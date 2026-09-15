@@ -164,6 +164,17 @@
       opacity: 0.5;
     }
 
+    /* ---------- twitter feed ---------- */
+    .twitter-embed-container {
+      max-width: 600px;
+      margin: 32px auto 0;
+      display: flex;
+      justify-content: center;
+    }
+    @media (max-width: 700px) {
+      .twitter-embed-container { max-width: 100%; }
+    }
+
     /* ---------- footer ---------- */
     .footer { padding: 64px 24px 40px; }
     .footer-inner { max-width: var(--max); margin: 0 auto; }
@@ -232,6 +243,21 @@
     </div>
   </section>
 
+  <!-- Latest from X -->
+  <section class="band">
+    <div class="band-inner" style="text-align: center;">
+      <span class="micro-cap">Latest from X</span>
+      <div class="twitter-embed-container">
+        <a class="twitter-timeline" 
+           data-theme="dark" 
+           data-chrome="noheader nofooter noborders transparent" 
+           data-tweet-limit="1"
+           href="https://twitter.com/bfitzx?ref_src=twsrc%5Etfw">
+        </a>
+      </div>
+    </div>
+  </section>
+
   <!-- Contact -->
   <section class="band">
     <div class="band-inner" style="text-align: center;">
@@ -257,6 +283,8 @@
       </div>
     </div>
   </footer>
+
+  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 </body>
 </html>
