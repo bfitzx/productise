@@ -164,19 +164,60 @@
       opacity: 0.5;
     }
 
-    /* ---------- twitter feed ---------- */
-    .twitter-embed-container {
+    /* ---------- X card ---------- */
+    .x-card {
       max-width: 600px;
-      min-height: 400px;
       margin: 32px auto 0;
+      background: var(--canvas-night-soft);
+      border: 1px solid var(--hairline);
+      border-radius: 8px;
+      padding: 48px 40px;
+      text-align: center;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
     }
-    .twitter-timeline {
-      width: 100% !important;
+    .x-card-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 64px;
+      height: 64px;
+      border: 1px solid var(--hairline);
+      border-radius: 50%;
+      background: var(--canvas-night);
+    }
+    .x-card-icon svg {
+      width: 32px;
+      height: 32px;
+      color: var(--on-primary);
+    }
+    .x-card-title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--on-primary);
+      margin: 0;
+    }
+    .x-card-body {
+      font-size: 15px;
+      line-height: 1.7;
+      letter-spacing: 0.3px;
+      color: var(--on-primary-mute);
+      margin: 0;
+      max-width: 480px;
+    }
+    .x-card-handle {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.4px;
+      color: var(--on-primary-mute);
+      font-family: monospace;
     }
     @media (max-width: 700px) {
-      .twitter-embed-container { max-width: 100%; }
+      .x-card { padding: 36px 28px; max-width: 100%; }
     }
 
     /* ---------- footer ---------- */
@@ -251,16 +292,29 @@
   <section class="band">
     <div class="band-inner" style="text-align: center;">
       <span class="micro-cap">Latest from X</span>
-      <div class="twitter-embed-container">
-        <a class="twitter-timeline" 
-           data-theme="dark" 
-           data-chrome="noheader nofooter noborders transparent" 
-           data-tweet-limit="3"
-           data-height="600"
-           href="https://twitter.com/productiseltd?ref_src=twsrc%5Etfw">
-          Tweets by @productiseltd
+      <div class="x-card">
+        <div class="x-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4l11.733 16h4.267l-11.733 -16z"></path>
+            <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772"></path>
+          </svg>
+        </div>
+        <h2 class="x-card-title">Follow Productise</h2>
+        <p class="x-card-body">
+          Stay up to date with product insights, industry updates, and the latest from Productise. Follow us on X for real-time conversations.
+        </p>
+        <span class="x-card-handle">@productiseltd</span>
+        <a href="https://x.com/productiseltd" target="_blank" rel="noopener noreferrer" class="ghost-pill">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4l11.733 16h4.267l-11.733 -16z"></path>
+            <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772"></path>
+          </svg>
+          Visit on X
         </a>
       </div>
+      <p style="margin-top: 24px; font-size: 13px; color: var(--on-primary-mute); opacity: 0.6;">
+        View the full timeline at <a href="https://x.com/productiseltd" target="_blank" rel="noopener noreferrer">x.com/productiseltd</a>
+      </p>
     </div>
   </section>
 
@@ -289,28 +343,6 @@
       </div>
     </div>
   </footer>
-
-  <!-- Twitter/X embed initialization -->
-  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-  <script>
-    // Ensure Twitter widget loads and renders properly
-    window.addEventListener('load', function() {
-      // Wait for twttr object to be available
-      function initTwitterWidget() {
-        if (window.twttr && window.twttr.widgets) {
-          // Explicitly load/refresh widgets to ensure rendering
-          window.twttr.widgets.load();
-          console.log('Twitter widget initialized');
-        } else {
-          // Retry after a short delay if twttr isn't ready yet
-          setTimeout(initTwitterWidget, 100);
-        }
-      }
-      
-      // Start initialization
-      initTwitterWidget();
-    });
-  </script>
 
 </body>
 </html>
