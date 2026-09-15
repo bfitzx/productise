@@ -167,9 +167,13 @@
     /* ---------- twitter feed ---------- */
     .twitter-embed-container {
       max-width: 600px;
+      min-height: 400px;
       margin: 32px auto 0;
       display: flex;
       justify-content: center;
+    }
+    .twitter-timeline {
+      width: 100% !important;
     }
     @media (max-width: 700px) {
       .twitter-embed-container { max-width: 100%; }
@@ -251,8 +255,9 @@
         <a class="twitter-timeline" 
            data-theme="dark" 
            data-chrome="noheader nofooter noborders transparent" 
-           data-tweet-limit="1"
-           href="https://x.com/productiseltd?ref_src=twsrc%5Etfw">
+           data-tweet-limit="3"
+           data-height="600"
+           href="https://twitter.com/productiseltd?ref_src=twsrc%5Etfw">
           Tweets by @productiseltd
         </a>
       </div>
@@ -285,7 +290,27 @@
     </div>
   </footer>
 
+  <!-- Twitter/X embed initialization -->
   <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+  <script>
+    // Ensure Twitter widget loads and renders properly
+    window.addEventListener('load', function() {
+      // Wait for twttr object to be available
+      function initTwitterWidget() {
+        if (window.twttr && window.twttr.widgets) {
+          // Explicitly load/refresh widgets to ensure rendering
+          window.twttr.widgets.load();
+          console.log('Twitter widget initialized');
+        } else {
+          // Retry after a short delay if twttr isn't ready yet
+          setTimeout(initTwitterWidget, 100);
+        }
+      }
+      
+      // Start initialization
+      initTwitterWidget();
+    });
+  </script>
 
 </body>
 </html>
