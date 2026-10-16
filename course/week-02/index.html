@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 02: CLI Fluency I — Files, Pipes and Text — Productise</title>
+  <meta name="description" content="A log-analysis one-liner toolkit and a cheat sheet">
+  <link rel="canonical" href="https://productise.ltd/course/week-02/">
+  <meta property="og:title" content="Week 02: CLI Fluency I — Files, Pipes and Text — Productise">
+  <meta property="og:description" content="A log-analysis one-liner toolkit and a cheat sheet">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://productise.ltd/course/week-02/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Week 02: CLI Fluency I — Files, Pipes and Text — Productise">
+  <meta name="twitter:description" content="A log-analysis one-liner toolkit and a cheat sheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/course.css">
+</head>
+<body class="" data-week-slug="week-02">
+<nav class="site-nav" aria-label="Primary">
+  <div class="site-nav-inner">
+    <a class="site-nav-brand plain" href="/">Productise</a>
+    <div class="site-nav-links">
+      <a class="plain" href="/">Home</a>
+      <a class="plain" href="/course/" aria-current="page">Course</a>
+      <a class="plain" href="/course/syllabus/">Syllabus</a>
+      <a class="plain" href="/course/domains/">Domains</a>
+    </div>
+  </div>
+</nav>
+<div class="page-shell">
+  <aside class="toc">
+  <div class="toc-label">On this page</div>
+  <nav><a href="#1-concept-brief">1. Concept brief</a><a href="#2-guided-lab-3-hrs">2. Guided lab (~3 hrs)</a><a href="#3-unguided-challenge-3-hrs">3. Unguided challenge (~3 hrs)</a><a href="#4-ways-of-working-1-hr">4. Ways of working (~1 hr)</a><a href="#5-check">5. Check</a><a href="#6-teach-back">6. Teach-back</a><a href="#done-when">Done when</a></nav>
+</aside>
+  <article>
+    <header class="lesson-header">
+      <div class="hero-meta">
+        <span class="micro-cap">1. CLI fluency</span>
+        <span class="micro-cap">·</span>
+        <span class="micro-cap">8–10 hrs</span>
+      </div>
+      <h1>Week 02 — CLI Fluency I — Files, Pipes and Text</h1>
+      <p class="body-lg" style="margin:0;max-width:640px;">A log-analysis one-liner toolkit and a cheat sheet</p>
+      
+      <div class="topic-chips"><span class="topic-chip">filesystem</span><span class="topic-chip">permissions</span><span class="topic-chip">redirection</span><span class="topic-chip">pipes</span><span class="topic-chip">grep</span><span class="topic-chip">ripgrep</span><span class="topic-chip">jq</span><span class="topic-chip">find</span><span class="topic-chip">xargs</span></div>
+      <p class="micro-cap" style="margin-top:16px;">Ways of working: The AI-native team</p>
+      <label class="micro-cap" style="display:flex;gap:10px;align-items:center;margin-top:18px;cursor:pointer;">
+        <input type="checkbox" data-mark-complete>
+        Mark week complete
+      </label>
+    </header>
+    <div class="prose"><p><strong>Phase 1 · Ways of working: the AI-native team</strong></p>
+<blockquote class="domain-pack">
+<p><strong><a href="/course/domains/">Domain pack</a>:</strong> Using a domain pack? Do the challenge on a public API from your domain as well, for example openFDA for pharma. See the <a href="/course/domains/">domain packs</a>.</p>
+</blockquote>
+<h2 id="1-concept-brief" tabindex="-1">1. Concept brief</h2>
+<p>Unix tools each do one thing and pass text to each other. Fluency means chaining small tools instead of opening a GUI. This week you learn to move around, inspect files, and transform text.</p>
+<p><strong>Vocabulary</strong></p>
+<ul>
+<li><strong>stdin / stdout / stderr:</strong> the three default streams. <code>&gt;</code> redirects stdout to a file, <code>2&gt;</code> redirects stderr, <code>|</code> pipes stdout into the next command’s stdin.</li>
+<li><strong>Absolute vs relative path:</strong> <code>/Users/you/x</code> vs <code>./x</code>. <code>~</code> means your home folder; <code>..</code> means the parent folder.</li>
+<li><strong>Permissions:</strong> <code>rwx</code> for user, group and others. <code>chmod +x</code> makes a file executable.</li>
+<li><strong>Glob:</strong> a shell wildcard (<code>*.csv</code>) that the shell expands <em>before</em> the command runs.</li>
+<li><strong>Exit code:</strong> <code>0</code> means success; anything else is failure. <code>$?</code> holds the last exit code.</li>
+<li><strong>JSON:</strong> the default data format of APIs. <code>jq</code> is how you query it.</li>
+</ul>
+<h2 id="2-guided-lab-3-hrs" tabindex="-1">2. Guided lab (~3 hrs)</h2>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#B392F0">mkdir</span><span style="color:#79B8FF"> -p</span><span style="color:#9ECBFF"> ~/dev/product-engineer-lab/week-02</span><span style="color:#E1E4E8"> &#x26;&#x26; </span><span style="color:#79B8FF">cd</span><span style="color:#79B8FF"> $_</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Navigation and inspection</span></span>
+<span class="line"><span style="color:#79B8FF">pwd</span><span style="color:#E1E4E8">; </span><span style="color:#B392F0">ls</span><span style="color:#79B8FF"> -la</span><span style="color:#E1E4E8">; </span><span style="color:#B392F0">tree</span><span style="color:#79B8FF"> -L</span><span style="color:#79B8FF"> 2</span><span style="color:#9ECBFF"> ~/dev</span></span>
+<span class="line"><span style="color:#B392F0">cat</span><span style="color:#9ECBFF"> /etc/hosts</span><span style="color:#E1E4E8">; </span><span style="color:#B392F0">less</span><span style="color:#9ECBFF"> /etc/services</span><span style="color:#6A737D">   # press q to quit</span></span>
+<span class="line"><span style="color:#B392F0">head</span><span style="color:#79B8FF"> -n</span><span style="color:#79B8FF"> 5</span><span style="color:#9ECBFF"> /etc/services</span><span style="color:#E1E4E8">; </span><span style="color:#B392F0">tail</span><span style="color:#79B8FF"> -n</span><span style="color:#79B8FF"> 5</span><span style="color:#9ECBFF"> /etc/services</span></span>
+<span class="line"><span style="color:#B392F0">wc</span><span style="color:#79B8FF"> -l</span><span style="color:#9ECBFF"> /etc/services</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Redirection and pipes</span></span>
+<span class="line"><span style="color:#79B8FF">echo</span><span style="color:#9ECBFF"> "hello"</span><span style="color:#F97583"> ></span><span style="color:#9ECBFF"> a.txt</span><span style="color:#E1E4E8">; </span><span style="color:#79B8FF">echo</span><span style="color:#9ECBFF"> "world"</span><span style="color:#F97583"> >></span><span style="color:#9ECBFF"> a.txt</span><span style="color:#E1E4E8">; </span><span style="color:#B392F0">cat</span><span style="color:#9ECBFF"> a.txt</span></span>
+<span class="line"><span style="color:#B392F0">ls</span><span style="color:#9ECBFF"> /nope</span><span style="color:#F97583"> 2></span><span style="color:#9ECBFF"> errors.txt</span><span style="color:#E1E4E8">; </span><span style="color:#B392F0">cat</span><span style="color:#9ECBFF"> errors.txt</span></span>
+<span class="line"><span style="color:#B392F0">cat</span><span style="color:#9ECBFF"> /etc/services</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> grep</span><span style="color:#79B8FF"> -i</span><span style="color:#9ECBFF"> http</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> wc</span><span style="color:#79B8FF"> -l</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Search</span></span>
+<span class="line"><span style="color:#B392F0">rg</span><span style="color:#9ECBFF"> "tcp"</span><span style="color:#9ECBFF"> /etc/services</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> head</span></span>
+<span class="line"><span style="color:#B392F0">find</span><span style="color:#9ECBFF"> ~/dev</span><span style="color:#79B8FF"> -name</span><span style="color:#9ECBFF"> "*.md"</span><span style="color:#79B8FF"> -type</span><span style="color:#9ECBFF"> f</span></span>
+<span class="line"><span style="color:#B392F0">find</span><span style="color:#9ECBFF"> .</span><span style="color:#79B8FF"> -name</span><span style="color:#9ECBFF"> "*.txt"</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> xargs</span><span style="color:#9ECBFF"> wc</span><span style="color:#79B8FF"> -l</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">curl</span><span style="color:#79B8FF"> -sL</span><span style="color:#9ECBFF"> https://raw.githubusercontent.com/datasets/airport-codes/main/data/airport-codes.csv</span><span style="color:#79B8FF"> -o</span><span style="color:#9ECBFF"> airports.csv</span></span>
+<span class="line"><span style="color:#B392F0">head</span><span style="color:#79B8FF"> -3</span><span style="color:#9ECBFF"> airports.csv</span></span>
+<span class="line"><span style="color:#B392F0">cut</span><span style="color:#79B8FF"> -d,</span><span style="color:#79B8FF"> -f2,3</span><span style="color:#9ECBFF"> airports.csv</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> sort</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> uniq</span><span style="color:#79B8FF"> -c</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> sort</span><span style="color:#79B8FF"> -rn</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> head</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># JSON with jq</span></span>
+<span class="line"><span style="color:#B392F0">curl</span><span style="color:#79B8FF"> -s</span><span style="color:#9ECBFF"> https://api.github.com/repos/astral-sh/uv/releases?per_page=</span><span style="color:#79B8FF">5</span><span style="color:#F97583"> ></span><span style="color:#9ECBFF"> releases.json</span></span>
+<span class="line"><span style="color:#B392F0">jq</span><span style="color:#9ECBFF"> '.[0] | keys'</span><span style="color:#9ECBFF"> releases.json</span></span>
+<span class="line"><span style="color:#B392F0">jq</span><span style="color:#79B8FF"> -r</span><span style="color:#9ECBFF"> '.[] | "\(.tag_name)\t\(.published_at)"'</span><span style="color:#9ECBFF"> releases.json</span></span>
+<span class="line"><span style="color:#B392F0">jq</span><span style="color:#9ECBFF"> '[.[] | {tag: .tag_name, assets: (.assets | length)}]'</span><span style="color:#9ECBFF"> releases.json</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Permissions</span></span>
+<span class="line"><span style="color:#79B8FF">echo</span><span style="color:#9ECBFF"> 'echo "I ran"'</span><span style="color:#F97583"> ></span><span style="color:#9ECBFF"> run.sh</span><span style="color:#E1E4E8">; </span><span style="color:#B392F0">./run.sh</span><span style="color:#6A737D">   # fails — why?</span></span>
+<span class="line"><span style="color:#B392F0">chmod</span><span style="color:#9ECBFF"> +x</span><span style="color:#9ECBFF"> run.sh</span><span style="color:#E1E4E8">; </span><span style="color:#B392F0">./run.sh</span><span style="color:#E1E4E8">; </span><span style="color:#B392F0">ls</span><span style="color:#79B8FF"> -l</span><span style="color:#9ECBFF"> run.sh</span></span>
+<span class="line"></span></code></pre></div><h2 id="3-unguided-challenge-3-hrs" tabindex="-1">3. Unguided challenge (~3 hrs)</h2>
+<p>Generate a fake support-ticket log with this script (save it as <code>gen.sh</code> and run <code>bash gen.sh &gt; tickets.log</code>):</p>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> i </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> $(</span><span style="color:#B392F0">seq</span><span style="color:#79B8FF"> 1</span><span style="color:#79B8FF"> 2000</span><span style="color:#E1E4E8">); </span><span style="color:#F97583">do</span></span>
+<span class="line"><span style="color:#E1E4E8">  s</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">$(</span><span style="color:#B392F0">shuf</span><span style="color:#79B8FF"> -n1</span><span style="color:#79B8FF"> -e</span><span style="color:#9ECBFF"> open</span><span style="color:#9ECBFF"> pending</span><span style="color:#9ECBFF"> resolved</span><span style="color:#9ECBFF"> escalated</span><span style="color:#9ECBFF"> closed</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#79B8FF">  echo</span><span style="color:#9ECBFF"> "$(</span><span style="color:#B392F0">date</span><span style="color:#79B8FF"> -v-${</span><span style="color:#E1E4E8">RANDOM</span><span style="color:#F97583">:</span><span style="color:#E1E4E8">0</span><span style="color:#F97583">:</span><span style="color:#E1E4E8">2</span><span style="color:#79B8FF">}M</span><span style="color:#9ECBFF"> +%FT%T) ticket_id=</span><span style="color:#E1E4E8">$i</span><span style="color:#9ECBFF"> account=A$((</span><span style="color:#B392F0">RANDOM%50</span><span style="color:#9ECBFF">)) status=</span><span style="color:#E1E4E8">$s</span><span style="color:#9ECBFF"> response_s=$((</span><span style="color:#B392F0">RANDOM%600</span><span style="color:#9ECBFF">))"</span></span>
+<span class="line"><span style="color:#F97583">done</span></span>
+<span class="line"></span></code></pre></div><p>(On macOS, run <code>brew install coreutils</code> first and use <code>gshuf</code> if <code>shuf</code> isn’t found.)</p>
+<p>Using only CLI tools, answer the questions below. Save each command in <code>answers.sh</code> with a comment:</p>
+<ol>
+<li>How many tickets per status?</li>
+<li>The top 5 accounts by <code>escalated</code> count.</li>
+<li>The average <code>response_s</code> of <code>resolved</code> tickets (hint: <code>awk</code>).</li>
+<li>Every ticket with <code>response_s</code> over 500, written to <code>slow_tickets.log</code>.</li>
+<li>A JSON array of <code>{account, escalations}</code> objects, built with <code>jq -R</code> / <code>jq -s</code>.</li>
+</ol>
+<p><strong>Acceptance criteria:</strong> each answer is a single pipeline, and <code>bash answers.sh</code> reproduces all the results.</p>
+<h2 id="4-ways-of-working-1-hr" tabindex="-1">4. Ways of working (~1 hr)</h2>
+<p><strong>The AI-native team.</strong> Small pods (2–4 people), builder-PMs who prototype, and agents doing first drafts of code, research and tests. Read two current write-ups on how AI-native teams are organised; search for recent posts from Linear, Vercel or Anthropic on how they build. Then write: what does a PRD become when a prototype takes an afternoon? What gets more important, and what disappears?</p>
+<h2 id="5-check" tabindex="-1">5. Check</h2>
+<ol>
+<li>What’s the difference between <code>&gt;</code> and <code>&gt;&gt;</code>?</li>
+<li>Why does <code>ls *.csv</code> behave differently in an empty folder?</li>
+<li>What does <code>2&gt;&amp;1</code> do?</li>
+<li>Write a <code>jq</code> filter that returns the <code>name</code> of every object in an array.</li>
+<li>What does exit code <code>127</code> usually mean?</li>
+</ol>
+<p>Recycled from week 1:</p>
+<ul>
+<li>What is PATH?</li>
+<li>What does idempotent mean?</li>
+</ul>
+<h2 id="6-teach-back" tabindex="-1">6. Teach-back</h2>
+<p>Write “Pipes explained with a factory line metaphor” (200 words), with three real one-liners from this week.</p>
+<h2 id="done-when" tabindex="-1">Done when</h2>
+<ul>
+<li class="task-list-item"><input type="checkbox">Guided lab completed</li>
+<li class="task-list-item"><input type="checkbox"><code>answers.sh</code> reproduces all five answers</li>
+<li class="task-list-item"><input type="checkbox">Personal CLI cheat sheet (<code>cheatsheet.md</code>) committed</li>
+<li class="task-list-item"><input type="checkbox">Ways-of-working note written</li>
+<li class="task-list-item"><input type="checkbox">Check and teach-back done</li>
+</ul>
+</div>
+    <nav class="pager" aria-label="Lesson pagination">
+  <a class="plain prev" href="/course/week-01/"><span class="label">Previous</span><span class="title">Week 01: Workstation</span></a>
+  <a class="plain next" href="/course/week-03/"><span class="label">Next</span><span class="title">Week 03: CLI Fluency II — Processes, Environment and Scripting</span></a>
+</nav>
+  </article>
+</div>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-legal">© 2026 Productise LTD. All rights reserved.</div>
+  </div>
+</footer>
+<script src="../assets/course.js"></script>
+</body>
+</html>

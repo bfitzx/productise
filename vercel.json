@@ -1,0 +1,10 @@
+{
+  "buildCommand": "",
+  "installCommand": "",
+  "outputDirectory": ".",
+  "framework": null,
+  "rewrites": [
+    { "source": "/course", "destination": "/course/index.html" },
+    { "source": "/course/", "destination": "/course/index.html" }
+  ]
+}

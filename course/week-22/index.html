@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 22: Experiments, Incidents and Runbooks — Productise</title>
+  <meta name="description" content="An A/B test readout, a runbook, and a postmortem from a simulated incident">
+  <link rel="canonical" href="https://productise.ltd/course/week-22/">
+  <meta property="og:title" content="Week 22: Experiments, Incidents and Runbooks — Productise">
+  <meta property="og:description" content="An A/B test readout, a runbook, and a postmortem from a simulated incident">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://productise.ltd/course/week-22/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Week 22: Experiments, Incidents and Runbooks — Productise">
+  <meta name="twitter:description" content="An A/B test readout, a runbook, and a postmortem from a simulated incident">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/course.css">
+</head>
+<body class="" data-week-slug="week-22">
+<nav class="site-nav" aria-label="Primary">
+  <div class="site-nav-inner">
+    <a class="site-nav-brand plain" href="/">Productise</a>
+    <div class="site-nav-links">
+      <a class="plain" href="/">Home</a>
+      <a class="plain" href="/course/" aria-current="page">Course</a>
+      <a class="plain" href="/course/syllabus/">Syllabus</a>
+      <a class="plain" href="/course/domains/">Domains</a>
+    </div>
+  </div>
+</nav>
+<div class="page-shell">
+  <aside class="toc">
+  <div class="toc-label">On this page</div>
+  <nav><a href="#1-concept-brief">1. Concept brief</a><a href="#2-guided-lab-25-hrs-run-the-experiment">2. Guided lab (~2.5 hrs) — run the experiment</a><a href="#3-unguided-challenge-3-hrs-incident-simulation">3. Unguided challenge (~3 hrs) — incident simulation</a><a href="#4-thread-a-metrics-readout-1-hr">4. Thread A — metrics readout (~1 hr)</a><a href="#5-mock-review-6-incident-review-1-hr">5. Mock review #6 — incident review (~1 hr)</a><a href="#6-ways-of-working-30-min">6. Ways of working (~30 min)</a><a href="#7-check">7. Check</a><a href="#8-teach-back">8. Teach-back</a><a href="#done-when">Done when</a></nav>
+</aside>
+  <article>
+    <header class="lesson-header">
+      <div class="hero-meta">
+        <span class="micro-cap">7. Production</span>
+        <span class="micro-cap">·</span>
+        <span class="micro-cap">8–10 hrs</span>
+      </div>
+      <h1>Week 22 — Experiments, Incidents and Runbooks</h1>
+      <p class="body-lg" style="margin:0;max-width:640px;">An A/B test readout, a runbook, and a postmortem from a simulated incident</p>
+      <div class="badge-row" style="margin-top:14px;"><span class="badge review">Mock review</span></div>
+      <div class="topic-chips"><span class="topic-chip">A/B testing</span><span class="topic-chip">experiment readout</span><span class="topic-chip">confidence intervals</span><span class="topic-chip">incident response</span><span class="topic-chip">severity levels</span><span class="topic-chip">runbooks</span><span class="topic-chip">blameless postmortems</span><span class="topic-chip">on-call</span></div>
+      <p class="micro-cap" style="margin-top:16px;">Ways of working: Case study: a public postmortem</p>
+      <label class="micro-cap" style="display:flex;gap:10px;align-items:center;margin-top:18px;cursor:pointer;">
+        <input type="checkbox" data-mark-complete>
+        Mark week complete
+      </label>
+    </header>
+    <div class="prose"><p><strong>Phase 7 · Threads A, B, D and H · Mock review #6</strong></p>
+<h2 id="1-concept-brief" tabindex="-1">1. Concept brief</h2>
+<p>You’ve built, shipped and instrumented. This week you <strong>measure</strong> honestly and <strong>respond</strong> when things break: the two things that earn trust from engineering teams.</p>
+<p><strong>Vocabulary</strong></p>
+<ul>
+<li><strong>Readout:</strong> the write-up of an experiment’s result and the decision it leads to.</li>
+<li><strong>Confidence interval:</strong> the range of plausible true effects. “+4% (−1% to +9%)” means you don’t know yet.</li>
+<li><strong>Statistical vs practical significance:</strong> an effect can be real but too small to matter.</li>
+<li><strong>Incident severity (SEV1–SEV4):</strong> impact-based levels that set who gets paged and how fast.</li>
+<li><strong>Incident commander (IC):</strong> the person coordinating the response. They don’t debug.</li>
+<li><strong>Runbook:</strong> step-by-step instructions for known failure scenarios.</li>
+<li><strong>Blameless postmortem:</strong> the timeline, contributing factors and actions. It focuses on systems, not people.</li>
+</ul>
+<h2 id="2-guided-lab-25-hrs-run-the-experiment" tabindex="-1">2. Guided lab (~2.5 hrs) — run the experiment</h2>
+<ol>
+<li>Launch the A/B test you planned in week 20 using a PostHog experiment, or a flag with a 50/50 split plus your own analysis.</li>
+<li>Let it run as long as your sample-size plan allows. With few users, extend the run or simulate additional traffic (label it as simulated).</li>
+<li>Export the results and analyse them yourself in a notebook:</li>
+</ol>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#F97583">from</span><span style="color:#E1E4E8"> statsmodels.stats.proportion </span><span style="color:#F97583">import</span><span style="color:#E1E4E8"> proportions_ztest, confint_proportions_2indep</span></span>
+<span class="line"><span style="color:#6A737D"># successes and totals per arm</span></span>
+<span class="line"><span style="color:#E1E4E8">stat, p </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> proportions_ztest([s_b, s_a], [n_b, n_a])</span></span>
+<span class="line"><span style="color:#E1E4E8">low, high </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> confint_proportions_2indep(s_b, n_b, s_a, n_a)</span></span>
+<span class="line"></span></code></pre></div><ol start="4">
+<li>Compare your numbers with PostHog’s. Do they agree? If not, why not?</li>
+</ol>
+<h2 id="3-unguided-challenge-3-hrs-incident-simulation" tabindex="-1">3. Unguided challenge (~3 hrs) — incident simulation</h2>
+<p><strong>Write the runbook first</strong> (<code>docs/runbook.md</code>):</p>
+<ul>
+<li>the service overview and dependencies</li>
+<li>dashboards and log links</li>
+<li>the five most likely failures, each with symptoms, checks and mitigations (database connections exhausted, a bad deploy, a third-party outage, a flag misfire, a quota or limit hit)</li>
+<li>how to roll back, how to flip the kill switch, and who to contact</li>
+</ul>
+<p><strong>Then run a game day.</strong> Ask Claude to run a live incident against you: <em>“SRE mode, run a SEV2 game day on FollowUp. Feed me alerts and symptoms over time; I’ll respond.”</em> You act as IC and responder:</p>
+<ul>
+<li>declare the severity</li>
+<li>post status updates every 10 minutes</li>
+<li>mitigate first, then find the root cause</li>
+</ul>
+<p><strong>Write the postmortem</strong> (<code>docs/postmortems/001.md</code>):</p>
+<ul>
+<li>summary</li>
+<li>impact</li>
+<li>timeline</li>
+<li>contributing factors (5 whys)</li>
+<li>what went well and what didn’t</li>
+<li>action items with owners</li>
+</ul>
+<h2 id="4-thread-a-metrics-readout-1-hr" tabindex="-1">4. Thread A — metrics readout (~1 hr)</h2>
+<p>One page for stakeholders:</p>
+<ul>
+<li>Did FollowUp move its north-star metric since week 11? What do the guardrails say?</li>
+<li>What was the experiment’s result, and what’s the decision (ship, kill or iterate)?</li>
+<li>What would you build next, and what would you stop?</li>
+</ul>
+<p>Use plain language, confidence intervals instead of “p &lt; 0.05”, and one chart.</p>
+<h2 id="5-mock-review-6-incident-review-1-hr" tabindex="-1">5. Mock review #6 — incident review (~1 hr)</h2>
+<p>Claude plays an SRE reviewing your postmortem: <em>“Why did detection take 14 minutes? Why wasn’t this in the runbook? Are your action items actually going to prevent a recurrence?”</em></p>
+<h2 id="6-ways-of-working-30-min" tabindex="-1">6. Ways of working (~30 min)</h2>
+<p>Read one well-known public postmortem (search for a major cloud provider or SaaS outage postmortem). What did they do that you didn’t?</p>
+<h2 id="7-check" tabindex="-1">7. Check</h2>
+<ol>
+<li>Statistical vs practical significance: give an example.</li>
+<li>What does the incident commander <em>not</em> do?</li>
+<li>Why are postmortems blameless?</li>
+<li>What belongs in a runbook entry?</li>
+<li>Your experiment shows “+3% (−2% to +8%)”. What do you decide, and why?</li>
+</ol>
+<p>Recycled:</p>
+<ul>
+<li>What’s the novelty effect?</li>
+<li>What does STRIDE stand for?</li>
+</ul>
+<h2 id="8-teach-back" tabindex="-1">8. Teach-back</h2>
+<p>Write “I ran my first incident: what I’d tell my old PM self.”</p>
+<h2 id="done-when" tabindex="-1">Done when</h2>
+<ul>
+<li class="task-list-item"><input type="checkbox">A/B test run and analysed independently, with the readout written</li>
+<li class="task-list-item"><input type="checkbox">Runbook written</li>
+<li class="task-list-item"><input type="checkbox">Game day run as IC</li>
+<li class="task-list-item"><input type="checkbox">Postmortem with action items</li>
+<li class="task-list-item"><input type="checkbox">Mock review passed</li>
+<li class="task-list-item"><input type="checkbox">Check and teach-back done</li>
+</ul>
+</div>
+    <nav class="pager" aria-label="Lesson pagination">
+  <a class="plain prev" href="/course/week-21/"><span class="label">Previous</span><span class="title">Week 21: Feature Flags, Rollouts, Debugging and Threat Modelling</span></a>
+  <a class="plain next" href="/course/week-23/"><span class="label">Next</span><span class="title">Week 23: Capstone I — Discovery and Architecture</span></a>
+</nav>
+  </article>
+</div>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-legal">© 2026 Productise LTD. All rights reserved.</div>
+  </div>
+</footer>
+<script src="../assets/course.js"></script>
+</body>
+</html>

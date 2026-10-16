@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 05: Python Core and Your First API — Productise</title>
+  <meta name="description" content="A typed FastAPI service skeleton with an ADR">
+  <link rel="canonical" href="https://productise.ltd/course/week-05/">
+  <meta property="og:title" content="Week 05: Python Core and Your First API — Productise">
+  <meta property="og:description" content="A typed FastAPI service skeleton with an ADR">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://productise.ltd/course/week-05/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Week 05: Python Core and Your First API — Productise">
+  <meta name="twitter:description" content="A typed FastAPI service skeleton with an ADR">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/course.css">
+</head>
+<body class="" data-week-slug="week-05">
+<nav class="site-nav" aria-label="Primary">
+  <div class="site-nav-inner">
+    <a class="site-nav-brand plain" href="/">Productise</a>
+    <div class="site-nav-links">
+      <a class="plain" href="/">Home</a>
+      <a class="plain" href="/course/" aria-current="page">Course</a>
+      <a class="plain" href="/course/syllabus/">Syllabus</a>
+      <a class="plain" href="/course/domains/">Domains</a>
+    </div>
+  </div>
+</nav>
+<div class="page-shell">
+  <aside class="toc">
+  <div class="toc-label">On this page</div>
+  <nav><a href="#1-concept-brief">1. Concept brief</a><a href="#2-guided-lab-3-hrs">2. Guided lab (~3 hrs)</a><a href="#3-unguided-challenge-3-hrs">3. Unguided challenge (~3 hrs)</a><a href="#4-system-design-1-apis-15-hrs">4. System design #1 — APIs (~1.5 hrs)</a><a href="#5-ways-of-working-1-hr">5. Ways of working (~1 hr)</a><a href="#6-check">6. Check</a><a href="#7-teach-back">7. Teach-back</a><a href="#done-when">Done when</a></nav>
+</aside>
+  <article>
+    <header class="lesson-header">
+      <div class="hero-meta">
+        <span class="micro-cap">3. Code core</span>
+        <span class="micro-cap">·</span>
+        <span class="micro-cap">8–10 hrs</span>
+      </div>
+      <h1>Week 05 — Python Core and Your First API</h1>
+      <p class="body-lg" style="margin:0;max-width:640px;">A typed FastAPI service skeleton with an ADR</p>
+      <div class="badge-row" style="margin-top:14px;"><span class="badge design">System design</span></div>
+      <div class="topic-chips"><span class="topic-chip">Python</span><span class="topic-chip">uv</span><span class="topic-chip">type hints</span><span class="topic-chip">pydantic</span><span class="topic-chip">HTTP</span><span class="topic-chip">REST</span><span class="topic-chip">FastAPI</span><span class="topic-chip">ADRs</span></div>
+      <p class="micro-cap" style="margin-top:16px;">Ways of working: Shape Up</p>
+      <label class="micro-cap" style="display:flex;gap:10px;align-items:center;margin-top:18px;cursor:pointer;">
+        <input type="checkbox" data-mark-complete>
+        Mark week complete
+      </label>
+    </header>
+    <div class="prose"><p><strong>Phase 3 · System design #1 · Ways of working: Shape Up</strong></p>
+<p>From this week on, Claude Code is your pair programmer. <strong>Rule:</strong> you write the first version of each function yourself, then ask Claude to review it or extend it. Read every line it writes before you accept it.</p>
+<h2 id="1-concept-brief" tabindex="-1">1. Concept brief</h2>
+<p>Python is the lingua franca of data and AI work. FastAPI is the modern way to put a Python function behind an HTTP endpoint, with type hints doing double duty as validation and documentation.</p>
+<p><strong>Vocabulary</strong></p>
+<ul>
+<li><strong>HTTP methods:</strong> <code>GET</code> (read), <code>POST</code> (create), <code>PUT</code>/<code>PATCH</code> (update), <code>DELETE</code>.</li>
+<li><strong>Status codes:</strong> <code>2xx</code> success, <code>4xx</code> the client’s fault, <code>5xx</code> the server’s fault. Learn 200, 201, 204, 400, 401, 403, 404, 409, 422, 429, 500 and 503.</li>
+<li><strong>REST:</strong> resources as URLs (<code>/tickets/42</code>), with methods as verbs.</li>
+<li><strong>Type hints:</strong> <code>def f(x: int) -&gt; str</code>. They’re not enforced at runtime unless a library like pydantic does it.</li>
+<li><strong>Pydantic model:</strong> a class that validates and serialises data.</li>
+<li><strong>OpenAPI:</strong> a machine-readable API description. FastAPI generates it for you at <code>/docs</code>.</li>
+<li><strong>Virtual environment:</strong> isolated per-project packages. <code>uv</code> manages it for you.</li>
+</ul>
+<h2 id="2-guided-lab-3-hrs" tabindex="-1">2. Guided lab (~3 hrs)</h2>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#79B8FF">cd</span><span style="color:#9ECBFF"> ~/dev</span><span style="color:#E1E4E8"> &#x26;&#x26; </span><span style="color:#B392F0">uv</span><span style="color:#9ECBFF"> init</span><span style="color:#9ECBFF"> ticket-service</span><span style="color:#E1E4E8"> &#x26;&#x26; </span><span style="color:#79B8FF">cd</span><span style="color:#9ECBFF"> ticket-service</span></span>
+<span class="line"><span style="color:#B392F0">uv</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> fastapi</span><span style="color:#9ECBFF"> uvicorn</span><span style="color:#9ECBFF"> pydantic</span></span>
+<span class="line"><span style="color:#B392F0">uv</span><span style="color:#9ECBFF"> add</span><span style="color:#79B8FF"> --dev</span><span style="color:#9ECBFF"> pytest</span><span style="color:#9ECBFF"> httpx</span><span style="color:#9ECBFF"> ruff</span><span style="color:#9ECBFF"> mypy</span></span>
+<span class="line"></span></code></pre></div><p>Create <code>main.py</code>:</p>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#F97583">from</span><span style="color:#E1E4E8"> datetime </span><span style="color:#F97583">import</span><span style="color:#E1E4E8"> datetime</span></span>
+<span class="line"><span style="color:#F97583">from</span><span style="color:#E1E4E8"> enum </span><span style="color:#F97583">import</span><span style="color:#E1E4E8"> Enum</span></span>
+<span class="line"><span style="color:#F97583">from</span><span style="color:#E1E4E8"> fastapi </span><span style="color:#F97583">import</span><span style="color:#E1E4E8"> FastAPI, HTTPException</span></span>
+<span class="line"><span style="color:#F97583">from</span><span style="color:#E1E4E8"> pydantic </span><span style="color:#F97583">import</span><span style="color:#E1E4E8"> BaseModel, Field</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">app </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> FastAPI(</span><span style="color:#FFAB70">title</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">"Ticket Service"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> Status</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">str</span><span style="color:#E1E4E8">, </span><span style="color:#B392F0">Enum</span><span style="color:#E1E4E8">):</span></span>
+<span class="line"><span style="color:#79B8FF">    open</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> "open"</span></span>
+<span class="line"><span style="color:#E1E4E8">    pending </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> "pending"</span></span>
+<span class="line"><span style="color:#E1E4E8">    resolved </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> "resolved"</span></span>
+<span class="line"><span style="color:#E1E4E8">    escalated </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> "escalated"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> TicketIn</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">BaseModel</span><span style="color:#E1E4E8">):</span></span>
+<span class="line"><span style="color:#E1E4E8">    account_id: </span><span style="color:#79B8FF">str</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> Field(</span><span style="color:#FFAB70">min_length</span><span style="color:#F97583">=</span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    customer_email: </span><span style="color:#79B8FF">str</span></span>
+<span class="line"><span style="color:#E1E4E8">    subject: </span><span style="color:#79B8FF">str</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> Ticket</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">TicketIn</span><span style="color:#E1E4E8">):</span></span>
+<span class="line"><span style="color:#79B8FF">    id</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">int</span></span>
+<span class="line"><span style="color:#E1E4E8">    created_at: datetime</span></span>
+<span class="line"><span style="color:#E1E4E8">    status: Status </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> Status.open</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">DB</span><span style="color:#E1E4E8">: dict[</span><span style="color:#79B8FF">int</span><span style="color:#E1E4E8">, Ticket] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> {}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">@app.post</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"/tickets"</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">status_code</span><span style="color:#F97583">=</span><span style="color:#79B8FF">201</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> create</span><span style="color:#E1E4E8">(req: TicketIn) -> Ticket:</span></span>
+<span class="line"><span style="color:#E1E4E8">    new </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> Ticket(</span><span style="color:#FFAB70">id</span><span style="color:#F97583">=</span><span style="color:#79B8FF">len</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">DB</span><span style="color:#E1E4E8">) </span><span style="color:#F97583">+</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">created_at</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">datetime.now(), </span><span style="color:#F97583">**</span><span style="color:#E1E4E8">req.model_dump())</span></span>
+<span class="line"><span style="color:#79B8FF">    DB</span><span style="color:#E1E4E8">[new.id] </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> new</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> new</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">@app.get</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"/tickets/</span><span style="color:#79B8FF">{req_id}</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> get</span><span style="color:#E1E4E8">(req_id: </span><span style="color:#79B8FF">int</span><span style="color:#E1E4E8">) -> Ticket:</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> req_id </span><span style="color:#F97583">not</span><span style="color:#F97583"> in</span><span style="color:#79B8FF"> DB</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#F97583">        raise</span><span style="color:#E1E4E8"> HTTPException(</span><span style="color:#79B8FF">404</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"not found"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#79B8FF"> DB</span><span style="color:#E1E4E8">[req_id]</span></span>
+<span class="line"></span></code></pre></div><div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#B392F0">uv</span><span style="color:#9ECBFF"> run</span><span style="color:#9ECBFF"> uvicorn</span><span style="color:#9ECBFF"> main:app</span><span style="color:#79B8FF"> --reload</span></span>
+<span class="line"><span style="color:#6A737D"># In a second tmux pane:</span></span>
+<span class="line"><span style="color:#B392F0">curl</span><span style="color:#79B8FF"> -s</span><span style="color:#79B8FF"> -X</span><span style="color:#9ECBFF"> POST</span><span style="color:#9ECBFF"> localhost:8000/tickets</span><span style="color:#79B8FF"> -H</span><span style="color:#9ECBFF"> 'content-type: application/json'</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#79B8FF">  -d</span><span style="color:#9ECBFF"> '{"account_id":"A12","customer_email":"sam@example.com","subject":"Cannot export report"}'</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> jq</span></span>
+<span class="line"><span style="color:#B392F0">curl</span><span style="color:#79B8FF"> -s</span><span style="color:#9ECBFF"> localhost:8000/tickets/1</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> jq</span></span>
+<span class="line"><span style="color:#B392F0">curl</span><span style="color:#79B8FF"> -s</span><span style="color:#79B8FF"> -X</span><span style="color:#9ECBFF"> POST</span><span style="color:#9ECBFF"> localhost:8000/tickets</span><span style="color:#79B8FF"> -H</span><span style="color:#9ECBFF"> 'content-type: application/json'</span><span style="color:#79B8FF"> -d</span><span style="color:#9ECBFF"> '{}'</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> jq</span><span style="color:#6A737D">   # 422 — read the error</span></span>
+<span class="line"><span style="color:#B392F0">open</span><span style="color:#9ECBFF"> http://localhost:8000/docs</span></span>
+<span class="line"><span style="color:#B392F0">uv</span><span style="color:#9ECBFF"> run</span><span style="color:#9ECBFF"> ruff</span><span style="color:#9ECBFF"> check</span><span style="color:#9ECBFF"> .</span><span style="color:#E1E4E8"> &#x26;&#x26; </span><span style="color:#B392F0">uv</span><span style="color:#9ECBFF"> run</span><span style="color:#9ECBFF"> mypy</span><span style="color:#9ECBFF"> main.py</span></span>
+<span class="line"></span></code></pre></div><p>Python fundamentals to practise in a REPL (<code>uv run python</code>):</p>
+<ul>
+<li>lists, dicts and comprehensions</li>
+<li>f-strings</li>
+<li><code>for</code>/<code>enumerate</code></li>
+<li>functions with default arguments</li>
+<li>exceptions and <code>try/except</code></li>
+<li><code>with</code> blocks</li>
+<li><code>dataclass</code> vs pydantic</li>
+</ul>
+<h2 id="3-unguided-challenge-3-hrs" tabindex="-1">3. Unguided challenge (~3 hrs)</h2>
+<p>Extend the service with:</p>
+<ul>
+<li><code>GET /tickets</code>, with <code>?status=</code> filtering and <code>limit</code>/<code>offset</code> pagination</li>
+<li><code>PATCH /tickets/{id}</code> to update the status; return <code>409</code> if the ticket is already <code>resolved</code></li>
+<li>a <code>tests/test_api.py</code> with at least 6 tests using FastAPI’s <code>TestClient</code></li>
+<li>a CI workflow running ruff, mypy and pytest</li>
+</ul>
+<p><strong>Acceptance criteria:</strong></p>
+<ul>
+<li><code>uv run pytest</code> passes.</li>
+<li>CI is green.</li>
+<li><code>/docs</code> shows every endpoint with example payloads.</li>
+</ul>
+<h2 id="4-system-design-1-apis-15-hrs" tabindex="-1">4. System design #1 — APIs (~1.5 hrs)</h2>
+<p>Design the public API for the ticket service, as used by partner companies that create and track tickets from their own systems. One page:</p>
+<ul>
+<li>resources and endpoints</li>
+<li>authentication approach</li>
+<li>pagination style (offset or cursor, and why)</li>
+<li>error format</li>
+<li>idempotency for <code>POST</code>: what happens if the partner retries? (Look up <code>Idempotency-Key</code> headers.)</li>
+<li>why REST rather than GraphQL or gRPC here, and when you’d choose each</li>
+</ul>
+<p>Then write your first <strong>ADR</strong> (Architecture Decision Record) in <code>docs/adr/0001-rest-api.md</code>, with sections for Context, Decision, Consequences and Alternatives. Add a <strong>three-line exec summary</strong> for a non-technical stakeholder.</p>
+<p>Defend it: <em>“Claude, staff engineer mode, poke holes in this API design.”</em></p>
+<h2 id="5-ways-of-working-1-hr" tabindex="-1">5. Ways of working (~1 hr)</h2>
+<p><strong>Shape Up</strong> (Basecamp): fixed time with variable scope, appetite rather than estimates, shaping before betting, 6-week cycles plus cooldown. Compare it with the sprint process you know. Where would it break at a 500-person company?</p>
+<h2 id="6-check" tabindex="-1">6. Check</h2>
+<ol>
+<li>What’s the difference between 401 and 403?</li>
+<li>Why does FastAPI return 422 rather than 400 for a bad body?</li>
+<li>What does pydantic give you that type hints alone don’t?</li>
+<li>Offset vs cursor pagination: name one failure mode of offset.</li>
+<li>What problem does an idempotency key solve?</li>
+</ol>
+<p>Recycled:</p>
+<ul>
+<li>When would you rebase rather than merge?</li>
+<li>What’s an environment variable?</li>
+</ul>
+<h2 id="7-teach-back" tabindex="-1">7. Teach-back</h2>
+<p>Write “What actually happens when you call an API.”</p>
+<h2 id="done-when" tabindex="-1">Done when</h2>
+<ul>
+<li class="task-list-item"><input type="checkbox">Service extended, tests passing, CI green</li>
+<li class="task-list-item"><input type="checkbox">API design doc, ADR 0001 and exec summary committed</li>
+<li class="task-list-item"><input type="checkbox">Design defended</li>
+<li class="task-list-item"><input type="checkbox">Check and teach-back done</li>
+</ul>
+</div>
+    <nav class="pager" aria-label="Lesson pagination">
+  <a class="plain prev" href="/course/week-04/"><span class="label">Previous</span><span class="title">Week 04: Git and GitHub</span></a>
+  <a class="plain next" href="/course/week-06/"><span class="label">Next</span><span class="title">Week 06: Persistence, Testing and Big-O</span></a>
+</nav>
+  </article>
+</div>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-legal">© 2026 Productise LTD. All rights reserved.</div>
+  </div>
+</footer>
+<script src="../assets/course.js"></script>
+</body>
+</html>

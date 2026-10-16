@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 14: Pipelines, Orchestration and Streaming — Productise</title>
+  <meta name="description" content="A bronze → silver → gold declarative pipeline fed by incremental file drops, plus a local Kafka demo">
+  <link rel="canonical" href="https://productise.ltd/course/week-14/">
+  <meta property="og:title" content="Week 14: Pipelines, Orchestration and Streaming — Productise">
+  <meta property="og:description" content="A bronze → silver → gold declarative pipeline fed by incremental file drops, plus a local Kafka demo">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://productise.ltd/course/week-14/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Week 14: Pipelines, Orchestration and Streaming — Productise">
+  <meta name="twitter:description" content="A bronze → silver → gold declarative pipeline fed by incremental file drops, plus a local Kafka demo">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/course.css">
+</head>
+<body class="" data-week-slug="week-14">
+<nav class="site-nav" aria-label="Primary">
+  <div class="site-nav-inner">
+    <a class="site-nav-brand plain" href="/">Productise</a>
+    <div class="site-nav-links">
+      <a class="plain" href="/">Home</a>
+      <a class="plain" href="/course/" aria-current="page">Course</a>
+      <a class="plain" href="/course/syllabus/">Syllabus</a>
+      <a class="plain" href="/course/domains/">Domains</a>
+    </div>
+  </div>
+</nav>
+<div class="page-shell">
+  <aside class="toc">
+  <div class="toc-label">On this page</div>
+  <nav><a href="#1-concept-brief">1. Concept brief</a><a href="#2-guided-lab-35-hrs">2. Guided lab (~3.5 hrs)</a><a href="#3-unguided-challenge-25-hrs">3. Unguided challenge (~2.5 hrs)</a><a href="#4-ways-of-working-1-hr">4. Ways of working (~1 hr)</a><a href="#5-check">5. Check</a><a href="#6-teach-back">6. Teach-back</a><a href="#done-when">Done when</a></nav>
+</aside>
+  <article>
+    <header class="lesson-header">
+      <div class="hero-meta">
+        <span class="micro-cap">5. Data engineering &amp; Databricks</span>
+        <span class="micro-cap">·</span>
+        <span class="micro-cap">8–10 hrs</span>
+      </div>
+      <h1>Week 14 — Pipelines, Orchestration and Streaming</h1>
+      <p class="body-lg" style="margin:0;max-width:640px;">A bronze → silver → gold declarative pipeline fed by incremental file drops, plus a local Kafka demo</p>
+      
+      <div class="topic-chips"><span class="topic-chip">Lakeflow Declarative Pipelines</span><span class="topic-chip">medallion architecture</span><span class="topic-chip">bronze/silver/gold</span><span class="topic-chip">Auto Loader</span><span class="topic-chip">DAGs</span><span class="topic-chip">retries</span><span class="topic-chip">backfills</span><span class="topic-chip">batch vs streaming</span><span class="topic-chip">Kafka</span><span class="topic-chip">Redpanda</span></div>
+      <p class="micro-cap" style="margin-top:16px;">Ways of working: Communicating trade-offs to non-engineers</p>
+      <label class="micro-cap" style="display:flex;gap:10px;align-items:center;margin-top:18px;cursor:pointer;">
+        <input type="checkbox" data-mark-complete>
+        Mark week complete
+      </label>
+    </header>
+    <div class="prose"><p><strong>Phase 5 · Ways of working: communicating trade-offs</strong></p>
+<h2 id="1-concept-brief" tabindex="-1">1. Concept brief</h2>
+<p>Last week you ran SQL by hand and in a job. Real pipelines are <strong>declarative</strong>: you describe the tables you want and their quality rules, and the engine works out the order, the incremental processing and the retries.</p>
+<p><strong>Vocabulary</strong></p>
+<ul>
+<li><strong>Medallion architecture:</strong>
+<ul>
+<li><strong>bronze:</strong> raw, as landed</li>
+<li><strong>silver:</strong> cleaned, deduplicated, conformed</li>
+<li><strong>gold:</strong> business-level aggregates</li>
+</ul>
+</li>
+<li><strong>Lakeflow Declarative Pipelines:</strong> Databricks’ declarative ETL framework, formerly Delta Live Tables (DLT).</li>
+<li><strong>Streaming table vs materialised view:</strong> incrementally appends new data, vs a recomputed result.</li>
+<li><strong>Auto Loader:</strong> incrementally picks up new files from storage (<code>cloudFiles</code>).</li>
+<li><strong>DAG:</strong> a directed acyclic graph of task dependencies. Orchestrators (Airflow, Dagster, Databricks Jobs) run DAGs.</li>
+<li><strong>Backfill:</strong> re-running a pipeline for historical periods.</li>
+<li><strong>Batch vs streaming:</strong> process in chunks on a schedule, vs continuously as events arrive.</li>
+<li><strong>Kafka:</strong> a durable, partitioned event log. Producers write to topics, consumers read at their own offset.</li>
+</ul>
+<h2 id="2-guided-lab-35-hrs" tabindex="-1">2. Guided lab (~3.5 hrs)</h2>
+<ol>
+<li>Split your tickets into daily Parquet or JSON files, and upload days 1–30 to <code>/Volumes/workspace/support/landing/</code>.</li>
+<li>Create a pipeline (Jobs &amp; Pipelines → Create → ETL pipeline) with a Python source file:</li>
+</ol>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#F97583">from</span><span style="color:#E1E4E8"> pyspark </span><span style="color:#F97583">import</span><span style="color:#E1E4E8"> pipelines </span><span style="color:#F97583">as</span><span style="color:#E1E4E8"> dp     </span><span style="color:#6A737D"># older workspaces: import dlt as dp</span></span>
+<span class="line"><span style="color:#F97583">from</span><span style="color:#E1E4E8"> pyspark.sql </span><span style="color:#F97583">import</span><span style="color:#E1E4E8"> functions </span><span style="color:#F97583">as</span><span style="color:#E1E4E8"> F</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">@dp.table</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">comment</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">"Raw tickets as landed"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> bronze_tickets</span><span style="color:#E1E4E8">():</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> (spark.readStream.format(</span><span style="color:#9ECBFF">"cloudFiles"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">            .option(</span><span style="color:#9ECBFF">"cloudFiles.format"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"parquet"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">            .load(</span><span style="color:#9ECBFF">"/Volumes/workspace/support/landing/"</span><span style="color:#E1E4E8">))</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">@dp.table</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">comment</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">"Cleaned, deduplicated tickets"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#B392F0">@dp.expect_or_drop</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"valid_status"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"status IN ('open','pending','resolved','escalated','closed')"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#B392F0">@dp.expect</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">"non_negative_response"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"first_response_s >= 0"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> silver_tickets</span><span style="color:#E1E4E8">():</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> (spark.readStream.table(</span><span style="color:#9ECBFF">"bronze_tickets"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">            .dropDuplicates([</span><span style="color:#9ECBFF">"ticket_id"</span><span style="color:#E1E4E8">])</span></span>
+<span class="line"><span style="color:#E1E4E8">            .withColumn(</span><span style="color:#9ECBFF">"ticket_date"</span><span style="color:#E1E4E8">, F.to_date(</span><span style="color:#9ECBFF">"created_at"</span><span style="color:#E1E4E8">)))</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#B392F0">@dp.materialized_view</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">comment</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">"Daily status counts by account"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> gold_daily_account_status</span><span style="color:#E1E4E8">():</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> (spark.read.table(</span><span style="color:#9ECBFF">"silver_tickets"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">            .groupBy(</span><span style="color:#9ECBFF">"ticket_date"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"account_id"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"status"</span><span style="color:#E1E4E8">).count())</span></span>
+<span class="line"></span></code></pre></div><ol start="3">
+<li>Run it and study the pipeline graph and the data-quality metrics.</li>
+<li>Upload days 31–35 and run again. Only the new files should be processed. Check the event log.</li>
+<li>Upload a file containing bad rows (negative response times, an unknown status). Where did they go?</li>
+</ol>
+<p><strong>Local streaming with Kafka (Redpanda):</strong></p>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> run</span><span style="color:#79B8FF"> -d</span><span style="color:#79B8FF"> --name</span><span style="color:#9ECBFF"> redpanda</span><span style="color:#79B8FF"> -p</span><span style="color:#9ECBFF"> 9092:9092</span><span style="color:#9ECBFF"> redpandadata/redpanda:latest</span><span style="color:#79B8FF"> \</span></span>
+<span class="line"><span style="color:#9ECBFF">  redpanda</span><span style="color:#9ECBFF"> start</span><span style="color:#79B8FF"> --overprovisioned</span><span style="color:#79B8FF"> --smp</span><span style="color:#79B8FF"> 1</span><span style="color:#79B8FF"> --kafka-addr</span><span style="color:#9ECBFF"> 0.0.0.0:9092</span><span style="color:#79B8FF"> --advertise-kafka-addr</span><span style="color:#9ECBFF"> localhost:9092</span></span>
+<span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> exec</span><span style="color:#79B8FF"> -it</span><span style="color:#9ECBFF"> redpanda</span><span style="color:#9ECBFF"> rpk</span><span style="color:#9ECBFF"> topic</span><span style="color:#9ECBFF"> create</span><span style="color:#9ECBFF"> ticket-events</span><span style="color:#79B8FF"> -p</span><span style="color:#79B8FF"> 3</span></span>
+<span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> exec</span><span style="color:#79B8FF"> -it</span><span style="color:#9ECBFF"> redpanda</span><span style="color:#9ECBFF"> rpk</span><span style="color:#9ECBFF"> topic</span><span style="color:#9ECBFF"> produce</span><span style="color:#9ECBFF"> ticket-events</span><span style="color:#6A737D">     # type a few JSON events, then Ctrl-C</span></span>
+<span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> exec</span><span style="color:#79B8FF"> -it</span><span style="color:#9ECBFF"> redpanda</span><span style="color:#9ECBFF"> rpk</span><span style="color:#9ECBFF"> topic</span><span style="color:#9ECBFF"> consume</span><span style="color:#9ECBFF"> ticket-events</span><span style="color:#79B8FF"> --offset</span><span style="color:#9ECBFF"> start</span></span>
+<span class="line"></span></code></pre></div><p>Then write a tiny Python producer and consumer with <code>uv add confluent-kafka</code>. Kill the consumer, produce more events, and restart it. Did it resume from the right offset?</p>
+<h2 id="3-unguided-challenge-25-hrs" tabindex="-1">3. Unguided challenge (~2.5 hrs)</h2>
+<ul>
+<li>Add <code>accounts</code> as a second source with <strong>SCD2 handling</strong> using <code>create_auto_cdc_flow</code> (formerly <code>apply_changes</code>); search the current docs for the exact API.</li>
+<li>Add a gold view of the escalation rate by plan at the time of the ticket.</li>
+<li>Schedule the pipeline in a Job that runs after a “file arrival” trigger, or daily.</li>
+<li>Document the DAG and say what a backfill of last month would involve.</li>
+</ul>
+<p><strong>Acceptance criteria:</strong></p>
+<ul>
+<li>Incremental runs process only new files.</li>
+<li>Bad rows are dropped and counted.</li>
+<li>SCD2 history is correct.</li>
+</ul>
+<h2 id="4-ways-of-working-1-hr" tabindex="-1">4. Ways of working (~1 hr)</h2>
+<p><strong>Communicating trade-offs.</strong> Write a 150-word note to a non-technical director explaining why “real-time support dashboards” would cost about 4× more than hourly ones, and what they’d gain. Use no jargon. Give one recommendation and one alternative.</p>
+<h2 id="5-check" tabindex="-1">5. Check</h2>
+<ol>
+<li>What belongs in bronze vs silver vs gold?</li>
+<li>What does <code>expect_or_drop</code> do differently from <code>expect</code>?</li>
+<li>What’s a consumer offset in Kafka?</li>
+<li>Why are declarative pipelines easier to backfill?</li>
+<li>Streaming table vs materialised view: when would you use each?</li>
+</ol>
+<p>Recycled:</p>
+<ul>
+<li>What’s Delta time travel?</li>
+<li>What is a UC column mask?</li>
+</ul>
+<h2 id="6-teach-back" tabindex="-1">6. Teach-back</h2>
+<p>Write “Bronze, silver, gold: a pipeline explained as a kitchen.”</p>
+<h2 id="done-when" tabindex="-1">Done when</h2>
+<ul>
+<li class="task-list-item"><input type="checkbox">Declarative pipeline running with expectations</li>
+<li class="task-list-item"><input type="checkbox">Incremental loads proven</li>
+<li class="task-list-item"><input type="checkbox">SCD2 via auto CDC working</li>
+<li class="task-list-item"><input type="checkbox">Kafka producer and consumer demo with offsets understood</li>
+<li class="task-list-item"><input type="checkbox">Director note written</li>
+<li class="task-list-item"><input type="checkbox">Check and teach-back done</li>
+</ul>
+</div>
+    <nav class="pager" aria-label="Lesson pagination">
+  <a class="plain prev" href="/course/week-13/"><span class="label">Previous</span><span class="title">Week 13: Databricks Foundations</span></a>
+  <a class="plain next" href="/course/week-15/"><span class="label">Next</span><span class="title">Week 15: Data Quality, Contracts, Cost and Portability</span></a>
+</nav>
+  </article>
+</div>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-legal">© 2026 Productise LTD. All rights reserved.</div>
+  </div>
+</footer>
+<script src="../assets/course.js"></script>
+</body>
+</html>

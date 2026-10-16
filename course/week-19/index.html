@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 19: Voice Pipelines and AI System Design — Productise</title>
+  <meta name="description" content="A local voice-agent prototype with a measured latency budget and a launch-review pack">
+  <link rel="canonical" href="https://productise.ltd/course/week-19/">
+  <meta property="og:title" content="Week 19: Voice Pipelines and AI System Design — Productise">
+  <meta property="og:description" content="A local voice-agent prototype with a measured latency budget and a launch-review pack">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://productise.ltd/course/week-19/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Week 19: Voice Pipelines and AI System Design — Productise">
+  <meta name="twitter:description" content="A local voice-agent prototype with a measured latency budget and a launch-review pack">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/course.css">
+</head>
+<body class="" data-week-slug="week-19">
+<nav class="site-nav" aria-label="Primary">
+  <div class="site-nav-inner">
+    <a class="site-nav-brand plain" href="/">Productise</a>
+    <div class="site-nav-links">
+      <a class="plain" href="/">Home</a>
+      <a class="plain" href="/course/" aria-current="page">Course</a>
+      <a class="plain" href="/course/syllabus/">Syllabus</a>
+      <a class="plain" href="/course/domains/">Domains</a>
+    </div>
+  </div>
+</nav>
+<div class="page-shell">
+  <aside class="toc">
+  <div class="toc-label">On this page</div>
+  <nav><a href="#1-concept-brief">1. Concept brief</a><a href="#2-guided-lab-35-hrs-local-no-audio-api-keys-needed">2. Guided lab (~3.5 hrs) — local, no audio API keys needed</a><a href="#3-unguided-challenge-25-hrs">3. Unguided challenge (~2.5 hrs)</a><a href="#4-thread-g-bias-and-failure-modes-45-min">4. Thread G — bias and failure modes (~45 min)</a><a href="#5-system-design-8-ai-system-design-1-hr">5. System design #8 — AI system design (~1 hr)</a><a href="#6-mock-review-5-ai-launch-review-1-hr">6. Mock review #5 — AI launch review (~1 hr)</a><a href="#7-check">7. Check</a><a href="#8-teach-back">8. Teach-back</a><a href="#done-when">Done when</a></nav>
+</aside>
+  <article>
+    <header class="lesson-header">
+      <div class="hero-meta">
+        <span class="micro-cap">6. AI engineering</span>
+        <span class="micro-cap">·</span>
+        <span class="micro-cap">8–10 hrs</span>
+      </div>
+      <h1>Week 19 — Voice Pipelines and AI System Design</h1>
+      <p class="body-lg" style="margin:0;max-width:640px;">A local voice-agent prototype with a measured latency budget and a launch-review pack</p>
+      <div class="badge-row" style="margin-top:14px;"><span class="badge design">System design</span><span class="badge review">Mock review</span></div>
+      <div class="topic-chips"><span class="topic-chip">speech-to-text</span><span class="topic-chip">text-to-speech</span><span class="topic-chip">latency budgets</span><span class="topic-chip">turn-taking</span><span class="topic-chip">barge-in</span><span class="topic-chip">realtime APIs</span><span class="topic-chip">model routing</span><span class="topic-chip">LLM caching</span><span class="topic-chip">bias</span><span class="topic-chip">human-in-the-loop</span><span class="topic-chip">kill switches</span></div>
+      <p class="micro-cap" style="margin-top:16px;">Ways of working: Case study: voice AI in production</p>
+      <label class="micro-cap" style="display:flex;gap:10px;align-items:center;margin-top:18px;cursor:pointer;">
+        <input type="checkbox" data-mark-complete>
+        Mark week complete
+      </label>
+    </header>
+    <div class="prose"><p><strong>Phase 6 · Threads F and G · System design #8 · Mock review #5</strong></p>
+<h2 id="1-concept-brief" tabindex="-1">1. Concept brief</h2>
+<p>A voice agent is a pipeline: <strong>speech-to-text (STT) → LLM → text-to-speech (TTS)</strong>, plus turn-taking. Users notice delays above roughly 800 ms, so every stage has a latency budget. Production systems also need fallbacks, a human handoff and a kill switch.</p>
+<p><strong>Vocabulary</strong></p>
+<ul>
+<li><strong>STT / ASR:</strong> speech-to-text. Streaming STT gives partial transcripts as the person speaks.</li>
+<li><strong>TTS:</strong> text-to-speech. What matters is time-to-first-audio.</li>
+<li><strong>VAD:</strong> voice activity detection — has the person stopped talking?</li>
+<li><strong>Barge-in:</strong> the user interrupts while the agent is speaking. The agent must stop.</li>
+<li><strong>Realtime / speech-to-speech models:</strong> a single model handling audio in and audio out, which cuts latency.</li>
+<li><strong>Latency budget:</strong> the time allowed per stage, for example STT 200 ms + LLM first token 400 ms + TTS first audio 200 ms.</li>
+<li><strong>Model routing:</strong> a cheap, fast model for easy turns and a strong model for hard ones.</li>
+<li><strong>Human-in-the-loop (HITL):</strong> escalating to a person on low confidence or sensitive cases.</li>
+</ul>
+<h2 id="2-guided-lab-35-hrs-local-no-audio-api-keys-needed" tabindex="-1">2. Guided lab (~3.5 hrs) — local, no audio API keys needed</h2>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#B392F0">brew</span><span style="color:#9ECBFF"> install</span><span style="color:#9ECBFF"> whisper-cpp</span><span style="color:#9ECBFF"> sox</span></span>
+<span class="line"><span style="color:#B392F0">mkdir</span><span style="color:#79B8FF"> -p</span><span style="color:#9ECBFF"> ~/dev/voice-agent/models</span><span style="color:#E1E4E8"> &#x26;&#x26; </span><span style="color:#79B8FF">cd</span><span style="color:#9ECBFF"> ~/dev/voice-agent</span><span style="color:#E1E4E8"> &#x26;&#x26; </span><span style="color:#B392F0">uv</span><span style="color:#9ECBFF"> init</span></span>
+<span class="line"><span style="color:#B392F0">curl</span><span style="color:#79B8FF"> -L</span><span style="color:#79B8FF"> -o</span><span style="color:#9ECBFF"> models/ggml-base.en.bin</span><span style="color:#9ECBFF"> https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.en.bin</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Record 5 seconds, transcribe, speak a reply</span></span>
+<span class="line"><span style="color:#B392F0">rec</span><span style="color:#79B8FF"> -r</span><span style="color:#79B8FF"> 16000</span><span style="color:#79B8FF"> -c</span><span style="color:#79B8FF"> 1</span><span style="color:#9ECBFF"> in.wav</span><span style="color:#9ECBFF"> trim</span><span style="color:#79B8FF"> 0</span><span style="color:#79B8FF"> 5</span></span>
+<span class="line"><span style="color:#F97583">time</span><span style="color:#E1E4E8"> whisper-cli -m models/ggml-base.en.bin -f in.wav -nt</span></span>
+<span class="line"><span style="color:#F97583">time</span><span style="color:#E1E4E8"> say -v Samantha </span><span style="color:#9ECBFF">"Thanks, I've reset your password and sent a confirmation email."</span></span>
+<span class="line"></span></code></pre></div><p>Build <code>agent.py</code>, a loop that:</p>
+<ol>
+<li>records until silence (<code>sox</code> silence detection, or a fixed window)</li>
+<li>transcribes with whisper-cli</li>
+<li>calls the LLM, playing a first-line voice support agent with access to your week 18 tools, with <strong>streaming</strong></li>
+<li>speaks each sentence as soon as it completes, rather than waiting for the whole reply</li>
+</ol>
+<p>Instrument the timestamps for end-of-speech, transcript ready, LLM first token, first sentence complete and first audio. Print a latency table for 10 turns.</p>
+<p>Then compare a hosted streaming STT/TTS or realtime speech API, using any provider’s free tier. Read its latency docs and note the trade-offs: cost, data residency, data-processing terms (DPA, and a BAA if you handle health data), and voice quality.</p>
+<h2 id="3-unguided-challenge-25-hrs" tabindex="-1">3. Unguided challenge (~2.5 hrs)</h2>
+<ul>
+<li>Hit a budget of <strong>p50 under 1.5 s</strong> from end of speech to first audio locally. Document what you changed.</li>
+<li>Add <strong>routing</strong>: a small, fast model by default and a stronger model when the intent is ambiguous. Measure the cost and latency difference.</li>
+<li>Add <strong>escalation</strong>: on low confidence, a detected request for a human, or a sensitive topic, the agent says it will transfer and logs a handoff event.</li>
+<li>Add a <strong>kill switch</strong>: an environment flag that routes every call to a human queue.</li>
+</ul>
+<p><strong>Acceptance criteria:</strong></p>
+<ul>
+<li>A latency table at p50 and p95.</li>
+<li>The routing comparison.</li>
+<li>Escalation and kill switch demonstrated.</li>
+</ul>
+<h2 id="4-thread-g-bias-and-failure-modes-45-min" tabindex="-1">4. Thread G — bias and failure modes (~45 min)</h2>
+<ul>
+<li>Run your week 18 evals on audio with different accents and speech patterns. You can generate audio with <code>say -v</code> using different voices, then transcribe it. Does accuracy differ?</li>
+<li>List the agent’s failure modes (mishearing, looping, false confidence, being cut off) and the mitigation for each.</li>
+</ul>
+<h2 id="5-system-design-8-ai-system-design-1-hr" tabindex="-1">5. System design #8 — AI system design (~1 hr)</h2>
+<p>Design a production <strong>voice support agent with human fallback</strong>. Cover:</p>
+<ul>
+<li>architecture (telephony, STT, LLM, TTS, state store, queue)</li>
+<li>latency budget per hop</li>
+<li>per-minute cost</li>
+<li>eval gates before rollout</li>
+<li>monitoring (containment rate, escalation rate, call outcome)</li>
+<li>sensitive-data handling (PII, and regulated data in your domain)</li>
+<li>failure behaviour when the LLM provider is down</li>
+</ul>
+<p>Write an ADR and an exec summary.</p>
+<h2 id="6-mock-review-5-ai-launch-review-1-hr" tabindex="-1">6. Mock review #5 — AI launch review (~1 hr)</h2>
+<p>Claude plays an ML engineer running a launch review. Bring:</p>
+<ul>
+<li>eval results with confidence intervals</li>
+<li>the red-team report</li>
+<li>the cost model</li>
+<li>the latency table</li>
+<li>the escalation design</li>
+</ul>
+<p>Expect: <em>“What’s your rollback plan? What’s the worst thing this can say to a caller? How will you know in production that quality has dropped?”</em></p>
+<h2 id="7-check" tabindex="-1">7. Check</h2>
+<ol>
+<li>Which stage usually dominates voice latency?</li>
+<li>Why speak sentence by sentence?</li>
+<li>What is barge-in, and why is it hard?</li>
+<li>When should the agent hand off to a human?</li>
+<li>What does a kill switch protect against?</li>
+</ol>
+<p>Recycled:</p>
+<ul>
+<li>Why run evals 3 times?</li>
+<li>What’s prompt injection?</li>
+</ul>
+<h2 id="8-teach-back" tabindex="-1">8. Teach-back</h2>
+<p>Write “The 800 ms problem: building a voice agent.”</p>
+<h2 id="done-when" tabindex="-1">Done when</h2>
+<ul>
+<li class="task-list-item"><input type="checkbox">Local voice loop with instrumentation</li>
+<li class="task-list-item"><input type="checkbox">p50 under 1.5 s documented</li>
+<li class="task-list-item"><input type="checkbox">Routing, escalation and kill switch working</li>
+<li class="task-list-item"><input type="checkbox">Bias check done</li>
+<li class="task-list-item"><input type="checkbox">Voice-agent ADR defended</li>
+<li class="task-list-item"><input type="checkbox">Launch review passed</li>
+<li class="task-list-item"><input type="checkbox">Check and teach-back done</li>
+</ul>
+</div>
+    <nav class="pager" aria-label="Lesson pagination">
+  <a class="plain prev" href="/course/week-18/"><span class="label">Previous</span><span class="title">Week 18: Agents, MCP and Evals</span></a>
+  <a class="plain next" href="/course/week-20/"><span class="label">Next</span><span class="title">Week 20: Containers, Infrastructure and Observability</span></a>
+</nav>
+  </article>
+</div>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-legal">© 2026 Productise LTD. All rights reserved.</div>
+  </div>
+</footer>
+<script src="../assets/course.js"></script>
+</body>
+</html>

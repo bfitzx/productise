@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 10: Auth, Deploy, Accessibility and Security — Productise</title>
+  <meta name="description" content="FollowUp deployed with auth, accessible, and security-reviewed; 5 user conversations done">
+  <link rel="canonical" href="https://productise.ltd/course/week-10/">
+  <meta property="og:title" content="Week 10: Auth, Deploy, Accessibility and Security — Productise">
+  <meta property="og:description" content="FollowUp deployed with auth, accessible, and security-reviewed; 5 user conversations done">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://productise.ltd/course/week-10/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Week 10: Auth, Deploy, Accessibility and Security — Productise">
+  <meta name="twitter:description" content="FollowUp deployed with auth, accessible, and security-reviewed; 5 user conversations done">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/course.css">
+</head>
+<body class="" data-week-slug="week-10">
+<nav class="site-nav" aria-label="Primary">
+  <div class="site-nav-inner">
+    <a class="site-nav-brand plain" href="/">Productise</a>
+    <div class="site-nav-links">
+      <a class="plain" href="/">Home</a>
+      <a class="plain" href="/course/" aria-current="page">Course</a>
+      <a class="plain" href="/course/syllabus/">Syllabus</a>
+      <a class="plain" href="/course/domains/">Domains</a>
+    </div>
+  </div>
+</nav>
+<div class="page-shell">
+  <aside class="toc">
+  <div class="toc-label">On this page</div>
+  <nav><a href="#1-concept-brief">1. Concept brief</a><a href="#2-guided-lab-3-hrs">2. Guided lab (~3 hrs)</a><a href="#3-unguided-challenge-2-hrs-owasp-pass">3. Unguided challenge (~2 hrs) — OWASP pass</a><a href="#4-thread-a-user-research-15-hrs">4. Thread A — user research (~1.5 hrs)</a><a href="#5-ways-of-working-1-hr">5. Ways of working (~1 hr)</a><a href="#6-check">6. Check</a><a href="#7-teach-back">7. Teach-back</a><a href="#done-when">Done when</a></nav>
+</aside>
+  <article>
+    <header class="lesson-header">
+      <div class="hero-meta">
+        <span class="micro-cap">4. Full-stack product</span>
+        <span class="micro-cap">·</span>
+        <span class="micro-cap">8–10 hrs</span>
+      </div>
+      <h1>Week 10 — Auth, Deploy, Accessibility and Security</h1>
+      <p class="body-lg" style="margin:0;max-width:640px;">FollowUp deployed with auth, accessible, and security-reviewed; 5 user conversations done</p>
+      
+      <div class="topic-chips"><span class="topic-chip">authentication</span><span class="topic-chip">sessions</span><span class="topic-chip">OAuth</span><span class="topic-chip">Vercel</span><span class="topic-chip">environments</span><span class="topic-chip">accessibility</span><span class="topic-chip">WCAG</span><span class="topic-chip">Core Web Vitals</span><span class="topic-chip">OWASP Top 10</span></div>
+      <p class="micro-cap" style="margin-top:16px;">Ways of working: Cost-aware building</p>
+      <label class="micro-cap" style="display:flex;gap:10px;align-items:center;margin-top:18px;cursor:pointer;">
+        <input type="checkbox" data-mark-complete>
+        Mark week complete
+      </label>
+    </header>
+    <div class="prose"><p><strong>Phase 4 · Threads A, D and E · Ways of working: cost-aware building</strong></p>
+<h2 id="1-concept-brief" tabindex="-1">1. Concept brief</h2>
+<p><strong>Vocabulary</strong></p>
+<ul>
+<li><strong>Authentication vs authorisation:</strong> who you are vs what you’re allowed to do.</li>
+<li><strong>Session vs JWT:</strong> a server-stored session referenced by a cookie, vs a signed token the client carries.</li>
+<li><strong>OAuth / OIDC:</strong> “sign in with Google”. The provider vouches for identity.</li>
+<li><strong>Magic link:</strong> passwordless email login.</li>
+<li><strong>Environments:</strong> local → preview (one per PR) → production. Each has its own environment variables and database.</li>
+<li><strong>WCAG:</strong> accessibility guidelines covering perceivable, operable, understandable and robust. AA is the usual target.</li>
+<li><strong>Core Web Vitals:</strong>
+<ul>
+<li><strong>LCP:</strong> loading</li>
+<li><strong>INP:</strong> responsiveness</li>
+<li><strong>CLS:</strong> layout stability</li>
+</ul>
+</li>
+<li><strong>OWASP Top 10:</strong> the most common web security risks.</li>
+</ul>
+<h2 id="2-guided-lab-3-hrs" tabindex="-1">2. Guided lab (~3 hrs)</h2>
+<p><strong>Auth with Supabase:</strong></p>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> @supabase/supabase-js</span><span style="color:#9ECBFF"> @supabase/ssr</span></span>
+<span class="line"></span></code></pre></div><ol>
+<li>Follow the Supabase Next.js server-side auth guide to add magic-link login and middleware that refreshes the session.</li>
+<li>Protect every page except <code>/login</code>.</li>
+<li>Store <code>owner_id</code> on requests.</li>
+</ol>
+<p><strong>Deploy:</strong></p>
+<ol>
+<li>Create a hosted Supabase project and run your migrations against it.</li>
+<li>Deploy:</li>
+</ol>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> dlx</span><span style="color:#9ECBFF"> vercel@latest</span><span style="color:#9ECBFF"> link</span></span>
+<span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> dlx</span><span style="color:#9ECBFF"> vercel@latest</span><span style="color:#9ECBFF"> env</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> DATABASE_URL</span><span style="color:#9ECBFF"> production</span></span>
+<span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> dlx</span><span style="color:#9ECBFF"> vercel@latest</span><span style="color:#79B8FF"> --prod</span></span>
+<span class="line"></span></code></pre></div><ol start="3">
+<li>Open a PR and check that Vercel creates a preview deployment. Which database is it using? Should it?</li>
+</ol>
+<p><strong>Accessibility and performance:</strong></p>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> add</span><span style="color:#79B8FF"> -D</span><span style="color:#9ECBFF"> @axe-core/playwright</span><span style="color:#6A737D">   # used next week in e2e</span></span>
+<span class="line"></span></code></pre></div><ul>
+<li>Run Lighthouse in Chrome DevTools on production and record LCP, INP, CLS and the accessibility score.</li>
+<li>Do a keyboard-only pass: can you create and update a request without a mouse?</li>
+<li>Turn on VoiceOver (Cmd-F5) and complete one task. Fix missing labels, focus states and contrast.</li>
+</ul>
+<h2 id="3-unguided-challenge-2-hrs-owasp-pass" tabindex="-1">3. Unguided challenge (~2 hrs) — OWASP pass</h2>
+<p>Attack your own app and fix what you find. Document each finding as risk → test → fix.</p>
+<ul>
+<li><strong>Broken access control / IDOR:</strong> can user A fetch or update user B’s request by changing the ID in the URL?</li>
+<li><strong>Injection:</strong> are all queries parameterised? (Drizzle does this. Prove it.)</li>
+<li><strong>XSS:</strong> put <code>&lt;img src=x onerror=alert(1)&gt;</code> in a request title. Is it escaped?</li>
+<li><strong>CSRF:</strong> how are Server Actions protected?</li>
+<li><strong>Security headers:</strong> check them with <code>curl -I</code> on your production URL. Add a CSP.</li>
+<li><strong>SSRF:</strong> if you added any “fetch this URL” feature, how would you protect it?</li>
+</ul>
+<p><strong>Acceptance criteria:</strong></p>
+<ul>
+<li>A <code>docs/security-review.md</code> with at least 6 checks.</li>
+<li>Every issue you found is fixed with a test.</li>
+</ul>
+<h2 id="4-thread-a-user-research-15-hrs" tabindex="-1">4. Thread A — user research (~1.5 hrs)</h2>
+<p>Run <strong>5 short conversations</strong> with real target users, or simulate them with Claude playing distinct personas if you must, and label them as simulated. Use a script that asks about their current workaround, the last time it failed, and what they’d pay attention to.</p>
+<p>Synthesise the findings into:</p>
+<ul>
+<li>themes</li>
+<li>quotes</li>
+<li>surprises</li>
+<li>what you’ll change</li>
+</ul>
+<h2 id="5-ways-of-working-1-hr" tabindex="-1">5. Ways of working (~1 hr)</h2>
+<p><strong>Cost-aware building.</strong> Estimate FollowUp’s monthly cost at 10, 1,000 and 100,000 users across Vercel, Supabase, email and (later) LLM tokens. What dominates at each scale? When does “free tier” become a trap?</p>
+<h2 id="6-check" tabindex="-1">6. Check</h2>
+<ol>
+<li>What’s the difference between authentication and authorisation?</li>
+<li>What is an IDOR, and how do you prevent it?</li>
+<li>Why should preview deployments not use the production database?</li>
+<li>What does CLS measure?</li>
+<li>Name three things a keyboard-only user needs.</li>
+</ol>
+<p>Recycled:</p>
+<ul>
+<li>When would you use ISR?</li>
+<li>What’s a migration?</li>
+</ul>
+<h2 id="7-teach-back" tabindex="-1">7. Teach-back</h2>
+<p>Write “I attacked my own app: what I found.”</p>
+<h2 id="done-when" tabindex="-1">Done when</h2>
+<ul>
+<li class="task-list-item"><input type="checkbox">Auth working, deployed to production and preview</li>
+<li class="task-list-item"><input type="checkbox">Lighthouse and keyboard pass documented and fixed</li>
+<li class="task-list-item"><input type="checkbox">OWASP review with fixes and tests</li>
+<li class="task-list-item"><input type="checkbox">5 conversations synthesised</li>
+<li class="task-list-item"><input type="checkbox">Cost model written</li>
+<li class="task-list-item"><input type="checkbox">Check and teach-back done</li>
+</ul>
+</div>
+    <nav class="pager" aria-label="Lesson pagination">
+  <a class="plain prev" href="/course/week-09/"><span class="label">Previous</span><span class="title">Week 09: Full-Stack Foundations — Next.js and Postgres</span></a>
+  <a class="plain next" href="/course/week-11/"><span class="label">Next</span><span class="title">Week 11: Ship to Real Users</span></a>
+</nav>
+  </article>
+</div>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-legal">© 2026 Productise LTD. All rights reserved.</div>
+  </div>
+</footer>
+<script src="../assets/course.js"></script>
+</body>
+</html>

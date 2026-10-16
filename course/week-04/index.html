@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 04: Git and GitHub — Productise</title>
+  <meta name="description" content="CI pipeline that lints and tests every PR">
+  <link rel="canonical" href="https://productise.ltd/course/week-04/">
+  <meta property="og:title" content="Week 04: Git and GitHub — Productise">
+  <meta property="og:description" content="CI pipeline that lints and tests every PR">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://productise.ltd/course/week-04/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Week 04: Git and GitHub — Productise">
+  <meta name="twitter:description" content="CI pipeline that lints and tests every PR">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/course.css">
+</head>
+<body class="" data-week-slug="week-04">
+<nav class="site-nav" aria-label="Primary">
+  <div class="site-nav-inner">
+    <a class="site-nav-brand plain" href="/">Productise</a>
+    <div class="site-nav-links">
+      <a class="plain" href="/">Home</a>
+      <a class="plain" href="/course/" aria-current="page">Course</a>
+      <a class="plain" href="/course/syllabus/">Syllabus</a>
+      <a class="plain" href="/course/domains/">Domains</a>
+    </div>
+  </div>
+</nav>
+<div class="page-shell">
+  <aside class="toc">
+  <div class="toc-label">On this page</div>
+  <nav><a href="#1-concept-brief">1. Concept brief</a><a href="#2-guided-lab-3-hrs">2. Guided lab (~3 hrs)</a><a href="#3-unguided-challenge-3-hrs">3. Unguided challenge (~3 hrs)</a><a href="#4-thread-d-secrets-basics-1-hr">4. Thread D — secrets basics (~1 hr)</a><a href="#5-mock-review-1-defend-your-ci-1-hr">5. Mock review #1 — defend your CI (~1 hr)</a><a href="#6-ways-of-working-1-hr">6. Ways of working (~1 hr)</a><a href="#7-check">7. Check</a><a href="#8-teach-back">8. Teach-back</a><a href="#done-when">Done when</a></nav>
+</aside>
+  <article>
+    <header class="lesson-header">
+      <div class="hero-meta">
+        <span class="micro-cap">2. Git &amp; GitHub</span>
+        <span class="micro-cap">·</span>
+        <span class="micro-cap">8–10 hrs</span>
+      </div>
+      <h1>Week 04 — Git and GitHub</h1>
+      <p class="body-lg" style="margin:0;max-width:640px;">CI pipeline that lints and tests every PR</p>
+      <div class="badge-row" style="margin-top:14px;"><span class="badge review">Mock review</span></div>
+      <div class="topic-chips"><span class="topic-chip">commits</span><span class="topic-chip">branches</span><span class="topic-chip">merge</span><span class="topic-chip">rebase</span><span class="topic-chip">pull requests</span><span class="topic-chip">gh CLI</span><span class="topic-chip">code review</span><span class="topic-chip">GitHub Actions</span><span class="topic-chip">secrets</span></div>
+      <p class="micro-cap" style="margin-top:16px;">Ways of working: Continuous discovery</p>
+      <label class="micro-cap" style="display:flex;gap:10px;align-items:center;margin-top:18px;cursor:pointer;">
+        <input type="checkbox" data-mark-complete>
+        Mark week complete
+      </label>
+    </header>
+    <div class="prose"><p><strong>Phase 2 · Thread D: secrets · Mock review #1 · Ways of working: continuous discovery</strong></p>
+<h2 id="1-concept-brief" tabindex="-1">1. Concept brief</h2>
+<p>Git is a database of snapshots; GitHub is where teams collaborate on top of it. Almost every engineering conversation you’ll be in touches branches, PRs or CI.</p>
+<p><strong>Vocabulary</strong></p>
+<ul>
+<li><strong>Commit:</strong> a snapshot plus a message, identified by a hash.</li>
+<li><strong>HEAD:</strong> where you are right now.</li>
+<li><strong>Branch:</strong> a movable pointer to a commit. <code>main</code> is the shared trunk.</li>
+<li><strong>Merge vs rebase:</strong> merge joins histories with a merge commit; rebase replays your commits on top of the target for a linear history. Never rebase shared branches.</li>
+<li><strong>Pull request (PR):</strong> a proposal to merge a branch, plus the review conversation around it.</li>
+<li><strong>CI (continuous integration):</strong> automated checks that run on every push or PR.</li>
+<li><strong>Merge conflict:</strong> two changes to the same lines; a human decides the result.</li>
+<li><strong><code>.gitignore</code>:</strong> files git must never track (<code>.env</code>, <code>node_modules</code>).</li>
+</ul>
+<h2 id="2-guided-lab-3-hrs" tabindex="-1">2. Guided lab (~3 hrs)</h2>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#79B8FF">cd</span><span style="color:#9ECBFF"> ~/dev/product-engineer-lab</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> status</span><span style="color:#E1E4E8">; </span><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> log</span><span style="color:#79B8FF"> --oneline</span><span style="color:#79B8FF"> --graph</span><span style="color:#79B8FF"> --all</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> head</span><span style="color:#79B8FF"> -20</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Branch, commit, push, PR</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> switch</span><span style="color:#79B8FF"> -c</span><span style="color:#9ECBFF"> feat/weather-readme</span></span>
+<span class="line"><span style="color:#79B8FF">echo</span><span style="color:#9ECBFF"> "## Week 3 tool"</span><span style="color:#F97583"> >></span><span style="color:#9ECBFF"> README.md</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> add</span><span style="color:#79B8FF"> -p</span><span style="color:#6A737D">            # stage interactively; learn this</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> commit</span><span style="color:#79B8FF"> -m</span><span style="color:#9ECBFF"> "docs: describe weather2csv"</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> push</span><span style="color:#79B8FF"> -u</span><span style="color:#9ECBFF"> origin</span><span style="color:#9ECBFF"> feat/weather-readme</span></span>
+<span class="line"><span style="color:#B392F0">gh</span><span style="color:#9ECBFF"> pr</span><span style="color:#9ECBFF"> create</span><span style="color:#79B8FF"> --fill</span></span>
+<span class="line"><span style="color:#B392F0">gh</span><span style="color:#9ECBFF"> pr</span><span style="color:#9ECBFF"> view</span><span style="color:#79B8FF"> --web</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Create a conflict on purpose</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> switch</span><span style="color:#9ECBFF"> main</span></span>
+<span class="line"><span style="color:#79B8FF">echo</span><span style="color:#9ECBFF"> "main change"</span><span style="color:#F97583"> >></span><span style="color:#9ECBFF"> README.md</span><span style="color:#E1E4E8"> &#x26;&#x26; </span><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> commit</span><span style="color:#79B8FF"> -am</span><span style="color:#9ECBFF"> "main edit"</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> switch</span><span style="color:#9ECBFF"> feat/weather-readme</span></span>
+<span class="line"><span style="color:#79B8FF">echo</span><span style="color:#9ECBFF"> "branch change"</span><span style="color:#F97583"> >></span><span style="color:#9ECBFF"> README.md</span><span style="color:#E1E4E8"> &#x26;&#x26; </span><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> commit</span><span style="color:#79B8FF"> -am</span><span style="color:#9ECBFF"> "branch edit"</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> rebase</span><span style="color:#9ECBFF"> main</span><span style="color:#6A737D">       # conflict! Edit README.md, then:</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> README.md</span><span style="color:#E1E4E8"> &#x26;&#x26; </span><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> rebase</span><span style="color:#79B8FF"> --continue</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> push</span><span style="color:#79B8FF"> --force-with-lease</span><span style="color:#6A737D">   # why not plain --force?</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Undo toolkit</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> restore</span><span style="color:#9ECBFF"> file.txt</span><span style="color:#6A737D">          # discard working changes</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> reset</span><span style="color:#79B8FF"> --soft</span><span style="color:#9ECBFF"> HEAD~1</span><span style="color:#6A737D">       # undo the commit, keep the changes</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> revert</span><span style="color:#F97583"> &#x3C;</span><span style="color:#9ECBFF">has</span><span style="color:#E1E4E8">h</span><span style="color:#F97583">></span><span style="color:#6A737D">             # safe undo on shared history</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> reflog</span><span style="color:#6A737D">                    # your safety net</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># Merge the PR</span></span>
+<span class="line"><span style="color:#B392F0">gh</span><span style="color:#9ECBFF"> pr</span><span style="color:#9ECBFF"> merge</span><span style="color:#79B8FF"> --squash</span><span style="color:#79B8FF"> --delete-branch</span></span>
+<span class="line"></span></code></pre></div><h2 id="3-unguided-challenge-3-hrs" tabindex="-1">3. Unguided challenge (~3 hrs)</h2>
+<p>Add CI to <code>product-engineer-lab</code> in <code>.github/workflows/ci.yml</code>, triggered on <code>pull_request</code> and on pushes to <code>main</code>. It should:</p>
+<ul>
+<li>run <code>shellcheck</code> on every <code>*.sh</code> file and on <code>weather2csv</code></li>
+<li>run a tiny test script that executes <code>weather2csv --help</code> and checks the exit code</li>
+<li>use a matrix of <code>ubuntu-latest</code> and <code>macos-latest</code></li>
+</ul>
+<p>Then protect <code>main</code> (Settings → Branches): require PRs and passing checks.</p>
+<p><strong>Acceptance criteria</strong></p>
+<ul>
+<li>A PR with a deliberate shellcheck error fails CI.</li>
+<li>The fix PR goes green.</li>
+<li>You can’t push directly to <code>main</code>.</li>
+</ul>
+<h2 id="4-thread-d-secrets-basics-1-hr" tabindex="-1">4. Thread D — secrets basics (~1 hr)</h2>
+<ol>
+<li>Add <code>.env</code> to <code>.gitignore</code>.</li>
+<li>Check whether you’ve ever committed a secret: <code>git log -p | rg -i &quot;api_key|token|secret&quot;</code>.</li>
+<li>Add a fake secret with <code>gh secret set DEMO_TOKEN</code> and use it in a workflow step without printing it.</li>
+<li>Install gitleaks: <code>brew install gitleaks</code>, then run <code>gitleaks detect</code>.</li>
+<li>Write down what you’d do in the first 10 minutes after a real key leaked.</li>
+</ol>
+<h2 id="5-mock-review-1-defend-your-ci-1-hr" tabindex="-1">5. Mock review #1 — defend your CI (~1 hr)</h2>
+<p>Paste your workflow file and PR link to Claude and say: <em>“Staff engineer mode: review my CI.”</em> Expect questions about:</p>
+<ul>
+<li>caching</li>
+<li>flaky tests</li>
+<li>why use a matrix at all</li>
+<li>how long CI should take</li>
+<li>what happens when a check is skipped</li>
+</ul>
+<p>Pass bar: you justify every choice or say how you’d find out.</p>
+<h2 id="6-ways-of-working-1-hr" tabindex="-1">6. Ways of working (~1 hr)</h2>
+<p><strong>Continuous discovery</strong> (Teresa Torres): weekly customer touchpoints, opportunity solution trees, assumption testing. Write up: what changes in discovery when building a prototype costs less than scheduling an interview?</p>
+<h2 id="7-check" tabindex="-1">7. Check</h2>
+<ol>
+<li>When would you rebase, and when would you merge?</li>
+<li>Why is <code>--force-with-lease</code> safer than <code>--force</code>?</li>
+<li>How do you undo a commit that’s already on <code>main</code>?</li>
+<li>What triggers a GitHub Actions workflow?</li>
+<li>A secret appears in a commit from 3 months ago. Is deleting the file enough? Why or why not?</li>
+</ol>
+<p>Recycled:</p>
+<ul>
+<li>What does <code>SIGTERM</code> do?</li>
+<li>What is stdin?</li>
+</ul>
+<h2 id="8-teach-back" tabindex="-1">8. Teach-back</h2>
+<p>Write “Git for PMs: the five commands that explain every engineering standup.”</p>
+<h2 id="done-when" tabindex="-1">Done when</h2>
+<ul>
+<li class="task-list-item"><input type="checkbox">At least 3 PRs merged via <code>gh</code></li>
+<li class="task-list-item"><input type="checkbox">A conflict resolved with a rebase</li>
+<li class="task-list-item"><input type="checkbox">CI green on both OSes, with branch protection on</li>
+<li class="task-list-item"><input type="checkbox">gitleaks clean</li>
+<li class="task-list-item"><input type="checkbox">Mock review done</li>
+<li class="task-list-item"><input type="checkbox">Check and teach-back done</li>
+</ul>
+</div>
+    <nav class="pager" aria-label="Lesson pagination">
+  <a class="plain prev" href="/course/week-03/"><span class="label">Previous</span><span class="title">Week 03: CLI Fluency II — Processes, Environment and Scripting</span></a>
+  <a class="plain next" href="/course/week-05/"><span class="label">Next</span><span class="title">Week 05: Python Core and Your First API</span></a>
+</nav>
+  </article>
+</div>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-legal">© 2026 Productise LTD. All rights reserved.</div>
+  </div>
+</footer>
+<script src="../assets/course.js"></script>
+</body>
+</html>

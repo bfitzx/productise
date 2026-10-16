@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 09: Full-Stack Foundations — Next.js and Postgres — Productise</title>
+  <meta name="description" content="A Next.js app reading and writing Postgres, running locally, plus a product brief">
+  <link rel="canonical" href="https://productise.ltd/course/week-09/">
+  <meta property="og:title" content="Week 09: Full-Stack Foundations — Next.js and Postgres — Productise">
+  <meta property="og:description" content="A Next.js app reading and writing Postgres, running locally, plus a product brief">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://productise.ltd/course/week-09/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Week 09: Full-Stack Foundations — Next.js and Postgres — Productise">
+  <meta name="twitter:description" content="A Next.js app reading and writing Postgres, running locally, plus a product brief">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/course.css">
+</head>
+<body class="" data-week-slug="week-09">
+<nav class="site-nav" aria-label="Primary">
+  <div class="site-nav-inner">
+    <a class="site-nav-brand plain" href="/">Productise</a>
+    <div class="site-nav-links">
+      <a class="plain" href="/">Home</a>
+      <a class="plain" href="/course/" aria-current="page">Course</a>
+      <a class="plain" href="/course/syllabus/">Syllabus</a>
+      <a class="plain" href="/course/domains/">Domains</a>
+    </div>
+  </div>
+</nav>
+<div class="page-shell">
+  <aside class="toc">
+  <div class="toc-label">On this page</div>
+  <nav><a href="#the-phase-4-app">The Phase 4 app</a><a href="#1-concept-brief">1. Concept brief</a><a href="#2-guided-lab-35-hrs">2. Guided lab (~3.5 hrs)</a><a href="#3-unguided-challenge-25-hrs">3. Unguided challenge (~2.5 hrs)</a><a href="#4-thread-a-product-brief-1-hr">4. Thread A — product brief (~1 hr)</a><a href="#5-system-design-3-caching-1-hr">5. System design #3 — caching (~1 hr)</a><a href="#6-ways-of-working-1-hr">6. Ways of working (~1 hr)</a><a href="#7-check">7. Check</a><a href="#8-teach-back">8. Teach-back</a><a href="#done-when">Done when</a></nav>
+</aside>
+  <article>
+    <header class="lesson-header">
+      <div class="hero-meta">
+        <span class="micro-cap">4. Full-stack product</span>
+        <span class="micro-cap">·</span>
+        <span class="micro-cap">8–10 hrs</span>
+      </div>
+      <h1>Week 09 — Full-Stack Foundations — Next.js and Postgres</h1>
+      <p class="body-lg" style="margin:0;max-width:640px;">A Next.js app reading and writing Postgres, running locally, plus a product brief</p>
+      <div class="badge-row" style="margin-top:14px;"><span class="badge design">System design</span></div>
+      <div class="topic-chips"><span class="topic-chip">Next.js App Router</span><span class="topic-chip">React Server Components</span><span class="topic-chip">SSR</span><span class="topic-chip">SSG</span><span class="topic-chip">ISR</span><span class="topic-chip">Postgres</span><span class="topic-chip">Supabase</span><span class="topic-chip">Drizzle</span><span class="topic-chip">migrations</span></div>
+      <p class="micro-cap" style="margin-top:16px;">Ways of working: Team Topologies</p>
+      <label class="micro-cap" style="display:flex;gap:10px;align-items:center;margin-top:18px;cursor:pointer;">
+        <input type="checkbox" data-mark-complete>
+        Mark week complete
+      </label>
+    </header>
+    <div class="prose"><p><strong>Phase 4 · Threads A and E · System design #3 · Ways of working: Team Topologies</strong></p>
+<h2 id="the-phase-4-app" tabindex="-1">The Phase 4 app</h2>
+<p>For weeks 9–11 and 20–22 you’ll build and run <strong>one real app with real users</strong>. Pick a small, real problem for a group you can reach: your team, a club, family, or a few contacts in your industry.</p>
+<p>The default if you don’t have one is <strong>FollowUp</strong>, a shared tracker for outstanding requests (approvals, data requests, callbacks, chases), with an owner, a status, due dates and a history.</p>
+<h2 id="1-concept-brief" tabindex="-1">1. Concept brief</h2>
+<p><strong>Vocabulary</strong></p>
+<ul>
+<li><strong>React component:</strong> a function that returns UI. Props go in, JSX comes out.</li>
+<li><strong>Server vs Client Components:</strong> Server Components run on the server and can query the database directly; Client Components (<code>&quot;use client&quot;</code>) run in the browser and handle interactivity.</li>
+<li><strong>Rendering strategies:</strong>
+<ul>
+<li><strong>SSR:</strong> render per request</li>
+<li><strong>SSG:</strong> render at build time</li>
+<li><strong>ISR:</strong> static, but regenerated periodically</li>
+<li><strong>CSR:</strong> render in the browser</li>
+</ul>
+</li>
+<li><strong>Server Action:</strong> a server function called directly from a form.</li>
+<li><strong>Migration:</strong> a versioned, ordered change to the database schema, checked into git.</li>
+<li><strong>Connection pooling:</strong> reusing database connections. Serverless functions need it (Supabase’s pooler, PgBouncer).</li>
+</ul>
+<h2 id="2-guided-lab-35-hrs" tabindex="-1">2. Guided lab (~3.5 hrs)</h2>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#79B8FF">cd</span><span style="color:#9ECBFF"> ~/dev</span></span>
+<span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> create</span><span style="color:#9ECBFF"> next-app@latest</span><span style="color:#9ECBFF"> followup</span><span style="color:#79B8FF"> --ts</span><span style="color:#79B8FF"> --tailwind</span><span style="color:#79B8FF"> --eslint</span><span style="color:#79B8FF"> --app</span><span style="color:#79B8FF"> --src-dir</span><span style="color:#79B8FF"> --use-pnpm</span></span>
+<span class="line"><span style="color:#79B8FF">cd</span><span style="color:#9ECBFF"> followup</span></span>
+<span class="line"><span style="color:#B392F0">brew</span><span style="color:#9ECBFF"> install</span><span style="color:#9ECBFF"> supabase/tap/supabase</span></span>
+<span class="line"><span style="color:#B392F0">supabase</span><span style="color:#9ECBFF"> init</span><span style="color:#E1E4E8"> &#x26;&#x26; </span><span style="color:#B392F0">supabase</span><span style="color:#9ECBFF"> start</span><span style="color:#6A737D">      # local Postgres in Docker; note the DB URL</span></span>
+<span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> drizzle-orm</span><span style="color:#9ECBFF"> postgres</span></span>
+<span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> add</span><span style="color:#79B8FF"> -D</span><span style="color:#9ECBFF"> drizzle-kit</span></span>
+<span class="line"></span></code></pre></div><ol>
+<li>Define the schema in <code>src/db/schema.ts</code> with Drizzle: <code>requests</code> (id, title, requester, status, owner, due_at, created_at) and <code>events</code> (request_id, type, at, note).</li>
+<li>Create and apply migrations:</li>
+</ol>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> drizzle-kit</span><span style="color:#9ECBFF"> generate</span><span style="color:#E1E4E8"> &#x26;&#x26; </span><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> drizzle-kit</span><span style="color:#9ECBFF"> migrate</span></span>
+<span class="line"><span style="color:#B392F0">psql</span><span style="color:#9ECBFF"> "</span><span style="color:#E1E4E8">$DATABASE_URL</span><span style="color:#9ECBFF">"</span><span style="color:#79B8FF"> -c</span><span style="color:#9ECBFF"> '\d requests'</span></span>
+<span class="line"></span></code></pre></div><ol start="3">
+<li>
+<p>Write a Server Component page that lists requests (query the database directly), and a form with a Server Action that creates one.</p>
+</li>
+<li>
+<p>Rendering experiment. Make three pages:</p>
+<ul>
+<li><code>/live</code>, dynamic: <code>export const dynamic = &quot;force-dynamic&quot;</code></li>
+<li><code>/static</code>, built once</li>
+<li><code>/isr</code>, with <code>export const revalidate = 60</code></li>
+</ul>
+<p>Print <code>new Date()</code> on each. Run <code>pnpm build &amp;&amp; pnpm start</code> and observe the differences.</p>
+</li>
+</ol>
+<h2 id="3-unguided-challenge-25-hrs" tabindex="-1">3. Unguided challenge (~2.5 hrs)</h2>
+<ul>
+<li>Add status changes (open → in progress → done) that write to <code>events</code>, plus a detail page showing the history.</li>
+<li>Add filtering by status and owner using URL search params.</li>
+<li>Seed script: <code>pnpm tsx scripts/seed.ts</code>.</li>
+</ul>
+<p><strong>Acceptance criteria:</strong></p>
+<ul>
+<li>A schema change is made via a new migration, never by editing the database by hand.</li>
+<li><code>pnpm build</code> passes.</li>
+<li>The README explains how to run it locally from scratch.</li>
+</ul>
+<h2 id="4-thread-a-product-brief-1-hr" tabindex="-1">4. Thread A — product brief (~1 hr)</h2>
+<p>For your Phase 4 app, write <code>docs/product-brief.md</code> covering:</p>
+<ul>
+<li>the problem (the week 3 format)</li>
+<li>an opportunity solution tree: outcome → opportunities → solutions → experiments</li>
+<li>one <strong>north-star metric</strong> and two <strong>guardrail metrics</strong></li>
+<li>who your first 5 users are</li>
+</ul>
+<h2 id="5-system-design-3-caching-1-hr" tabindex="-1">5. System design #3 — caching (~1 hr)</h2>
+<p>Where could you cache in FollowUp? Consider the browser, CDN, Next.js data cache, an in-process cache, Redis and Postgres itself. Then work through:</p>
+<ul>
+<li>When a request’s status changes, what goes stale, and how do you invalidate it (<code>revalidatePath</code>, tags, TTLs)?</li>
+<li>What breaks if two users edit at once?</li>
+</ul>
+<p>Write an ADR and an exec summary, then defend them.</p>
+<h2 id="6-ways-of-working-1-hr" tabindex="-1">6. Ways of working (~1 hr)</h2>
+<p><strong>Team Topologies.</strong> There are four team types: stream-aligned, platform, enabling and complicated-subsystem. There are three interaction modes: collaboration, X-as-a-service and facilitating. Map your current organisation onto them. Where is the cognitive load too high?</p>
+<h2 id="7-check" tabindex="-1">7. Check</h2>
+<ol>
+<li>When would you choose ISR over SSR?</li>
+<li>Why can a Server Component query the database but a Client Component can’t?</li>
+<li>Why must migrations be in git?</li>
+<li>What’s a guardrail metric?</li>
+<li>What’s the hardest part of caching?</li>
+</ol>
+<p>Recycled:</p>
+<ul>
+<li>What does a contract test catch?</li>
+<li>Promise.all vs a sequential await loop?</li>
+</ul>
+<h2 id="8-teach-back" tabindex="-1">8. Teach-back</h2>
+<p>Write “SSR, SSG, ISR and CSR explained with newspapers.”</p>
+<h2 id="done-when" tabindex="-1">Done when</h2>
+<ul>
+<li class="task-list-item"><input type="checkbox">App runs locally with a migrations-managed schema</li>
+<li class="task-list-item"><input type="checkbox">Rendering experiment documented</li>
+<li class="task-list-item"><input type="checkbox">Product brief with opportunity tree and metrics written</li>
+<li class="task-list-item"><input type="checkbox">Caching ADR defended</li>
+<li class="task-list-item"><input type="checkbox">Check and teach-back done</li>
+</ul>
+</div>
+    <nav class="pager" aria-label="Lesson pagination">
+  <a class="plain prev" href="/course/week-08/"><span class="label">Previous</span><span class="title">Week 08: Reading, Refactoring and Contract Tests</span></a>
+  <a class="plain next" href="/course/week-10/"><span class="label">Next</span><span class="title">Week 10: Auth, Deploy, Accessibility and Security</span></a>
+</nav>
+  </article>
+</div>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-legal">© 2026 Productise LTD. All rights reserved.</div>
+  </div>
+</footer>
+<script src="../assets/course.js"></script>
+</body>
+</html>

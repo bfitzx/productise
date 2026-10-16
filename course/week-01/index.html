@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 01: Workstation — Productise</title>
+  <meta name="description" content="A dotfiles repo with an idempotent bootstrap script">
+  <link rel="canonical" href="https://productise.ltd/course/week-01/">
+  <meta property="og:title" content="Week 01: Workstation — Productise">
+  <meta property="og:description" content="A dotfiles repo with an idempotent bootstrap script">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://productise.ltd/course/week-01/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Week 01: Workstation — Productise">
+  <meta name="twitter:description" content="A dotfiles repo with an idempotent bootstrap script">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/course.css">
+</head>
+<body class="" data-week-slug="week-01">
+<nav class="site-nav" aria-label="Primary">
+  <div class="site-nav-inner">
+    <a class="site-nav-brand plain" href="/">Productise</a>
+    <div class="site-nav-links">
+      <a class="plain" href="/">Home</a>
+      <a class="plain" href="/course/" aria-current="page">Course</a>
+      <a class="plain" href="/course/syllabus/">Syllabus</a>
+      <a class="plain" href="/course/domains/">Domains</a>
+    </div>
+  </div>
+</nav>
+<div class="page-shell">
+  <aside class="toc">
+  <div class="toc-label">On this page</div>
+  <nav><a href="#1-concept-brief">1. Concept brief</a><a href="#2-guided-lab-3-hrs">2. Guided lab (~3 hrs)</a><a href="#3-unguided-challenge-3-hrs">3. Unguided challenge (~3 hrs)</a><a href="#4-ways-of-working-1-hr">4. Ways of working (~1 hr)</a><a href="#5-check">5. Check</a><a href="#6-teach-back">6. Teach-back</a><a href="#done-when">Done when</a></nav>
+</aside>
+  <article>
+    <header class="lesson-header">
+      <div class="hero-meta">
+        <span class="micro-cap">0. Workstation</span>
+        <span class="micro-cap">·</span>
+        <span class="micro-cap">8–10 hrs</span>
+      </div>
+      <h1>Week 01 — Workstation</h1>
+      <p class="body-lg" style="margin:0;max-width:640px;">A dotfiles repo with an idempotent bootstrap script</p>
+      
+      <div class="topic-chips"><span class="topic-chip">Homebrew</span><span class="topic-chip">terminal</span><span class="topic-chip">zsh</span><span class="topic-chip">PATH</span><span class="topic-chip">mise</span><span class="topic-chip">uv</span><span class="topic-chip">Docker</span><span class="topic-chip">dotfiles</span><span class="topic-chip">Claude Code</span></div>
+      <p class="micro-cap" style="margin-top:16px;">Ways of working: What a product engineer is</p>
+      <label class="micro-cap" style="display:flex;gap:10px;align-items:center;margin-top:18px;cursor:pointer;">
+        <input type="checkbox" data-mark-complete>
+        Mark week complete
+      </label>
+    </header>
+    <div class="prose"><p><strong>Phase 0 · Ways of working: what a product engineer is</strong></p>
+<h2 id="1-concept-brief" tabindex="-1">1. Concept brief</h2>
+<p>You’re building the machine you’ll use for the next 25 weeks. The goal is a setup that is <strong>reproducible</strong>: if your laptop died tonight, one script would rebuild it.</p>
+<p><strong>Vocabulary</strong></p>
+<ul>
+<li><strong>Shell vs terminal:</strong> the terminal (Ghostty, iTerm2) is the window; the shell (zsh) is the program inside it that interprets your commands.</li>
+<li><strong>PATH:</strong> the ordered list of folders the shell searches for programs. Most “command not found” errors are PATH problems.</li>
+<li><strong>Package manager:</strong> installs and updates software. Homebrew for Mac apps and CLIs, <code>uv</code> for Python, <code>npm</code>/<code>pnpm</code> for JavaScript.</li>
+<li><strong>Version manager:</strong> <code>mise</code> lets each project pin its own Node/Python version, which avoids “works on my machine” problems.</li>
+<li><strong>Dotfiles:</strong> config files whose names start with <code>.</code> (<code>.zshrc</code>, <code>.gitconfig</code>). Engineers keep these in a git repo.</li>
+<li><strong>Container:</strong> a packaged, isolated environment (Docker). OrbStack is a fast Docker runtime for Mac.</li>
+<li><strong>Idempotent:</strong> running it twice has the same effect as running it once.</li>
+</ul>
+<h2 id="2-guided-lab-3-hrs" tabindex="-1">2. Guided lab (~3 hrs)</h2>
+<p>Type every command yourself. Before running each one, say out loud what you expect it to do.</p>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#6A737D"># 1. Xcode command-line tools (compilers, git)</span></span>
+<span class="line"><span style="color:#B392F0">xcode-select</span><span style="color:#79B8FF"> --install</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 2. Homebrew</span></span>
+<span class="line"><span style="color:#B392F0">/bin/bash</span><span style="color:#79B8FF"> -c</span><span style="color:#9ECBFF"> "$(</span><span style="color:#B392F0">curl</span><span style="color:#79B8FF"> -fsSL</span><span style="color:#9ECBFF"> https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</span></span>
+<span class="line"><span style="color:#B392F0">brew</span><span style="color:#79B8FF"> --version</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 3. Core CLI tools</span></span>
+<span class="line"><span style="color:#B392F0">brew</span><span style="color:#9ECBFF"> install</span><span style="color:#9ECBFF"> git</span><span style="color:#9ECBFF"> gh</span><span style="color:#9ECBFF"> mise</span><span style="color:#9ECBFF"> uv</span><span style="color:#9ECBFF"> jq</span><span style="color:#9ECBFF"> ripgrep</span><span style="color:#9ECBFF"> fzf</span><span style="color:#9ECBFF"> tmux</span><span style="color:#9ECBFF"> tree</span><span style="color:#9ECBFF"> bat</span><span style="color:#9ECBFF"> eza</span></span>
+<span class="line"><span style="color:#B392F0">brew</span><span style="color:#9ECBFF"> install</span><span style="color:#79B8FF"> --cask</span><span style="color:#9ECBFF"> ghostty</span><span style="color:#9ECBFF"> orbstack</span><span style="color:#9ECBFF"> visual-studio-code</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 4. Git identity</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> config</span><span style="color:#79B8FF"> --global</span><span style="color:#9ECBFF"> user.name</span><span style="color:#9ECBFF"> "Your Name"</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> config</span><span style="color:#79B8FF"> --global</span><span style="color:#9ECBFF"> user.email</span><span style="color:#9ECBFF"> "you@example.com"</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> config</span><span style="color:#79B8FF"> --global</span><span style="color:#9ECBFF"> init.defaultBranch</span><span style="color:#9ECBFF"> main</span></span>
+<span class="line"><span style="color:#B392F0">gh</span><span style="color:#9ECBFF"> auth</span><span style="color:#9ECBFF"> login</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 5. Language runtimes via mise</span></span>
+<span class="line"><span style="color:#B392F0">mise</span><span style="color:#9ECBFF"> use</span><span style="color:#79B8FF"> --global</span><span style="color:#9ECBFF"> node@lts</span><span style="color:#9ECBFF"> python@3.12</span></span>
+<span class="line"><span style="color:#B392F0">mise</span><span style="color:#9ECBFF"> ls</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 6. Check Docker works</span></span>
+<span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> run</span><span style="color:#79B8FF"> --rm</span><span style="color:#9ECBFF"> hello-world</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 7. Claude Code</span></span>
+<span class="line"><span style="color:#B392F0">npm</span><span style="color:#9ECBFF"> install</span><span style="color:#79B8FF"> -g</span><span style="color:#9ECBFF"> @anthropic-ai/claude-code</span></span>
+<span class="line"><span style="color:#B392F0">claude</span><span style="color:#79B8FF"> --version</span></span>
+<span class="line"></span></code></pre></div><p>Then:</p>
+<ol>
+<li>Add <code>eval &quot;$(mise activate zsh)&quot;</code> to <code>~/.zshrc</code>, then run <code>source ~/.zshrc</code>. Why is that line needed?</li>
+<li>Run <code>echo $PATH | tr ':' '\n'</code> and identify where each tool lives.</li>
+<li>Run <code>which python node git</code>. Are they the versions you expect?</li>
+</ol>
+<h2 id="3-unguided-challenge-3-hrs" tabindex="-1">3. Unguided challenge (~3 hrs)</h2>
+<p>Create a GitHub repo called <code>dotfiles</code> containing:</p>
+<ul>
+<li><code>Brewfile</code>, generated with <code>brew bundle dump</code></li>
+<li>your <code>.zshrc</code> and <code>.gitconfig</code></li>
+<li><code>bootstrap.sh</code>, which on a fresh Mac installs Homebrew if it’s missing, runs <code>brew bundle</code>, symlinks the dotfiles into <code>~</code> and sets up mise runtimes</li>
+</ul>
+<p><strong>Acceptance criteria</strong></p>
+<ul>
+<li>Running <code>./bootstrap.sh</code> twice causes no errors and no duplicate entries.</li>
+<li>The script starts with <code>set -euo pipefail</code>.</li>
+<li>The README explains what it does and how to run it.</li>
+</ul>
+<p>Then create a second repo, <code>product-engineer-lab</code>. This is your course spine for the next 25 weeks.</p>
+<h2 id="4-ways-of-working-1-hr" tabindex="-1">4. Ways of working (~1 hr)</h2>
+<p><strong>What a product engineer is.</strong> Write half a page:</p>
+<ul>
+<li>How does a product engineer differ from a PM, a full-stack engineer and a forward-deployed engineer?</li>
+<li>Which of your past roles came closest, and why?</li>
+<li>Name one product decision you’d have made differently if you could have prototyped it yourself in a day.</li>
+</ul>
+<h2 id="5-check" tabindex="-1">5. Check</h2>
+<ol>
+<li>What’s the difference between a terminal and a shell?</li>
+<li>You get <code>command not found</code> right after installing a tool. What’s the likely cause, and how do you check?</li>
+<li>Why use <code>mise</code> rather than installing Node with Homebrew?</li>
+<li>What does “idempotent” mean, and why does it matter for a setup script?</li>
+<li>What does <code>set -euo pipefail</code> do?</li>
+</ol>
+<h2 id="6-teach-back" tabindex="-1">6. Teach-back</h2>
+<p>Write <code>teach-back/week-01.md</code> (200–300 words): “What I set up and why, for a PM who’s never opened a terminal.”</p>
+<h2 id="done-when" tabindex="-1">Done when</h2>
+<ul>
+<li class="task-list-item"><input type="checkbox">All lab commands run cleanly</li>
+<li class="task-list-item"><input type="checkbox"><code>dotfiles</code> repo is pushed and the bootstrap script is idempotent</li>
+<li class="task-list-item"><input type="checkbox"><code>product-engineer-lab</code> repo exists</li>
+<li class="task-list-item"><input type="checkbox">Ways-of-working reflection written</li>
+<li class="task-list-item"><input type="checkbox">Check answered</li>
+<li class="task-list-item"><input type="checkbox">Teach-back committed</li>
+</ul>
+</div>
+    <nav class="pager" aria-label="Lesson pagination">
+  <span></span>
+  <a class="plain next" href="/course/week-02/"><span class="label">Next</span><span class="title">Week 02: CLI Fluency I — Files, Pipes and Text</span></a>
+</nav>
+  </article>
+</div>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-legal">© 2026 Productise LTD. All rights reserved.</div>
+  </div>
+</footer>
+<script src="../assets/course.js"></script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 15: Data Quality, Contracts, Cost and Portability — Productise</title>
+  <meta name="description" content="The pipeline deployed from CI with Bundles, plus a dbt/Dagster rebuild of one gold table">
+  <link rel="canonical" href="https://productise.ltd/course/week-15/">
+  <meta property="og:title" content="Week 15: Data Quality, Contracts, Cost and Portability — Productise">
+  <meta property="og:description" content="The pipeline deployed from CI with Bundles, plus a dbt/Dagster rebuild of one gold table">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://productise.ltd/course/week-15/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Week 15: Data Quality, Contracts, Cost and Portability — Productise">
+  <meta name="twitter:description" content="The pipeline deployed from CI with Bundles, plus a dbt/Dagster rebuild of one gold table">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/course.css">
+</head>
+<body class="" data-week-slug="week-15">
+<nav class="site-nav" aria-label="Primary">
+  <div class="site-nav-inner">
+    <a class="site-nav-brand plain" href="/">Productise</a>
+    <div class="site-nav-links">
+      <a class="plain" href="/">Home</a>
+      <a class="plain" href="/course/" aria-current="page">Course</a>
+      <a class="plain" href="/course/syllabus/">Syllabus</a>
+      <a class="plain" href="/course/domains/">Domains</a>
+    </div>
+  </div>
+</nav>
+<div class="page-shell">
+  <aside class="toc">
+  <div class="toc-label">On this page</div>
+  <nav><a href="#1-concept-brief">1. Concept brief</a><a href="#2-guided-lab-35-hrs-bundles-and-ci">2. Guided lab (~3.5 hrs) — Bundles and CI</a><a href="#3-unguided-challenge-25-hrs-portability">3. Unguided challenge (~2.5 hrs) — portability</a><a href="#4-mock-review-4-slow-and-expensive-pipeline-1-hr">4. Mock review #4 — slow and expensive pipeline (~1 hr)</a><a href="#5-system-design-6-batch-vs-streaming-1-hr">5. System design #6 — batch vs streaming (~1 hr)</a><a href="#6-ways-of-working-30-min">6. Ways of working (~30 min)</a><a href="#7-check">7. Check</a><a href="#8-teach-back">8. Teach-back</a><a href="#done-when">Done when</a></nav>
+</aside>
+  <article>
+    <header class="lesson-header">
+      <div class="hero-meta">
+        <span class="micro-cap">5. Data engineering &amp; Databricks</span>
+        <span class="micro-cap">·</span>
+        <span class="micro-cap">8–10 hrs</span>
+      </div>
+      <h1>Week 15 — Data Quality, Contracts, Cost and Portability</h1>
+      <p class="body-lg" style="margin:0;max-width:640px;">The pipeline deployed from CI with Bundles, plus a dbt/Dagster rebuild of one gold table</p>
+      <div class="badge-row" style="margin-top:14px;"><span class="badge design">System design</span><span class="badge review">Mock review</span></div>
+      <div class="topic-chips"><span class="topic-chip">data contracts</span><span class="topic-chip">data quality</span><span class="topic-chip">schema evolution</span><span class="topic-chip">partitioning</span><span class="topic-chip">liquid clustering</span><span class="topic-chip">DBUs</span><span class="topic-chip">serverless vs classic</span><span class="topic-chip">Declarative Automation Bundles</span><span class="topic-chip">CI/CD for data</span><span class="topic-chip">Genie</span><span class="topic-chip">AI/BI dashboards</span><span class="topic-chip">dbt</span><span class="topic-chip">Dagster</span></div>
+      <p class="micro-cap" style="margin-top:16px;">Ways of working: Case study: a data incident</p>
+      <label class="micro-cap" style="display:flex;gap:10px;align-items:center;margin-top:18px;cursor:pointer;">
+        <input type="checkbox" data-mark-complete>
+        Mark week complete
+      </label>
+    </header>
+    <div class="prose"><p><strong>Phase 5 · Thread F · System design #6 · Mock review #4</strong></p>
+<h2 id="1-concept-brief" tabindex="-1">1. Concept brief</h2>
+<p><strong>Vocabulary</strong></p>
+<ul>
+<li><strong>Data contract:</strong> an agreed schema, semantics, SLAs and owner between a data producer and its consumers. Breaking it is like breaking an API.</li>
+<li><strong>Schema evolution:</strong> adding, renaming or retyping columns safely. Delta can <code>mergeSchema</code>, but downstream consumers may still break.</li>
+<li><strong>Partitioning / liquid clustering:</strong> organising files so queries can skip data. Liquid clustering is Databricks’ newer, adaptive alternative to static partitions.</li>
+<li><strong>DBU:</strong> Databricks Unit, the billing unit for compute. Your cost is roughly DBUs × rate, plus cloud infrastructure.</li>
+<li><strong>Declarative Automation Bundles</strong> (still widely called <strong>Asset Bundles</strong>, or DABs): pipelines, jobs and config defined as YAML in git and deployed with the CLI. This is infrastructure-as-code for Databricks.</li>
+<li><strong>dbt:</strong> SQL-first transformation framework (models, tests, docs) that runs on any warehouse.</li>
+<li><strong>Dagster / Airflow:</strong> general-purpose orchestrators.</li>
+</ul>
+<h2 id="2-guided-lab-35-hrs-bundles-and-ci" tabindex="-1">2. Guided lab (~3.5 hrs) — Bundles and CI</h2>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#79B8FF">cd</span><span style="color:#9ECBFF"> ~/dev</span><span style="color:#E1E4E8"> &#x26;&#x26; </span><span style="color:#B392F0">databricks</span><span style="color:#9ECBFF"> bundle</span><span style="color:#9ECBFF"> init</span><span style="color:#6A737D">     # choose the default Python or pipeline template</span></span>
+<span class="line"><span style="color:#79B8FF">cd</span><span style="color:#F97583"> &#x3C;</span><span style="color:#9ECBFF">bundl</span><span style="color:#E1E4E8">e</span><span style="color:#F97583">></span><span style="color:#E1E4E8"> &#x26;&#x26; </span><span style="color:#B392F0">tree</span></span>
+<span class="line"></span></code></pre></div><ol>
+<li>Move your week 14 pipeline code into the bundle, and define the pipeline and job in <code>resources/*.yml</code>.</li>
+<li>Deploy and run it:</li>
+</ol>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#B392F0">databricks</span><span style="color:#9ECBFF"> bundle</span><span style="color:#9ECBFF"> validate</span></span>
+<span class="line"><span style="color:#B392F0">databricks</span><span style="color:#9ECBFF"> bundle</span><span style="color:#9ECBFF"> deploy</span><span style="color:#79B8FF"> -t</span><span style="color:#9ECBFF"> dev</span></span>
+<span class="line"><span style="color:#B392F0">databricks</span><span style="color:#9ECBFF"> bundle</span><span style="color:#9ECBFF"> run</span><span style="color:#79B8FF"> -t</span><span style="color:#9ECBFF"> dev</span><span style="color:#F97583"> &#x3C;</span><span style="color:#9ECBFF">job_ke</span><span style="color:#E1E4E8">y</span><span style="color:#F97583">></span></span>
+<span class="line"></span></code></pre></div><ol start="3">
+<li>Add a GitHub Actions workflow that runs <code>databricks bundle validate</code> on PRs and <code>deploy -t prod</code> on merge to <code>main</code>. Use a <strong>service principal</strong> or OAuth token stored as a GitHub secret, never your personal token.</li>
+</ol>
+<p><strong>Quality and contracts:</strong></p>
+<ol>
+<li>Write <code>contracts/tickets.yml</code>: columns, types, allowed values, nullability, freshness SLA (for example, “data no more than 2 hours old”), owner, and consumers.</li>
+<li>Add a CI test that compares the bronze schema with the contract and fails on drift.</li>
+</ol>
+<p><strong>Cost:</strong></p>
+<ol>
+<li>Open the system tables (<code>system.billing.usage</code>) if available, or the usage page. Which runs cost the most?</li>
+<li>Apply <code>CLUSTER BY (ticket_date, account_id)</code> to silver, and compare query time and bytes scanned before and after.</li>
+</ol>
+<h2 id="3-unguided-challenge-25-hrs-portability" tabindex="-1">3. Unguided challenge (~2.5 hrs) — portability</h2>
+<p>Rebuild <strong>one gold table</strong> outside Databricks:</p>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#B392F0">mkdir</span><span style="color:#79B8FF"> -p</span><span style="color:#9ECBFF"> ~/dev/support-dbt</span><span style="color:#E1E4E8"> &#x26;&#x26; </span><span style="color:#79B8FF">cd</span><span style="color:#79B8FF"> $_</span><span style="color:#E1E4E8"> &#x26;&#x26; </span><span style="color:#B392F0">uv</span><span style="color:#9ECBFF"> init</span></span>
+<span class="line"><span style="color:#B392F0">uv</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> dbt-duckdb</span><span style="color:#9ECBFF"> dagster</span><span style="color:#9ECBFF"> dagster-webserver</span><span style="color:#9ECBFF"> dagster-dbt</span></span>
+<span class="line"><span style="color:#B392F0">uv</span><span style="color:#9ECBFF"> run</span><span style="color:#9ECBFF"> dbt</span><span style="color:#9ECBFF"> init</span><span style="color:#9ECBFF"> support</span></span>
+<span class="line"></span></code></pre></div><ol>
+<li>Write staging and mart models in dbt over last week’s Parquet files, with <code>not_null</code>, <code>unique</code> and <code>accepted_values</code> tests.</li>
+<li>Run <code>uv run dbt build</code>, then <code>uv run dbt docs generate &amp;&amp; uv run dbt docs serve</code>.</li>
+<li>Wrap the dbt project in Dagster (<code>dagster-dbt</code>), run <code>uv run dagster dev</code>, and materialise the assets from the UI.</li>
+</ol>
+<p>Write <code>docs/comparison.md</code> comparing the two stacks on developer experience, testing, lineage, orchestration, cost model, governance of sensitive data, and which one you’d choose for a 5-person team vs a 500-person organisation.</p>
+<h2 id="4-mock-review-4-slow-and-expensive-pipeline-1-hr" tabindex="-1">4. Mock review #4 — slow and expensive pipeline (~1 hr)</h2>
+<p>Claude plays a senior data engineer: <em>“Your pipeline costs €3k/month and the gold table is 6 hours stale. Walk me through it.”</em> Expect questions on:</p>
+<ul>
+<li>cluster sizing</li>
+<li>serverless vs classic compute</li>
+<li>small files</li>
+<li>clustering</li>
+<li>full vs incremental recompute</li>
+<li>schedule frequency</li>
+<li>whether anyone actually uses the table</li>
+</ul>
+<h2 id="5-system-design-6-batch-vs-streaming-1-hr" tabindex="-1">5. System design #6 — batch vs streaming (~1 hr)</h2>
+<p>Should support analytics be <strong>real-time</strong> or <strong>nightly</strong>? Decide per consumer: ops dashboard, customer SLA reports, ML training, billing. Cost both options and recommend a hybrid. Write an ADR and an exec summary.</p>
+<h2 id="6-ways-of-working-30-min" tabindex="-1">6. Ways of working (~30 min)</h2>
+<p>Read one public data-incident postmortem; search for “data pipeline postmortem” or a dbt Labs or Monte Carlo case study. What contract or test would have caught it?</p>
+<h2 id="7-check" tabindex="-1">7. Check</h2>
+<ol>
+<li>What goes in a data contract?</li>
+<li>Why is renaming a column in silver risky?</li>
+<li>What does a bundle give you that clicking in the UI doesn’t?</li>
+<li>Liquid clustering vs partitioning, in one sentence?</li>
+<li>Name two drivers of Databricks cost you can control.</li>
+</ol>
+<p>Recycled:</p>
+<ul>
+<li>What does Auto Loader do?</li>
+<li>What’s a Kafka offset?</li>
+</ul>
+<h2 id="8-teach-back" tabindex="-1">8. Teach-back</h2>
+<p>Write “Databricks vs dbt + Dagster: what I’d tell my CTO.”</p>
+<h2 id="done-when" tabindex="-1">Done when</h2>
+<ul>
+<li class="task-list-item"><input type="checkbox">Pipeline deployed via Bundles from CI with a service principal</li>
+<li class="task-list-item"><input type="checkbox">Contract and drift test in CI</li>
+<li class="task-list-item"><input type="checkbox">Clustering before/after measured</li>
+<li class="task-list-item"><input type="checkbox">dbt + Dagster rebuild running with tests</li>
+<li class="task-list-item"><input type="checkbox">Comparison doc written</li>
+<li class="task-list-item"><input type="checkbox">Mock review and design ADR done</li>
+<li class="task-list-item"><input type="checkbox">Check and teach-back done</li>
+</ul>
+</div>
+    <nav class="pager" aria-label="Lesson pagination">
+  <a class="plain prev" href="/course/week-14/"><span class="label">Previous</span><span class="title">Week 14: Pipelines, Orchestration and Streaming</span></a>
+  <a class="plain next" href="/course/week-16/"><span class="label">Next</span><span class="title">Week 16: LLM APIs and Structured Outputs</span></a>
+</nav>
+  </article>
+</div>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-legal">© 2026 Productise LTD. All rights reserved.</div>
+  </div>
+</footer>
+<script src="../assets/course.js"></script>
+</body>
+</html>
