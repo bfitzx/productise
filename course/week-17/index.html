@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 17: Retrieval-Augmented Generation — Productise</title>
+  <meta name="description" content="A cited Q&amp;A over a help-centre and policy knowledge base, with a retrieval test set">
+  <link rel="canonical" href="https://productise.ltd/course/week-17/">
+  <meta property="og:title" content="Week 17: Retrieval-Augmented Generation — Productise">
+  <meta property="og:description" content="A cited Q&amp;A over a help-centre and policy knowledge base, with a retrieval test set">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://productise.ltd/course/week-17/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Week 17: Retrieval-Augmented Generation — Productise">
+  <meta name="twitter:description" content="A cited Q&amp;A over a help-centre and policy knowledge base, with a retrieval test set">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/course.css">
+</head>
+<body class="" data-week-slug="week-17">
+<nav class="site-nav" aria-label="Primary">
+  <div class="site-nav-inner">
+    <a class="site-nav-brand plain" href="/">Productise</a>
+    <div class="site-nav-links">
+      <a class="plain" href="/">Home</a>
+      <a class="plain" href="/course/" aria-current="page">Course</a>
+      <a class="plain" href="/course/syllabus/">Syllabus</a>
+      <a class="plain" href="/course/domains/">Domains</a>
+    </div>
+  </div>
+</nav>
+<div class="page-shell">
+  <aside class="toc">
+  <div class="toc-label">On this page</div>
+  <nav><a href="#1-concept-brief">1. Concept brief</a><a href="#2-guided-lab-35-hrs">2. Guided lab (~3.5 hrs)</a><a href="#3-unguided-challenge-25-hrs">3. Unguided challenge (~2.5 hrs)</a><a href="#4-thread-g-rag-failure-modes-1-hr">4. Thread G — RAG failure modes (~1 hr)</a><a href="#5-system-design-7-scaling-with-cost-1-hr">5. System design #7 — scaling with cost (~1 hr)</a><a href="#6-ways-of-working-30-min">6. Ways of working (~30 min)</a><a href="#7-check">7. Check</a><a href="#8-teach-back">8. Teach-back</a><a href="#done-when">Done when</a></nav>
+</aside>
+  <article>
+    <header class="lesson-header">
+      <div class="hero-meta">
+        <span class="micro-cap">6. AI engineering</span>
+        <span class="micro-cap">·</span>
+        <span class="micro-cap">8–10 hrs</span>
+      </div>
+      <h1>Week 17 — Retrieval-Augmented Generation</h1>
+      <p class="body-lg" style="margin:0;max-width:640px;">A cited Q&amp;A over a help-centre and policy knowledge base, with a retrieval test set</p>
+      <div class="badge-row" style="margin-top:14px;"><span class="badge design">System design</span></div>
+      <div class="topic-chips"><span class="topic-chip">embeddings</span><span class="topic-chip">vector search</span><span class="topic-chip">pgvector</span><span class="topic-chip">chunking</span><span class="topic-chip">hybrid search</span><span class="topic-chip">reranking</span><span class="topic-chip">citations</span><span class="topic-chip">RAG failure modes</span></div>
+      <p class="micro-cap" style="margin-top:16px;">Ways of working: Retro on your own work so far</p>
+      <label class="micro-cap" style="display:flex;gap:10px;align-items:center;margin-top:18px;cursor:pointer;">
+        <input type="checkbox" data-mark-complete>
+        Mark week complete
+      </label>
+    </header>
+    <div class="prose"><p><strong>Phase 6 · Threads G and F · System design #7</strong></p>
+<blockquote class="domain-pack">
+<p><strong><a href="/course/domains/">Domain pack</a>:</strong> Using a domain pack? Use your domain’s public documents as the corpus, for example openFDA or DailyMed drug labels for pharma.</p>
+</blockquote>
+<h2 id="1-concept-brief" tabindex="-1">1. Concept brief</h2>
+<p>Models don’t know your organisation’s documents. <strong>RAG</strong> finds relevant passages first, then asks the model to answer <em>using only those passages</em>, with citations. Most RAG failures are retrieval failures, not model failures.</p>
+<p><strong>Vocabulary</strong></p>
+<ul>
+<li><strong>Embedding:</strong> a vector of numbers representing meaning. Similar texts produce nearby vectors.</li>
+<li><strong>Vector search:</strong> finding nearest neighbours by cosine similarity. <code>pgvector</code> adds this to Postgres.</li>
+<li><strong>Chunking:</strong> splitting documents into retrievable pieces. Size and overlap matter a lot.</li>
+<li><strong>Hybrid search:</strong> keyword search (BM25 / full-text) plus vector search. Keywords catch exact terms such as error codes or product IDs.</li>
+<li><strong>Reranking:</strong> a second model reorders the top-k results for relevance.</li>
+<li><strong>Grounding / citations:</strong> the answer points to its sources, so users can verify it.</li>
+<li><strong>Recall@k:</strong> how often the right chunk appears in the top k results. This is the core retrieval metric.</li>
+</ul>
+<h2 id="2-guided-lab-35-hrs" tabindex="-1">2. Guided lab (~3.5 hrs)</h2>
+<p><strong>Corpus.</strong> Ask Claude to generate about 40 synthetic help-centre articles and internal policies: refunds, SLAs per plan, data export, SSO setup, error codes. Make some contradict each other and some go out of date. (Or use a public corpus from your domain pack.)</p>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#79B8FF">cd</span><span style="color:#9ECBFF"> ~/dev/support-ai</span></span>
+<span class="line"><span style="color:#B392F0">uv</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> "psycopg[binary]"</span><span style="color:#9ECBFF"> pgvector</span><span style="color:#9ECBFF"> voyageai</span><span style="color:#6A737D">   # or another embeddings provider; check current options</span></span>
+<span class="line"><span style="color:#B392F0">docker</span><span style="color:#9ECBFF"> run</span><span style="color:#79B8FF"> -d</span><span style="color:#79B8FF"> --name</span><span style="color:#9ECBFF"> pgv</span><span style="color:#79B8FF"> -e</span><span style="color:#9ECBFF"> POSTGRES_PASSWORD=pw</span><span style="color:#79B8FF"> -p</span><span style="color:#9ECBFF"> 5433:5432</span><span style="color:#9ECBFF"> pgvector/pgvector:pg17</span></span>
+<span class="line"><span style="color:#B392F0">psql</span><span style="color:#9ECBFF"> postgresql://postgres:pw@localhost:5433/postgres</span><span style="color:#79B8FF"> -c</span><span style="color:#9ECBFF"> "create extension vector;"</span></span>
+<span class="line"></span></code></pre></div><div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#F97583">create</span><span style="color:#F97583"> table</span><span style="color:#B392F0"> chunks</span><span style="color:#E1E4E8"> (id </span><span style="color:#F97583">serial</span><span style="color:#F97583"> primary key</span><span style="color:#E1E4E8">, doc_id </span><span style="color:#F97583">text</span><span style="color:#E1E4E8">, plan </span><span style="color:#F97583">text</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#E1E4E8">  updated_at </span><span style="color:#F97583">date</span><span style="color:#E1E4E8">, content </span><span style="color:#F97583">text</span><span style="color:#E1E4E8">, embedding </span><span style="color:#F97583">vector</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">1024</span><span style="color:#E1E4E8">));</span></span>
+<span class="line"><span style="color:#F97583">create</span><span style="color:#F97583"> index</span><span style="color:#B392F0"> on</span><span style="color:#E1E4E8"> chunks </span><span style="color:#F97583">using</span><span style="color:#E1E4E8"> hnsw (embedding vector_cosine_ops);</span></span>
+<span class="line"><span style="color:#F97583">create</span><span style="color:#F97583"> index</span><span style="color:#B392F0"> on</span><span style="color:#E1E4E8"> chunks </span><span style="color:#F97583">using</span><span style="color:#E1E4E8"> gin (to_tsvector(</span><span style="color:#9ECBFF">'english'</span><span style="color:#E1E4E8">, content));</span></span>
+<span class="line"></span></code></pre></div><p>Then:</p>
+<ol>
+<li>Write <code>ingest.py</code>: chunk the documents (try 300 and 800 tokens), embed them, and insert.</li>
+<li>Write <code>ask.py</code>: embed the question, take the top 5 chunks by cosine similarity, and prompt the model to answer <strong>only from those sources</strong> and cite chunk IDs, or say “not found”.</li>
+<li>Add hybrid retrieval: combine the vector rank with full-text rank (reciprocal rank fusion).</li>
+</ol>
+<h2 id="3-unguided-challenge-25-hrs" tabindex="-1">3. Unguided challenge (~2.5 hrs)</h2>
+<ul>
+<li><strong>Retrieval test set:</strong> 25 questions, each labelled with the chunk(s) that contain the answer. Compute recall@5 for vector-only vs hybrid, and for both chunk sizes.</li>
+<li>Return citations in the API response, and refuse to answer when the top score is below a threshold.</li>
+<li>Add a metadata filter, for example <code>plan</code>, so the model can’t mix one plan’s policy with another’s.</li>
+</ul>
+<p><strong>Acceptance criteria:</strong></p>
+<ul>
+<li>A recall@5 table in the README.</li>
+<li>Answers always cite sources or explicitly decline.</li>
+</ul>
+<h2 id="4-thread-g-rag-failure-modes-1-hr" tabindex="-1">4. Thread G — RAG failure modes (~1 hr)</h2>
+<p>Deliberately trigger and document each of these:</p>
+<ul>
+<li><strong>Retrieval miss:</strong> the answer exists, but it isn’t retrieved.</li>
+<li><strong>Stale data:</strong> an outdated policy wins over the current one. Fix it with <code>updated_at</code> filtering or boosting.</li>
+<li><strong>Citation hallucination:</strong> a cited chunk doesn’t support the claim. Detect it with a second check.</li>
+<li><strong>Conflicting sources:</strong> what should the system say?</li>
+</ul>
+<h2 id="5-system-design-7-scaling-with-cost-1-hr" tabindex="-1">5. System design #7 — scaling with cost (~1 hr)</h2>
+<p>Handle <strong>100× volume</strong>: from 50k to 5M triaged tickets a day. Cover:</p>
+<ul>
+<li>horizontal scaling of the API</li>
+<li>load balancing</li>
+<li>queueing the LLM calls</li>
+<li>provider rate limits and your own rate limits</li>
+<li>batching</li>
+<li>caching repeated questions</li>
+<li>a <strong>monthly cost estimate</strong> (LLM tokens, embeddings, compute, database)</li>
+</ul>
+<p>What do you cut first if the budget is half? Write an ADR and an exec summary.</p>
+<h2 id="6-ways-of-working-30-min" tabindex="-1">6. Ways of working (~30 min)</h2>
+<p><strong>Retro on your own work.</strong> Halfway point. What’s working, what isn’t, and what will you change for weeks 18–26? Update your estimation log.</p>
+<h2 id="7-check" tabindex="-1">7. Check</h2>
+<ol>
+<li>What does an embedding represent?</li>
+<li>Why does hybrid search beat vector-only for error codes?</li>
+<li>What does recall@5 measure?</li>
+<li>Name two ways to handle stale documents.</li>
+<li>What’s the cheapest way to reduce LLM spend at 100× volume?</li>
+</ol>
+<p>Recycled:</p>
+<ul>
+<li>Why use tool schemas for extraction?</li>
+<li>What’s in a data contract?</li>
+</ul>
+<h2 id="8-teach-back" tabindex="-1">8. Teach-back</h2>
+<p>Write “Why most RAG problems are search problems.”</p>
+<h2 id="done-when" tabindex="-1">Done when</h2>
+<ul>
+<li class="task-list-item"><input type="checkbox">pgvector RAG with hybrid retrieval and citations</li>
+<li class="task-list-item"><input type="checkbox">Retrieval test set with a recall table</li>
+<li class="task-list-item"><input type="checkbox">Four failure modes documented</li>
+<li class="task-list-item"><input type="checkbox">Scaling and cost ADR defended</li>
+<li class="task-list-item"><input type="checkbox">Mid-course retro done</li>
+<li class="task-list-item"><input type="checkbox">Check and teach-back done</li>
+</ul>
+</div>
+    <nav class="pager" aria-label="Lesson pagination">
+  <a class="plain prev" href="/course/week-16/"><span class="label">Previous</span><span class="title">Week 16: LLM APIs and Structured Outputs</span></a>
+  <a class="plain next" href="/course/week-18/"><span class="label">Next</span><span class="title">Week 18: Agents, MCP and Evals</span></a>
+</nav>
+  </article>
+</div>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-legal">© 2026 Productise LTD. All rights reserved.</div>
+  </div>
+</footer>
+<script src="../assets/course.js"></script>
+</body>
+</html>

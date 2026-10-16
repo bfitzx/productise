@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 08: Reading, Refactoring and Contract Tests — Productise</title>
+  <meta name="description" content="A merged (or submitted) open-source PR and contract tests between service and client">
+  <link rel="canonical" href="https://productise.ltd/course/week-08/">
+  <meta property="og:title" content="Week 08: Reading, Refactoring and Contract Tests — Productise">
+  <meta property="og:description" content="A merged (or submitted) open-source PR and contract tests between service and client">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://productise.ltd/course/week-08/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Week 08: Reading, Refactoring and Contract Tests — Productise">
+  <meta name="twitter:description" content="A merged (or submitted) open-source PR and contract tests between service and client">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/course.css">
+</head>
+<body class="" data-week-slug="week-08">
+<nav class="site-nav" aria-label="Primary">
+  <div class="site-nav-inner">
+    <a class="site-nav-brand plain" href="/">Productise</a>
+    <div class="site-nav-links">
+      <a class="plain" href="/">Home</a>
+      <a class="plain" href="/course/" aria-current="page">Course</a>
+      <a class="plain" href="/course/syllabus/">Syllabus</a>
+      <a class="plain" href="/course/domains/">Domains</a>
+    </div>
+  </div>
+</nav>
+<div class="page-shell">
+  <aside class="toc">
+  <div class="toc-label">On this page</div>
+  <nav><a href="#1-concept-brief">1. Concept brief</a><a href="#2-guided-lab-3-hrs-read-a-real-codebase">2. Guided lab (~3 hrs) — read a real codebase</a><a href="#3-unguided-challenge-3-hrs">3. Unguided challenge (~3 hrs)</a><a href="#4-mock-review-2-api-design-review-1-hr">4. Mock review #2 — API design review (~1 hr)</a><a href="#5-ways-of-working-1-hr">5. Ways of working (~1 hr)</a><a href="#6-check">6. Check</a><a href="#7-teach-back">7. Teach-back</a><a href="#done-when">Done when</a></nav>
+</aside>
+  <article>
+    <header class="lesson-header">
+      <div class="hero-meta">
+        <span class="micro-cap">3. Code core</span>
+        <span class="micro-cap">·</span>
+        <span class="micro-cap">8–10 hrs</span>
+      </div>
+      <h1>Week 08 — Reading, Refactoring and Contract Tests</h1>
+      <p class="body-lg" style="margin:0;max-width:640px;">A merged (or submitted) open-source PR and contract tests between service and client</p>
+      <div class="badge-row" style="margin-top:14px;"><span class="badge review">Mock review</span></div>
+      <div class="topic-chips"><span class="topic-chip">reading unfamiliar code</span><span class="topic-chip">refactoring</span><span class="topic-chip">code smells</span><span class="topic-chip">open-source contribution</span><span class="topic-chip">contract testing</span><span class="topic-chip">OpenAPI</span></div>
+      <p class="micro-cap" style="margin-top:16px;">Ways of working: Instrumentation-first</p>
+      <label class="micro-cap" style="display:flex;gap:10px;align-items:center;margin-top:18px;cursor:pointer;">
+        <input type="checkbox" data-mark-complete>
+        Mark week complete
+      </label>
+    </header>
+    <div class="prose"><p><strong>Phase 3 · Thread C · Mock review #2 · Ways of working: instrumentation-first</strong></p>
+<h2 id="1-concept-brief" tabindex="-1">1. Concept brief</h2>
+<p>Most engineering time goes on <em>reading</em> code, not writing it. This week you navigate a codebase you didn’t write, change it safely, and make sure two services can’t silently drift apart.</p>
+<p><strong>Vocabulary</strong></p>
+<ul>
+<li><strong>Entry point:</strong> where execution starts (<code>main</code>, the route handlers, the CLI command).</li>
+<li><strong>Call graph:</strong> who calls whom. Use “go to definition” and “find references” in your editor.</li>
+<li><strong>Code smell:</strong> a sign of trouble — long functions, duplicated logic, flag arguments, deep nesting.</li>
+<li><strong>Refactor:</strong> change the structure without changing behaviour. Tests first, small steps.</li>
+<li><strong>Characterisation test:</strong> a test that pins down <em>current</em> behaviour before you change it.</li>
+<li><strong>Contract test:</strong> verifies a client and a server agree on the API shape (from the OpenAPI schema, or consumer-driven with Pact).</li>
+<li><strong>Breaking change:</strong> a change that makes existing clients fail.</li>
+</ul>
+<h2 id="2-guided-lab-3-hrs-read-a-real-codebase" tabindex="-1">2. Guided lab (~3 hrs) — read a real codebase</h2>
+<p>Pick a mid-sized, well-maintained open-source Python or TypeScript project you use. Good options: <code>httpx</code>, <code>rich</code>, <code>typer</code>, or a small FastAPI or Next.js example app.</p>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#B392F0">gh</span><span style="color:#9ECBFF"> repo</span><span style="color:#9ECBFF"> fork</span><span style="color:#F97583"> &#x3C;</span><span style="color:#9ECBFF">owne</span><span style="color:#E1E4E8">r</span><span style="color:#F97583">></span><span style="color:#9ECBFF">/</span><span style="color:#F97583">&#x3C;</span><span style="color:#9ECBFF">rep</span><span style="color:#E1E4E8">o</span><span style="color:#F97583">></span><span style="color:#79B8FF"> --clone</span><span style="color:#E1E4E8"> &#x26;&#x26; </span><span style="color:#79B8FF">cd</span><span style="color:#F97583"> &#x3C;</span><span style="color:#9ECBFF">rep</span><span style="color:#E1E4E8">o</span><span style="color:#F97583">></span></span>
+<span class="line"><span style="color:#B392F0">tree</span><span style="color:#79B8FF"> -L</span><span style="color:#79B8FF"> 2</span><span style="color:#79B8FF"> -I</span><span style="color:#9ECBFF"> node_modules</span></span>
+<span class="line"><span style="color:#B392F0">rg</span><span style="color:#79B8FF"> -n</span><span style="color:#9ECBFF"> "def main|if __name__|export default"</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> head</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> log</span><span style="color:#79B8FF"> --oneline</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> head</span><span style="color:#79B8FF"> -30</span><span style="color:#6A737D">          # what changes often?</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> log</span><span style="color:#79B8FF"> --format=</span><span style="color:#9ECBFF">'%an'</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> sort</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> uniq</span><span style="color:#79B8FF"> -c</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> sort</span><span style="color:#79B8FF"> -rn</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> head</span><span style="color:#6A737D">   # who owns it?</span></span>
+<span class="line"><span style="color:#B392F0">rg</span><span style="color:#79B8FF"> -c</span><span style="color:#9ECBFF"> "TODO|FIXME"</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> sort</span><span style="color:#79B8FF"> -t:</span><span style="color:#79B8FF"> -k2</span><span style="color:#79B8FF"> -rn</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> head</span></span>
+<span class="line"></span></code></pre></div><p>Then:</p>
+<ol>
+<li>Draw (on paper or in Excalidraw) the main modules and how one request or command flows through them.</li>
+<li>Run the test suite locally, following <code>CONTRIBUTING.md</code>.</li>
+<li>Ask Claude Code to explain one module, then check its explanation against the code. Where was it wrong?</li>
+</ol>
+<h2 id="3-unguided-challenge-3-hrs" tabindex="-1">3. Unguided challenge (~3 hrs)</h2>
+<p><strong>Part 1 — contribute.</strong> Find a <code>good first issue</code> (or a docs or type-hint improvement). Fix it with a test, and open a PR following the project’s conventions.</p>
+<p><strong>Part 2 — refactor your own code.</strong> In <code>ticket-service</code>:</p>
+<ul>
+<li>write characterisation tests for the stats endpoint first</li>
+<li>extract the business logic out of route handlers into a <code>services/</code> module</li>
+<li>remove duplication and add type hints everywhere</li>
+</ul>
+<p><strong>Part 3 — contract tests.</strong> Export the OpenAPI schema with <code>curl localhost:8000/openapi.json &gt; openapi.json</code>, then:</p>
+<ul>
+<li>generate TS types with <code>pnpm dlx openapi-typescript openapi.json -o src/api.d.ts</code></li>
+<li>add a CI job that regenerates the schema and fails if <code>api.d.ts</code> or the zod schemas would change without a commit</li>
+<li>try <a href="https://schemathesis.readthedocs.io">Schemathesis</a> on your API: <code>uvx schemathesis run http://localhost:8000/openapi.json</code></li>
+</ul>
+<p><strong>Acceptance criteria:</strong></p>
+<ul>
+<li>The upstream PR is opened.</li>
+<li>The refactor has no behaviour change (tests stay green).</li>
+<li>Renaming a field in the API breaks CI.</li>
+</ul>
+<h2 id="4-mock-review-2-api-design-review-1-hr" tabindex="-1">4. Mock review #2 — API design review (~1 hr)</h2>
+<p>Bring your week 5 design doc, updated with what you’ve built since. Ask Claude to be a staff engineer reviewing it for production readiness. Expect questions on:</p>
+<ul>
+<li>versioning</li>
+<li>pagination at scale</li>
+<li>error contracts</li>
+<li>auth</li>
+<li>rate limits</li>
+<li>what breaks partners when you change things</li>
+</ul>
+<h2 id="5-ways-of-working-1-hr" tabindex="-1">5. Ways of working (~1 hr)</h2>
+<p><strong>Instrumentation-first.</strong> Decide what you’ll measure <em>before</em> building: events, properties, and the question each one answers. Write a tracking plan (event name, trigger, properties, the decision it informs) for the ticket service: 8–10 events.</p>
+<h2 id="6-check" tabindex="-1">6. Check</h2>
+<ol>
+<li>What’s a characterisation test for?</li>
+<li>Name three code smells.</li>
+<li>What does a contract test catch that unit tests don’t?</li>
+<li>Is adding an optional field a breaking change? Is renaming one?</li>
+<li>What’s the first thing you look at in an unfamiliar repo?</li>
+</ol>
+<p>Recycled:</p>
+<ul>
+<li>Why validate with zod at runtime?</li>
+<li>What’s a fixture?</li>
+</ul>
+<h2 id="7-teach-back" tabindex="-1">7. Teach-back</h2>
+<p>Write “How to read a codebase you didn’t write: my checklist.”</p>
+<h2 id="done-when" tabindex="-1">Done when</h2>
+<ul>
+<li class="task-list-item"><input type="checkbox">Codebase map drawn</li>
+<li class="task-list-item"><input type="checkbox">Upstream PR opened</li>
+<li class="task-list-item"><input type="checkbox">Refactor done with tests green</li>
+<li class="task-list-item"><input type="checkbox">Contract test fails on drift</li>
+<li class="task-list-item"><input type="checkbox">Mock review done</li>
+<li class="task-list-item"><input type="checkbox">Tracking plan written</li>
+<li class="task-list-item"><input type="checkbox">Check and teach-back done</li>
+</ul>
+</div>
+    <nav class="pager" aria-label="Lesson pagination">
+  <a class="plain prev" href="/course/week-07/"><span class="label">Previous</span><span class="title">Week 07: TypeScript and Async</span></a>
+  <a class="plain next" href="/course/week-09/"><span class="label">Next</span><span class="title">Week 09: Full-Stack Foundations — Next.js and Postgres</span></a>
+</nav>
+  </article>
+</div>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-legal">© 2026 Productise LTD. All rights reserved.</div>
+  </div>
+</footer>
+<script src="../assets/course.js"></script>
+</body>
+</html>

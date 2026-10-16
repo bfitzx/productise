@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 16: LLM APIs and Structured Outputs — Productise</title>
+  <meta name="description" content="A support-conversation triage service that returns validated structured output via an API endpoint">
+  <link rel="canonical" href="https://productise.ltd/course/week-16/">
+  <meta property="og:title" content="Week 16: LLM APIs and Structured Outputs — Productise">
+  <meta property="og:description" content="A support-conversation triage service that returns validated structured output via an API endpoint">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://productise.ltd/course/week-16/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Week 16: LLM APIs and Structured Outputs — Productise">
+  <meta name="twitter:description" content="A support-conversation triage service that returns validated structured output via an API endpoint">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/course.css">
+</head>
+<body class="" data-week-slug="week-16">
+<nav class="site-nav" aria-label="Primary">
+  <div class="site-nav-inner">
+    <a class="site-nav-brand plain" href="/">Productise</a>
+    <div class="site-nav-links">
+      <a class="plain" href="/">Home</a>
+      <a class="plain" href="/course/" aria-current="page">Course</a>
+      <a class="plain" href="/course/syllabus/">Syllabus</a>
+      <a class="plain" href="/course/domains/">Domains</a>
+    </div>
+  </div>
+</nav>
+<div class="page-shell">
+  <aside class="toc">
+  <div class="toc-label">On this page</div>
+  <nav><a href="#1-concept-brief">1. Concept brief</a><a href="#2-guided-lab-35-hrs">2. Guided lab (~3.5 hrs)</a><a href="#3-unguided-challenge-25-hrs">3. Unguided challenge (~2.5 hrs)</a><a href="#4-ways-of-working-1-hr">4. Ways of working (~1 hr)</a><a href="#5-check">5. Check</a><a href="#6-teach-back">6. Teach-back</a><a href="#done-when">Done when</a></nav>
+</aside>
+  <article>
+    <header class="lesson-header">
+      <div class="hero-meta">
+        <span class="micro-cap">6. AI engineering</span>
+        <span class="micro-cap">·</span>
+        <span class="micro-cap">8–10 hrs</span>
+      </div>
+      <h1>Week 16 — LLM APIs and Structured Outputs</h1>
+      <p class="body-lg" style="margin:0;max-width:640px;">A support-conversation triage service that returns validated structured output via an API endpoint</p>
+      
+      <div class="topic-chips"><span class="topic-chip">LLM APIs</span><span class="topic-chip">tokens</span><span class="topic-chip">context windows</span><span class="topic-chip">system prompts</span><span class="topic-chip">temperature</span><span class="topic-chip">streaming</span><span class="topic-chip">structured outputs</span><span class="topic-chip">JSON schema</span><span class="topic-chip">tool use basics</span><span class="topic-chip">prompt caching</span></div>
+      <p class="micro-cap" style="margin-top:16px;">Ways of working: Case study: an AI-native product team</p>
+      <label class="micro-cap" style="display:flex;gap:10px;align-items:center;margin-top:18px;cursor:pointer;">
+        <input type="checkbox" data-mark-complete>
+        Mark week complete
+      </label>
+    </header>
+    <div class="prose"><p><strong>Phase 6 · Ways of working: AI-native team case study</strong></p>
+<blockquote class="domain-pack">
+<p><strong><a href="/course/domains/">Domain pack</a>:</strong> Using a domain pack? Extract structured fields from your domain’s text instead, for example drug, dose, reaction and seriousness from synthetic case narratives.</p>
+</blockquote>
+<h2 id="1-concept-brief" tabindex="-1">1. Concept brief</h2>
+<p>An LLM call is just an HTTP request: messages in, text (or structured data) out. Product engineering with LLMs is about making that probabilistic component <strong>reliable</strong>, with schemas, validation, retries, evals and cost control around it.</p>
+<p><strong>Vocabulary</strong></p>
+<ul>
+<li><strong>Token:</strong> the unit of text the model reads and bills by (roughly ¾ of an English word).</li>
+<li><strong>Context window:</strong> the maximum number of tokens in plus out per call.</li>
+<li><strong>System prompt:</strong> standing instructions, separate from the user’s message.</li>
+<li><strong>Temperature:</strong> randomness. Use low values for extraction and higher ones for ideation.</li>
+<li><strong>Structured output:</strong> forcing the response to match a JSON schema, via native structured-output features or tool-use with an input schema.</li>
+<li><strong>Tool use / function calling:</strong> the model asks <em>your code</em> to run a function and gets the result back.</li>
+<li><strong>Streaming:</strong> receiving tokens as they’re generated, which improves perceived latency.</li>
+<li><strong>Prompt caching:</strong> reusing a long, unchanged prompt prefix cheaply.</li>
+</ul>
+<h2 id="2-guided-lab-35-hrs" tabindex="-1">2. Guided lab (~3.5 hrs)</h2>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#B392F0">mkdir</span><span style="color:#79B8FF"> -p</span><span style="color:#9ECBFF"> ~/dev/support-ai</span><span style="color:#E1E4E8"> &#x26;&#x26; </span><span style="color:#79B8FF">cd</span><span style="color:#79B8FF"> $_</span><span style="color:#E1E4E8"> &#x26;&#x26; </span><span style="color:#B392F0">uv</span><span style="color:#9ECBFF"> init</span></span>
+<span class="line"><span style="color:#B392F0">uv</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> anthropic</span><span style="color:#9ECBFF"> pydantic</span><span style="color:#9ECBFF"> fastapi</span><span style="color:#9ECBFF"> uvicorn</span><span style="color:#9ECBFF"> python-dotenv</span></span>
+<span class="line"><span style="color:#79B8FF">echo</span><span style="color:#9ECBFF"> "ANTHROPIC_API_KEY=sk-..."</span><span style="color:#F97583"> ></span><span style="color:#9ECBFF"> .env</span><span style="color:#E1E4E8"> &#x26;&#x26; </span><span style="color:#79B8FF">echo</span><span style="color:#9ECBFF"> ".env"</span><span style="color:#F97583"> >></span><span style="color:#9ECBFF"> .gitignore</span></span>
+<span class="line"></span></code></pre></div><div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#6A737D"># hello.py</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> anthropic</span></span>
+<span class="line"><span style="color:#F97583">from</span><span style="color:#E1E4E8"> dotenv </span><span style="color:#F97583">import</span><span style="color:#E1E4E8"> load_dotenv; load_dotenv()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">client </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> anthropic.Anthropic()</span></span>
+<span class="line"><span style="color:#79B8FF">MODEL</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> "claude-sonnet-4-5"</span><span style="color:#6A737D">   # check docs.claude.com for the current model names</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">msg </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> client.messages.create(</span></span>
+<span class="line"><span style="color:#FFAB70">    model</span><span style="color:#F97583">=</span><span style="color:#79B8FF">MODEL</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">max_tokens</span><span style="color:#F97583">=</span><span style="color:#79B8FF">300</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#FFAB70">    system</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">"You are a concise assistant for a customer support team."</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#FFAB70">    messages</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">[{</span><span style="color:#9ECBFF">"role"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"user"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"content"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"Summarise what a support SLA is in two sentences."</span><span style="color:#E1E4E8">}],</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#79B8FF">print</span><span style="color:#E1E4E8">(msg.content[</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">].text)</span></span>
+<span class="line"><span style="color:#79B8FF">print</span><span style="color:#E1E4E8">(msg.usage)   </span><span style="color:#6A737D"># input and output tokens: this is your cost</span></span>
+<span class="line"></span></code></pre></div><p><strong>Structured output via a tool schema:</strong></p>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#F97583">from</span><span style="color:#E1E4E8"> pydantic </span><span style="color:#F97583">import</span><span style="color:#E1E4E8"> BaseModel</span></span>
+<span class="line"><span style="color:#F97583">from</span><span style="color:#E1E4E8"> typing </span><span style="color:#F97583">import</span><span style="color:#E1E4E8"> Literal</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> TicketTriage</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">BaseModel</span><span style="color:#E1E4E8">):</span></span>
+<span class="line"><span style="color:#E1E4E8">    category: Literal[</span><span style="color:#9ECBFF">"billing"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"bug"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"how_to"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"account_access"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"feature_request"</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">    priority: Literal[</span><span style="color:#9ECBFF">"low"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"normal"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"high"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"urgent"</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">    needs_human: </span><span style="color:#79B8FF">bool</span></span>
+<span class="line"><span style="color:#E1E4E8">    summary: </span><span style="color:#79B8FF">str</span></span>
+<span class="line"><span style="color:#E1E4E8">    sentiment: Literal[</span><span style="color:#9ECBFF">"positive"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"neutral"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"negative"</span><span style="color:#E1E4E8">]</span></span>
+<span class="line"><span style="color:#E1E4E8">    confidence: </span><span style="color:#79B8FF">float</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">tool </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> {</span><span style="color:#9ECBFF">"name"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"record_summary"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"description"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"Record the structured ticket triage"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#9ECBFF">        "input_schema"</span><span style="color:#E1E4E8">: TicketTriage.model_json_schema()}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">resp </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> client.messages.create(</span></span>
+<span class="line"><span style="color:#FFAB70">    model</span><span style="color:#F97583">=</span><span style="color:#79B8FF">MODEL</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">max_tokens</span><span style="color:#F97583">=</span><span style="color:#79B8FF">500</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">tools</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">[tool],</span></span>
+<span class="line"><span style="color:#FFAB70">    tool_choice</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">{</span><span style="color:#9ECBFF">"type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"tool"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"name"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"record_summary"</span><span style="color:#E1E4E8">},</span></span>
+<span class="line"><span style="color:#FFAB70">    messages</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">[{</span><span style="color:#9ECBFF">"role"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"user"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"content"</span><span style="color:#E1E4E8">: </span><span style="color:#F97583">f</span><span style="color:#9ECBFF">"Conversation:</span><span style="color:#79B8FF">\n{open</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'t1.txt'</span><span style="color:#E1E4E8">).read()</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">}],</span></span>
+<span class="line"><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">data </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> next</span><span style="color:#E1E4E8">(b.input </span><span style="color:#F97583">for</span><span style="color:#E1E4E8"> b </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> resp.content </span><span style="color:#F97583">if</span><span style="color:#E1E4E8"> b.type </span><span style="color:#F97583">==</span><span style="color:#9ECBFF"> "tool_use"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#79B8FF">print</span><span style="color:#E1E4E8">(TicketTriage.model_validate(data))</span></span>
+<span class="line"></span></code></pre></div><p>Ask Claude to generate 20 <strong>synthetic</strong> support conversations: varied categories, angry and confused customers, multiple issues in one message, typos. Never use real customer data.</p>
+<p>Then experiment:</p>
+<ul>
+<li>Run temperature 0 vs 1 on the same conversation 5 times each. What varies?</li>
+<li>Stream a response with <code>client.messages.stream(...)</code> and print the tokens as they arrive.</li>
+<li>Measure latency and tokens per call, and compute the cost per 1,000 tickets from the current pricing page.</li>
+</ul>
+<h2 id="3-unguided-challenge-25-hrs" tabindex="-1">3. Unguided challenge (~2.5 hrs)</h2>
+<p>Build the endpoint <code>POST /triage</code> that:</p>
+<ul>
+<li>accepts a conversation and returns a validated <code>TicketTriage</code></li>
+<li>retries once if validation fails, feeding the validation error back to the model</li>
+<li>logs latency, token counts and model version per call to a local SQLite table</li>
+<li>has a <code>--dry-run</code> mode with a fake client, for tests that don’t spend tokens</li>
+</ul>
+<p><strong>Acceptance criteria:</strong></p>
+<ul>
+<li>All 20 synthetic conversations return schema-valid output.</li>
+<li>Tests run without network access.</li>
+<li>A cost-per-1k-tickets figure is in the README.</li>
+</ul>
+<h2 id="4-ways-of-working-1-hr" tabindex="-1">4. Ways of working (~1 hr)</h2>
+<p>Read a recent write-up from an AI-native product team on how they build with LLMs (search for “how we build with LLMs” posts from companies whose products you use). Note three practices you’d adopt and one you’re sceptical of.</p>
+<h2 id="5-check" tabindex="-1">5. Check</h2>
+<ol>
+<li>What’s a token, and why does it matter for cost?</li>
+<li>Why use a tool schema for extraction instead of asking for JSON in the prompt?</li>
+<li>When would you use temperature 0?</li>
+<li>Why log the model version per call?</li>
+<li>What does streaming improve, and what doesn’t it improve?</li>
+</ol>
+<p>Recycled:</p>
+<ul>
+<li>What’s a data contract?</li>
+<li>What’s a DBU?</li>
+</ul>
+<h2 id="6-teach-back" tabindex="-1">6. Teach-back</h2>
+<p>Write “An LLM is just an API call: the engineering around it is the product.”</p>
+<h2 id="done-when" tabindex="-1">Done when</h2>
+<ul>
+<li class="task-list-item"><input type="checkbox">Hello-world, structured output and streaming working</li>
+<li class="task-list-item"><input type="checkbox"><code>/triage</code> with retries, logging and offline tests</li>
+<li class="task-list-item"><input type="checkbox">Cost model in the README</li>
+<li class="task-list-item"><input type="checkbox">Case-study notes written</li>
+<li class="task-list-item"><input type="checkbox">Check and teach-back done</li>
+</ul>
+</div>
+    <nav class="pager" aria-label="Lesson pagination">
+  <a class="plain prev" href="/course/week-15/"><span class="label">Previous</span><span class="title">Week 15: Data Quality, Contracts, Cost and Portability</span></a>
+  <a class="plain next" href="/course/week-17/"><span class="label">Next</span><span class="title">Week 17: Retrieval-Augmented Generation</span></a>
+</nav>
+  </article>
+</div>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-legal">© 2026 Productise LTD. All rights reserved.</div>
+  </div>
+</footer>
+<script src="../assets/course.js"></script>
+</body>
+</html>

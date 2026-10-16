@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 24: Capstone II — Data and Backend — Productise</title>
+  <meta name="description" content="Capstone data pipeline and API running in CI and deployed to a dev environment">
+  <link rel="canonical" href="https://productise.ltd/course/week-24/">
+  <meta property="og:title" content="Week 24: Capstone II — Data and Backend — Productise">
+  <meta property="og:description" content="Capstone data pipeline and API running in CI and deployed to a dev environment">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://productise.ltd/course/week-24/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Week 24: Capstone II — Data and Backend — Productise">
+  <meta name="twitter:description" content="Capstone data pipeline and API running in CI and deployed to a dev environment">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/course.css">
+</head>
+<body class="" data-week-slug="week-24">
+<nav class="site-nav" aria-label="Primary">
+  <div class="site-nav-inner">
+    <a class="site-nav-brand plain" href="/">Productise</a>
+    <div class="site-nav-links">
+      <a class="plain" href="/">Home</a>
+      <a class="plain" href="/course/" aria-current="page">Course</a>
+      <a class="plain" href="/course/syllabus/">Syllabus</a>
+      <a class="plain" href="/course/domains/">Domains</a>
+    </div>
+  </div>
+</nav>
+<div class="page-shell">
+  <aside class="toc">
+  <div class="toc-label">On this page</div>
+  <nav><a href="#goal">Goal</a><a href="#1-setup-1-hr">1. Setup (~1 hr)</a><a href="#2-data-35-hrs">2. Data (~3.5 hrs)</a><a href="#3-backend-35-hrs">3. Backend (~3.5 hrs)</a><a href="#4-daily-discipline">4. Daily discipline</a><a href="#5-mid-week-check-in-30-min">5. Mid-week check-in (~30 min)</a><a href="#6-check">6. Check</a><a href="#done-when">Done when</a></nav>
+</aside>
+  <article>
+    <header class="lesson-header">
+      <div class="hero-meta">
+        <span class="micro-cap">Capstone</span>
+        <span class="micro-cap">·</span>
+        <span class="micro-cap">8–10 hrs</span>
+      </div>
+      <h1>Week 24 — Capstone II — Data and Backend</h1>
+      <p class="body-lg" style="margin:0;max-width:640px;">Capstone data pipeline and API running in CI and deployed to a dev environment</p>
+      
+      <div class="topic-chips"><span class="topic-chip">repo setup</span><span class="topic-chip">CI</span><span class="topic-chip">synthetic data</span><span class="topic-chip">pipeline</span><span class="topic-chip">data contracts</span><span class="topic-chip">API</span><span class="topic-chip">tests</span><span class="topic-chip">migrations</span><span class="topic-chip">deployment</span></div>
+      <p class="micro-cap" style="margin-top:16px;">Ways of working: Swarming on your own blockers</p>
+      <label class="micro-cap" style="display:flex;gap:10px;align-items:center;margin-top:18px;cursor:pointer;">
+        <input type="checkbox" data-mark-complete>
+        Mark week complete
+      </label>
+    </header>
+    <div class="prose"><p><strong>Capstone · Build week 1 of 3</strong></p>
+<h2 id="goal" tabindex="-1">Goal</h2>
+<p>By Sunday, data flows from source to gold tables, and an API serves the data the app and the AI feature need. Everything should be deployed to a <strong>dev</strong> environment from CI.</p>
+<h2 id="1-setup-1-hr" tabindex="-1">1. Setup (~1 hr)</h2>
+<ul>
+<li class="task-list-item"><input type="checkbox">Monorepo or polyrepo decision recorded in an ADR</li>
+<li class="task-list-item"><input type="checkbox">Dev container or <code>compose.yaml</code> that runs everything locally with one command</li>
+<li class="task-list-item"><input type="checkbox">CI covering lint, types and tests for each component, plus secrets scanning (gitleaks)</li>
+<li class="task-list-item"><input type="checkbox">Branch protection; trunk-based workflow with small PRs</li>
+</ul>
+<h2 id="2-data-35-hrs" tabindex="-1">2. Data (~3.5 hrs)</h2>
+<ul>
+<li class="task-list-item"><input type="checkbox">A synthetic data generator with realistic volume, mess and edge cases. Document what’s simulated.</li>
+<li class="task-list-item"><input type="checkbox">Bronze → silver → gold pipeline (Databricks Bundles or dbt + Dagster), deployed from CI</li>
+<li class="task-list-item"><input type="checkbox">Data contracts for every source, with drift tests in CI</li>
+<li class="task-list-item"><input type="checkbox">Expectations and data-quality tests, with bad rows quarantined and counted</li>
+<li class="task-list-item"><input type="checkbox">Governance: sensitive (PII or regulated) columns tagged and masked</li>
+<li class="task-list-item"><input type="checkbox">Gold tables documented, with grain stated</li>
+</ul>
+<h2 id="3-backend-35-hrs" tabindex="-1">3. Backend (~3.5 hrs)</h2>
+<ul>
+<li class="task-list-item"><input type="checkbox">API (FastAPI or Next.js route handlers) with an OpenAPI spec</li>
+<li class="task-list-item"><input type="checkbox">Postgres schema via migrations, with RLS where there are users</li>
+<li class="task-list-item"><input type="checkbox">Unit, integration and contract tests, at 80%+ coverage on business logic</li>
+<li class="task-list-item"><input type="checkbox">Idempotent writes where clients might retry</li>
+<li class="task-list-item"><input type="checkbox">OTel tracing and structured logs from day one</li>
+<li class="task-list-item"><input type="checkbox">Deployed to dev (Vercel, Fly or Render, plus a hosted database)</li>
+</ul>
+<h2 id="4-daily-discipline" tabindex="-1">4. Daily discipline</h2>
+<p>Each day:</p>
+<ul>
+<li>write a 3-line log entry in <code>capstone/LOG.md</code>: done, next, blocked</li>
+<li>update the estimate-vs-actual sheet</li>
+</ul>
+<p>If you’re blocked for more than 45 minutes, <strong>swarm it</strong>: open parallel Claude sessions with different hypotheses, then pick one.</p>
+<h2 id="5-mid-week-check-in-30-min" tabindex="-1">5. Mid-week check-in (~30 min)</h2>
+<p>Midweek, paste your log and repo link to Claude: <em>“Staff engineer: what am I about to regret?”</em></p>
+<h2 id="6-check" tabindex="-1">6. Check</h2>
+<ol>
+<li>What’s the most fragile part of your pipeline today?</li>
+<li>Which test would fail first if a source added a column?</li>
+<li>Show a trace of one API request end to end.</li>
+<li>Where’s your biggest estimate miss so far, and why?</li>
+<li>What did you cut?</li>
+</ol>
+<h2 id="done-when" tabindex="-1">Done when</h2>
+<ul>
+<li class="task-list-item"><input type="checkbox">Pipeline produces gold tables from CI</li>
+<li class="task-list-item"><input type="checkbox">Contracts and DQ tests in place</li>
+<li class="task-list-item"><input type="checkbox">API deployed to dev with tests and traces</li>
+<li class="task-list-item"><input type="checkbox">LOG and estimate sheet updated daily</li>
+</ul>
+</div>
+    <nav class="pager" aria-label="Lesson pagination">
+  <a class="plain prev" href="/course/week-23/"><span class="label">Previous</span><span class="title">Week 23: Capstone I — Discovery and Architecture</span></a>
+  <a class="plain next" href="/course/week-25/"><span class="label">Next</span><span class="title">Week 25: Capstone III — AI Feature and Frontend</span></a>
+</nav>
+  </article>
+</div>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-legal">© 2026 Productise LTD. All rights reserved.</div>
+  </div>
+</footer>
+<script src="../assets/course.js"></script>
+</body>
+</html>

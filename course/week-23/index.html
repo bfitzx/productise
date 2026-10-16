@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 23: Capstone I — Discovery and Architecture — Productise</title>
+  <meta name="description" content="A capstone brief, architecture design doc and shaped build plan">
+  <link rel="canonical" href="https://productise.ltd/course/week-23/">
+  <meta property="og:title" content="Week 23: Capstone I — Discovery and Architecture — Productise">
+  <meta property="og:description" content="A capstone brief, architecture design doc and shaped build plan">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://productise.ltd/course/week-23/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Week 23: Capstone I — Discovery and Architecture — Productise">
+  <meta name="twitter:description" content="A capstone brief, architecture design doc and shaped build plan">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/course.css">
+</head>
+<body class="" data-week-slug="week-23">
+<nav class="site-nav" aria-label="Primary">
+  <div class="site-nav-inner">
+    <a class="site-nav-brand plain" href="/">Productise</a>
+    <div class="site-nav-links">
+      <a class="plain" href="/">Home</a>
+      <a class="plain" href="/course/" aria-current="page">Course</a>
+      <a class="plain" href="/course/syllabus/">Syllabus</a>
+      <a class="plain" href="/course/domains/">Domains</a>
+    </div>
+  </div>
+</nav>
+<div class="page-shell">
+  <aside class="toc">
+  <div class="toc-label">On this page</div>
+  <nav><a href="#the-capstone">The capstone</a><a href="#1-discovery-sprint-35-hrs-swarm-plus-judgement">1. Discovery sprint (~3.5 hrs) — swarm plus judgement</a><a href="#2-architecture-3-hrs">2. Architecture (~3 hrs)</a><a href="#3-shape-the-build-1-hr">3. Shape the build (~1 hr)</a><a href="#4-system-design-10-capstone-architecture-review-1-hr">4. System design #10 — capstone architecture review (~1 hr)</a><a href="#5-check">5. Check</a><a href="#6-teach-back">6. Teach-back</a><a href="#done-when">Done when</a></nav>
+</aside>
+  <article>
+    <header class="lesson-header">
+      <div class="hero-meta">
+        <span class="micro-cap">Capstone</span>
+        <span class="micro-cap">·</span>
+        <span class="micro-cap">8–10 hrs</span>
+      </div>
+      <h1>Week 23 — Capstone I — Discovery and Architecture</h1>
+      <p class="body-lg" style="margin:0;max-width:640px;">A capstone brief, architecture design doc and shaped build plan</p>
+      <div class="badge-row" style="margin-top:14px;"><span class="badge design">System design</span></div>
+      <div class="topic-chips"><span class="topic-chip">agent swarm discovery</span><span class="topic-chip">problem framing</span><span class="topic-chip">opportunity solution tree</span><span class="topic-chip">success metrics</span><span class="topic-chip">architecture design doc</span><span class="topic-chip">ADRs</span><span class="topic-chip">build plan</span></div>
+      <p class="micro-cap" style="margin-top:16px;">Ways of working: Swarms (applied)</p>
+      <label class="micro-cap" style="display:flex;gap:10px;align-items:center;margin-top:18px;cursor:pointer;">
+        <input type="checkbox" data-mark-complete>
+        Mark week complete
+      </label>
+    </header>
+    <div class="prose"><p><strong>Capstone · Thread A · System design #10</strong></p>
+<blockquote class="domain-pack">
+<p><strong><a href="/course/domains/">Domain pack</a>:</strong> This is where your domain pack pays off: build the capstone on your own industry’s public data.</p>
+</blockquote>
+<h2 id="the-capstone" tabindex="-1">The capstone</h2>
+<p>Over four weeks you build <strong>one product end to end</strong>: discovery → prototype → data → AI → shipped → measured. It should combine at least:</p>
+<ul>
+<li>a <strong>user-facing app</strong> (Next.js)</li>
+<li>a <strong>backend/API</strong> with tests</li>
+<li>a <strong>data pipeline</strong> (Databricks or dbt) feeding analytics</li>
+<li>an <strong>AI feature</strong> with evals (LLM, RAG, agent or voice)</li>
+<li><strong>production practices</strong>: flags, observability, a runbook and an experiment</li>
+</ul>
+<p><strong>Pick a theme from your own domain.</strong> See the <a href="/course/domains/">domain packs</a> for public datasets and capstone ideas in pharma and life sciences, healthcare, fintech and e-commerce. Some examples:</p>
+<ul>
+<li><strong>Pharma:</strong> a drug-label Q&amp;A and comparison tool over openFDA labels, with a pipeline tracking label changes, and evals for answer accuracy.</li>
+<li><strong>Pharma:</strong> an adverse-event signal explorer over FAERS data: medallion pipeline, disproportionality stats, and an LLM that drafts plain-language signal summaries for review.</li>
+<li><strong>Life sciences:</strong> a clinical-trial landscape explorer over <a href="http://ClinicalTrials.gov">ClinicalTrials.gov</a>: site and sponsor analytics, plus an agent that answers protocol questions with citations.</li>
+<li><strong>General:</strong> extend the course’s ticket service into an AI support co-pilot: triage, RAG answers, escalation analytics.</li>
+</ul>
+<p>Use public or synthetic data only. Never use real personal or patient data.</p>
+<h2 id="1-discovery-sprint-35-hrs-swarm-plus-judgement" tabindex="-1">1. Discovery sprint (~3.5 hrs) — swarm plus judgement</h2>
+<ol>
+<li><strong>Frame it</strong> using the week 3 format: problem, users, constraints, non-goals.</li>
+<li><strong>Run an agent swarm.</strong> Use five parallel Claude sessions or subagents:
+<ul>
+<li>competitive landscape</li>
+<li>user-pain hypotheses from public sources (forums, reviews)</li>
+<li>regulatory and compliance constraints</li>
+<li>technical feasibility spike (what’s hard?)</li>
+<li>a devil’s advocate</li>
+</ul>
+</li>
+<li><strong>Talk to at least 3 real people</strong> in the target role (or 5 simulated personas, clearly labelled).</li>
+<li><strong>Synthesise</strong> into an opportunity solution tree. Pick <strong>one</strong> opportunity.</li>
+<li><strong>Define success:</strong>
+<ul>
+<li>a north-star metric</li>
+<li>2 guardrail metrics</li>
+<li>the eval pass bar for the AI feature</li>
+<li>the experiment you’ll run in week 26</li>
+</ul>
+</li>
+</ol>
+<h2 id="2-architecture-3-hrs" tabindex="-1">2. Architecture (~3 hrs)</h2>
+<p>Write <code>capstone/docs/design.md</code>, the full design doc:</p>
+<ul>
+<li>context and goals / non-goals</li>
+<li>a system diagram showing app, API, database, pipeline, AI, third parties, trust boundaries and sensitive-data flows</li>
+<li>the data model and pipeline (bronze/silver/gold)</li>
+<li>the AI design: model choice, prompts, tools, eval plan, cost and latency budget, fallbacks</li>
+<li>an API sketch</li>
+<li>observability: SLOs, dashboards, alerts</li>
+<li>security and compliance: a STRIDE summary, vendor BAA/DPA needs</li>
+<li>the cost estimate at pilot scale</li>
+<li>risks, and what you’ll cut first</li>
+</ul>
+<p>Write ADRs for the 3–5 biggest decisions.</p>
+<h2 id="3-shape-the-build-1-hr" tabindex="-1">3. Shape the build (~1 hr)</h2>
+<p>Set an appetite of three weeks at about 8 hours each. Break the work into scopes (Shape Up style), and mark must-haves vs nice-to-haves. Produce:</p>
+<ul>
+<li>a <strong>“not doing” list</strong></li>
+<li>an estimation sheet: your estimates now, with the actuals filled in later</li>
+</ul>
+<h2 id="4-system-design-10-capstone-architecture-review-1-hr" tabindex="-1">4. System design #10 — capstone architecture review (~1 hr)</h2>
+<p>Present the design doc to Claude as a panel (staff SWE plus data engineer). Iterate on the doc until it survives the review.</p>
+<h2 id="5-check" tabindex="-1">5. Check</h2>
+<ol>
+<li>What’s the single riskiest assumption in your capstone, and how will you test it first?</li>
+<li>Which component would you cut if you lost a week?</li>
+<li>Where does sensitive data flow in your diagram?</li>
+<li>What’s the AI feature’s eval pass bar, and why that number?</li>
+<li>What’s your cost per active user at pilot scale?</li>
+</ol>
+<h2 id="6-teach-back" tabindex="-1">6. Teach-back</h2>
+<p>Write “How I chose my capstone: discovery with a swarm.”</p>
+<h2 id="done-when" tabindex="-1">Done when</h2>
+<ul>
+<li class="task-list-item"><input type="checkbox">Discovery sprint done (swarm, conversations, opportunity tree)</li>
+<li class="task-list-item"><input type="checkbox">Success metrics defined</li>
+<li class="task-list-item"><input type="checkbox">Design doc and ADRs written</li>
+<li class="task-list-item"><input type="checkbox">Build shaped, with a “not doing” list</li>
+<li class="task-list-item"><input type="checkbox">Architecture review passed</li>
+<li class="task-list-item"><input type="checkbox">Teach-back written</li>
+</ul>
+</div>
+    <nav class="pager" aria-label="Lesson pagination">
+  <a class="plain prev" href="/course/week-22/"><span class="label">Previous</span><span class="title">Week 22: Experiments, Incidents and Runbooks</span></a>
+  <a class="plain next" href="/course/week-24/"><span class="label">Next</span><span class="title">Week 24: Capstone II — Data and Backend</span></a>
+</nav>
+  </article>
+</div>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-legal">© 2026 Productise LTD. All rights reserved.</div>
+  </div>
+</footer>
+<script src="../assets/course.js"></script>
+</body>
+</html>

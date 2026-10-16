@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 11: Ship to Real Users — Productise</title>
+  <meta name="description" content="FollowUp v1 in the hands of 5+ real users, with e2e tests and RLS">
+  <link rel="canonical" href="https://productise.ltd/course/week-11/">
+  <meta property="og:title" content="Week 11: Ship to Real Users — Productise">
+  <meta property="og:description" content="FollowUp v1 in the hands of 5+ real users, with e2e tests and RLS">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://productise.ltd/course/week-11/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Week 11: Ship to Real Users — Productise">
+  <meta name="twitter:description" content="FollowUp v1 in the hands of 5+ real users, with e2e tests and RLS">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/course.css">
+</head>
+<body class="" data-week-slug="week-11">
+<nav class="site-nav" aria-label="Primary">
+  <div class="site-nav-inner">
+    <a class="site-nav-brand plain" href="/">Productise</a>
+    <div class="site-nav-links">
+      <a class="plain" href="/">Home</a>
+      <a class="plain" href="/course/" aria-current="page">Course</a>
+      <a class="plain" href="/course/syllabus/">Syllabus</a>
+      <a class="plain" href="/course/domains/">Domains</a>
+    </div>
+  </div>
+</nav>
+<div class="page-shell">
+  <aside class="toc">
+  <div class="toc-label">On this page</div>
+  <nav><a href="#1-concept-brief">1. Concept brief</a><a href="#2-guided-lab-3-hrs">2. Guided lab (~3 hrs)</a><a href="#3-unguided-challenge-25-hrs-ship">3. Unguided challenge (~2.5 hrs) — ship</a><a href="#4-system-design-4-queues-1-hr">4. System design #4 — queues (~1 hr)</a><a href="#5-mock-review-3-why-postgres-1-hr">5. Mock review #3 — “Why Postgres?” (~1 hr)</a><a href="#6-ways-of-working-30-min">6. Ways of working (~30 min)</a><a href="#7-check">7. Check</a><a href="#8-teach-back">8. Teach-back</a><a href="#done-when">Done when</a></nav>
+</aside>
+  <article>
+    <header class="lesson-header">
+      <div class="hero-meta">
+        <span class="micro-cap">4. Full-stack product</span>
+        <span class="micro-cap">·</span>
+        <span class="micro-cap">8–10 hrs</span>
+      </div>
+      <h1>Week 11 — Ship to Real Users</h1>
+      <p class="body-lg" style="margin:0;max-width:640px;">FollowUp v1 in the hands of 5+ real users, with e2e tests and RLS</p>
+      <div class="badge-row" style="margin-top:14px;"><span class="badge design">System design</span><span class="badge review">Mock review</span></div>
+      <div class="topic-chips"><span class="topic-chip">Playwright</span><span class="topic-chip">end-to-end testing</span><span class="topic-chip">row-level security</span><span class="topic-chip">least privilege</span><span class="topic-chip">state management</span><span class="topic-chip">design tokens</span><span class="topic-chip">prioritisation</span><span class="topic-chip">queues</span></div>
+      <p class="micro-cap" style="margin-top:16px;">Ways of working: Reading an engineering org</p>
+      <label class="micro-cap" style="display:flex;gap:10px;align-items:center;margin-top:18px;cursor:pointer;">
+        <input type="checkbox" data-mark-complete>
+        Mark week complete
+      </label>
+    </header>
+    <div class="prose"><p><strong>Phase 4 · Threads A, C, D and E · System design #4 · Mock review #3 · Ways of working: reading an engineering org</strong></p>
+<h2 id="1-concept-brief" tabindex="-1">1. Concept brief</h2>
+<p><strong>Vocabulary</strong></p>
+<ul>
+<li><strong>End-to-end (e2e) test:</strong> drives a real browser through a real user flow. Slow and valuable, so keep them few.</li>
+<li><strong>Flaky test:</strong> passes and fails without code changes, usually because of timing. Fix it or delete it.</li>
+<li><strong>Row-level security (RLS):</strong> Postgres policies that filter rows per user, so the database enforces authorisation even if app code forgets to.</li>
+<li><strong>Least privilege:</strong> every key, role and service gets only the access it needs.</li>
+<li><strong>State management:</strong> where UI state lives — URL, server, local component state, or a global store. Prefer the URL and the server.</li>
+<li><strong>Design tokens:</strong> named values for colour, spacing and type that every component uses.</li>
+<li><strong>Queue:</strong> a buffer of jobs processed asynchronously by workers.</li>
+</ul>
+<h2 id="2-guided-lab-3-hrs" tabindex="-1">2. Guided lab (~3 hrs)</h2>
+<p><strong>E2E with Playwright:</strong></p>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> create</span><span style="color:#9ECBFF"> playwright</span></span>
+<span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> exec</span><span style="color:#9ECBFF"> playwright</span><span style="color:#9ECBFF"> codegen</span><span style="color:#9ECBFF"> http://localhost:3000</span><span style="color:#6A737D">   # record a flow, then clean it up</span></span>
+<span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> exec</span><span style="color:#9ECBFF"> playwright</span><span style="color:#9ECBFF"> test</span><span style="color:#79B8FF"> --ui</span></span>
+<span class="line"></span></code></pre></div><ol>
+<li>Write three e2e tests: log in (use a test user and Supabase’s admin API to create a session), create a request, change its status.</li>
+<li>Add an axe accessibility check to each.</li>
+<li>Run them in CI against the preview deployment URL.</li>
+</ol>
+<p><strong>RLS:</strong></p>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#F97583">alter</span><span style="color:#F97583"> table</span><span style="color:#E1E4E8"> requests </span><span style="color:#F97583">enable</span><span style="color:#F97583"> row</span><span style="color:#F97583"> level</span><span style="color:#F97583"> security</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">create</span><span style="color:#F97583"> policy</span><span style="color:#9ECBFF"> "owners read"</span><span style="color:#F97583"> on</span><span style="color:#E1E4E8"> requests </span><span style="color:#F97583">for</span><span style="color:#F97583"> select</span><span style="color:#F97583"> using</span><span style="color:#E1E4E8"> (owner_id </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> auth</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">uid</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"><span style="color:#F97583">create</span><span style="color:#F97583"> policy</span><span style="color:#9ECBFF"> "owners write"</span><span style="color:#F97583"> on</span><span style="color:#E1E4E8"> requests </span><span style="color:#F97583">for</span><span style="color:#F97583"> update</span><span style="color:#F97583"> using</span><span style="color:#E1E4E8"> (owner_id </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> auth</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">uid</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"></span></code></pre></div><p>Then:</p>
+<ol>
+<li>Write a test that proves user B gets zero rows.</li>
+<li>Check which database role your app connects as. Does it really need superuser? Create a restricted role.</li>
+</ol>
+<p><strong>Tokens and state:</strong></p>
+<ol>
+<li>Move colours and spacing into CSS variables or Tailwind theme tokens.</li>
+<li>Audit your components for state: what should live in the URL (filters), on the server (data) or locally (an open modal)?</li>
+</ol>
+<h2 id="3-unguided-challenge-25-hrs-ship" tabindex="-1">3. Unguided challenge (~2.5 hrs) — ship</h2>
+<ul>
+<li><strong>Prioritise ruthlessly (Thread A).</strong> List everything you want to add. Set an appetite of 2 hours. Write the <strong>“not doing” list</strong>.</li>
+<li>Ship the remaining must-haves, then invite <strong>5+ real users</strong>.</li>
+<li>Add a feedback link and basic error tracking. The Sentry free tier is fine: <code>pnpm dlx @sentry/wizard@latest -i nextjs</code>.</li>
+</ul>
+<p><strong>Acceptance criteria:</strong></p>
+<ul>
+<li>5+ people have logged in and used the app for real.</li>
+<li>CI runs unit, e2e and axe checks.</li>
+<li>RLS is proven by a test.</li>
+</ul>
+<h2 id="4-system-design-4-queues-1-hr" tabindex="-1">4. System design #4 — queues (~1 hr)</h2>
+<p>Design <strong>reliable outbound notifications</strong> for the ticket service: 50k emails/SMS/webhooks a day, recipient time zones and quiet hours, retries with backoff, and no customer notified twice.</p>
+<p>Cover:</p>
+<ul>
+<li>queue choice (SQS, a Postgres-backed queue such as pg-boss, or Kafka)</li>
+<li>idempotency keys</li>
+<li>at-least-once vs exactly-once delivery</li>
+<li>dead-letter queues</li>
+<li>poison messages</li>
+<li>visibility timeouts</li>
+<li>what the on-call engineer sees when it breaks</li>
+</ul>
+<p>Write an ADR and an exec summary.</p>
+<h2 id="5-mock-review-3-why-postgres-1-hr" tabindex="-1">5. Mock review #3 — “Why Postgres?” (~1 hr)</h2>
+<p>Claude plays a principal engineer who would have picked DynamoDB. Defend Postgres for FollowUp <em>and</em> for the support-conversations datastore from week 7. Cover scaling limits, connection pooling, RLS and cost. Concede where they’re right.</p>
+<h2 id="6-ways-of-working-30-min" tabindex="-1">6. Ways of working (~30 min)</h2>
+<p><strong>Reading an engineering org.</strong> RFCs, ADRs, incident reviews, on-call rotations and the tech-debt register are the documents that show how an engineering team really works. Find one example of each at your organisation, or a public one. What do they tell you about how decisions get made?</p>
+<h2 id="7-check" tabindex="-1">7. Check</h2>
+<ol>
+<li>Why keep e2e tests few?</li>
+<li>What does RLS protect against that app-level checks don’t?</li>
+<li>At-least-once delivery means your consumer must be ____?</li>
+<li>What’s a dead-letter queue for?</li>
+<li>Why put filters in the URL?</li>
+</ol>
+<p>Recycled:</p>
+<ul>
+<li>What’s an IDOR?</li>
+<li>Name the three Core Web Vitals.</li>
+</ul>
+<h2 id="8-teach-back" tabindex="-1">8. Teach-back</h2>
+<p>Write “Shipping my first app to real users: what surprised me.”</p>
+<h2 id="done-when" tabindex="-1">Done when</h2>
+<ul>
+<li class="task-list-item"><input type="checkbox">E2E plus axe running in CI</li>
+<li class="task-list-item"><input type="checkbox">RLS proven and the app uses a least-privilege role</li>
+<li class="task-list-item"><input type="checkbox">Design tokens in place</li>
+<li class="task-list-item"><input type="checkbox">5+ real users onboarded</li>
+<li class="task-list-item"><input type="checkbox">“Not doing” list written</li>
+<li class="task-list-item"><input type="checkbox">Queue design defended</li>
+<li class="task-list-item"><input type="checkbox">Mock review done</li>
+<li class="task-list-item"><input type="checkbox">Check and teach-back done</li>
+</ul>
+</div>
+    <nav class="pager" aria-label="Lesson pagination">
+  <a class="plain prev" href="/course/week-10/"><span class="label">Previous</span><span class="title">Week 10: Auth, Deploy, Accessibility and Security</span></a>
+  <a class="plain next" href="/course/week-12/"><span class="label">Next</span><span class="title">Week 12: SQL and Data Modelling</span></a>
+</nav>
+  </article>
+</div>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-legal">© 2026 Productise LTD. All rights reserved.</div>
+  </div>
+</footer>
+<script src="../assets/course.js"></script>
+</body>
+</html>

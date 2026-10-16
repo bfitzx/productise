@@ -39,9 +39,19 @@ npx serve
 
 ## Structure
 
-- `index.html` — Complete single-page site with inline CSS
-- No build process required
-- No dependencies
+- `index.html` — Marketing homepage
+- `course-content/` — Markdown source of truth for the course (overview, syllabus, domain packs, lessons)
+- `course/` — Generated static course pages (`/course`, `/course/week-NN`, …)
+- `scripts/build-course.mjs` — Build step: markdown → HTML with syntax highlighting
+
+### Course build
+
+```bash
+npm install
+npm run build
+```
+
+Regenerate `course/` whenever files under `course-content/` change. Deploy the repo root as a static site.
 
 ---
 

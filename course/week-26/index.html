@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 26: Capstone IV — Ship, Measure, Defend — Productise</title>
+  <meta name="description" content="Capstone live with pilot users, measured, defended, and written up publicly">
+  <link rel="canonical" href="https://productise.ltd/course/week-26/">
+  <meta property="og:title" content="Week 26: Capstone IV — Ship, Measure, Defend — Productise">
+  <meta property="og:description" content="Capstone live with pilot users, measured, defended, and written up publicly">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://productise.ltd/course/week-26/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Week 26: Capstone IV — Ship, Measure, Defend — Productise">
+  <meta name="twitter:description" content="Capstone live with pilot users, measured, defended, and written up publicly">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/course.css">
+</head>
+<body class="" data-week-slug="week-26">
+<nav class="site-nav" aria-label="Primary">
+  <div class="site-nav-inner">
+    <a class="site-nav-brand plain" href="/">Productise</a>
+    <div class="site-nav-links">
+      <a class="plain" href="/">Home</a>
+      <a class="plain" href="/course/" aria-current="page">Course</a>
+      <a class="plain" href="/course/syllabus/">Syllabus</a>
+      <a class="plain" href="/course/domains/">Domains</a>
+    </div>
+  </div>
+</nav>
+<div class="page-shell">
+  <aside class="toc">
+  <div class="toc-label">On this page</div>
+  <nav><a href="#1-ship-25-hrs">1. Ship (~2.5 hrs)</a><a href="#2-measure-2-hrs">2. Measure (~2 hrs)</a><a href="#3-launch-memo-1-hr">3. Launch memo (~1 hr)</a><a href="#4-capstone-defence-15-hrs">4. Capstone defence (~1.5 hrs)</a><a href="#5-retrospective-1-hr">5. Retrospective (~1 hr)</a><a href="#6-publish-1-hr">6. Publish (~1 hr)</a><a href="#done-when">Done when</a></nav>
+</aside>
+  <article>
+    <header class="lesson-header">
+      <div class="hero-meta">
+        <span class="micro-cap">Capstone</span>
+        <span class="micro-cap">·</span>
+        <span class="micro-cap">8–10 hrs</span>
+      </div>
+      <h1>Week 26 — Capstone IV — Ship, Measure, Defend</h1>
+      <p class="body-lg" style="margin:0;max-width:640px;">Capstone live with pilot users, measured, defended, and written up publicly</p>
+      <div class="badge-row" style="margin-top:14px;"><span class="badge review">Mock review</span></div>
+      <div class="topic-chips"><span class="topic-chip">staged rollout</span><span class="topic-chip">pilot users</span><span class="topic-chip">experiment readout</span><span class="topic-chip">runbook</span><span class="topic-chip">launch memo</span><span class="topic-chip">capstone defence</span><span class="topic-chip">retrospective</span><span class="topic-chip">publishing</span></div>
+      <p class="micro-cap" style="margin-top:16px;">Ways of working: Course retrospective</p>
+      <label class="micro-cap" style="display:flex;gap:10px;align-items:center;margin-top:18px;cursor:pointer;">
+        <input type="checkbox" data-mark-complete>
+        Mark week complete
+      </label>
+    </header>
+    <div class="prose"><p><strong>Capstone · Mock review #7: the final panel</strong></p>
+<h2 id="1-ship-25-hrs" tabindex="-1">1. Ship (~2.5 hrs)</h2>
+<ul>
+<li class="task-list-item"><input type="checkbox">Production environment separate from dev and preview, deployed from CI only</li>
+<li class="task-list-item"><input type="checkbox">Staged rollout: you → 2–3 friendly users → full pilot group, watching SLOs and errors at each step</li>
+<li class="task-list-item"><input type="checkbox">Runbook covering the top 5 failure modes, kill switch, rollback and contacts</li>
+<li class="task-list-item"><input type="checkbox">The experiment from week 25 running</li>
+</ul>
+<h2 id="2-measure-2-hrs" tabindex="-1">2. Measure (~2 hrs)</h2>
+<p>At the end of the week (or as late as the sample allows):</p>
+<ul>
+<li class="task-list-item"><input type="checkbox">Experiment readout with a confidence interval and a decision (ship, kill or iterate)</li>
+<li class="task-list-item"><input type="checkbox">North-star and guardrail metrics against the targets set in week 23</li>
+<li class="task-list-item"><input type="checkbox">AI-feature production quality: a sample of real outputs graded against your eval rubric. Did production match the offline evals?</li>
+<li class="task-list-item"><input type="checkbox">Actual cost vs the estimate</li>
+</ul>
+<h2 id="3-launch-memo-1-hr" tabindex="-1">3. Launch memo (~1 hr)</h2>
+<p>Write one page for an exec audience covering:</p>
+<ul>
+<li>what you built and for whom</li>
+<li>the result, with numbers and uncertainty</li>
+<li>the risks you’ve handled and the ones that remain</li>
+<li>what it would cost to scale</li>
+<li>the recommendation and the next three bets</li>
+</ul>
+<p>No jargon.</p>
+<h2 id="4-capstone-defence-15-hrs" tabindex="-1">4. Capstone defence (~1.5 hrs)</h2>
+<p>Tell Claude: <em>“Run the final panel: a staff SWE, a senior data engineer, an SRE and an exec. 60 minutes. Don’t go easy.”</em> Present:</p>
+<ul>
+<li>the design doc</li>
+<li>a demo</li>
+<li>eval results</li>
+<li>the experiment readout</li>
+<li>the cost</li>
+<li>the postmortem from any real incident</li>
+</ul>
+<p><strong>Pass bar:</strong></p>
+<ul>
+<li>You defend each major decision with its trade-offs.</li>
+<li>You identify your system’s weakest point before the panel does.</li>
+<li>You say “I don’t know, here’s how I’d find out” where that’s the honest answer.</li>
+<li>The exec understands the memo without asking for translation.</li>
+</ul>
+<h2 id="5-retrospective-1-hr" tabindex="-1">5. Retrospective (~1 hr)</h2>
+<p>Write <code>retro.md</code>:</p>
+<ul>
+<li>your week 1 vs week 26 self-assessment on CLI, git, Python, TypeScript, SQL, Databricks, AI engineering, production, system design and stats (1–5 each)</li>
+<li>where estimates were most wrong, across the whole course</li>
+<li>what you’d now do differently as a PM, and what you’ll stop doing</li>
+<li>the next 3 skills to deepen</li>
+</ul>
+<h2 id="6-publish-1-hr" tabindex="-1">6. Publish (~1 hr)</h2>
+<ul>
+<li>Clean up the repo: README, architecture diagram, how to run it, and screenshots.</li>
+<li>Turn your 26 teach-backs into an index page.</li>
+<li>Write a public post: “26 weeks from PM to product engineer: what I built and what I learned.”</li>
+</ul>
+<h2 id="done-when" tabindex="-1">Done when</h2>
+<ul>
+<li class="task-list-item"><input type="checkbox">Capstone live with pilot users</li>
+<li class="task-list-item"><input type="checkbox">Experiment readout and metrics reviewed</li>
+<li class="task-list-item"><input type="checkbox">Launch memo written</li>
+<li class="task-list-item"><input type="checkbox">Final panel passed</li>
+<li class="task-list-item"><input type="checkbox">Retrospective written</li>
+<li class="task-list-item"><input type="checkbox">Repo and teach-backs published</li>
+</ul>
+</div>
+    <nav class="pager" aria-label="Lesson pagination">
+  <a class="plain prev" href="/course/week-25/"><span class="label">Previous</span><span class="title">Week 25: Capstone III — AI Feature and Frontend</span></a>
+  <span></span>
+</nav>
+  </article>
+</div>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-legal">© 2026 Productise LTD. All rights reserved.</div>
+  </div>
+</footer>
+<script src="../assets/course.js"></script>
+</body>
+</html>

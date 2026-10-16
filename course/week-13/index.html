@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 13: Databricks Foundations — Productise</title>
+  <meta name="description" content="Support data loaded into Unity Catalog Delta tables with governance controls and a scheduled job">
+  <link rel="canonical" href="https://productise.ltd/course/week-13/">
+  <meta property="og:title" content="Week 13: Databricks Foundations — Productise">
+  <meta property="og:description" content="Support data loaded into Unity Catalog Delta tables with governance controls and a scheduled job">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://productise.ltd/course/week-13/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Week 13: Databricks Foundations — Productise">
+  <meta name="twitter:description" content="Support data loaded into Unity Catalog Delta tables with governance controls and a scheduled job">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/course.css">
+</head>
+<body class="" data-week-slug="week-13">
+<nav class="site-nav" aria-label="Primary">
+  <div class="site-nav-inner">
+    <a class="site-nav-brand plain" href="/">Productise</a>
+    <div class="site-nav-links">
+      <a class="plain" href="/">Home</a>
+      <a class="plain" href="/course/" aria-current="page">Course</a>
+      <a class="plain" href="/course/syllabus/">Syllabus</a>
+      <a class="plain" href="/course/domains/">Domains</a>
+    </div>
+  </div>
+</nav>
+<div class="page-shell">
+  <aside class="toc">
+  <div class="toc-label">On this page</div>
+  <nav><a href="#1-concept-brief">1. Concept brief</a><a href="#2-guided-lab-35-hrs">2. Guided lab (~3.5 hrs)</a><a href="#3-unguided-challenge-25-hrs">3. Unguided challenge (~2.5 hrs)</a><a href="#4-thread-d-governing-personal-data-1-hr">4. Thread D — governing personal data (~1 hr)</a><a href="#5-thread-h-estimation-practice-30-min">5. Thread H — estimation practice (~30 min)</a><a href="#6-system-design-5-consistency-1-hr">6. System design #5 — consistency (~1 hr)</a><a href="#7-ways-of-working-30-min">7. Ways of working (~30 min)</a><a href="#8-check">8. Check</a><a href="#9-teach-back">9. Teach-back</a><a href="#done-when">Done when</a></nav>
+</aside>
+  <article>
+    <header class="lesson-header">
+      <div class="hero-meta">
+        <span class="micro-cap">5. Data engineering &amp; Databricks</span>
+        <span class="micro-cap">·</span>
+        <span class="micro-cap">8–10 hrs</span>
+      </div>
+      <h1>Week 13 — Databricks Foundations</h1>
+      <p class="body-lg" style="margin:0;max-width:640px;">Support data loaded into Unity Catalog Delta tables with governance controls and a scheduled job</p>
+      <div class="badge-row" style="margin-top:14px;"><span class="badge design">System design</span></div>
+      <div class="topic-chips"><span class="topic-chip">Databricks Free Edition</span><span class="topic-chip">lakehouse</span><span class="topic-chip">Delta Lake</span><span class="topic-chip">ACID</span><span class="topic-chip">time travel</span><span class="topic-chip">Unity Catalog</span><span class="topic-chip">governance</span><span class="topic-chip">lineage</span><span class="topic-chip">notebooks</span><span class="topic-chip">jobs</span><span class="topic-chip">Databricks CLI</span></div>
+      <p class="micro-cap" style="margin-top:16px;">Ways of working: Estimation honestly</p>
+      <label class="micro-cap" style="display:flex;gap:10px;align-items:center;margin-top:18px;cursor:pointer;">
+        <input type="checkbox" data-mark-complete>
+        Mark week complete
+      </label>
+    </header>
+    <div class="prose"><p><strong>Phase 5 · Threads D and H · System design #5 · Ways of working: estimation</strong></p>
+<h2 id="1-concept-brief" tabindex="-1">1. Concept brief</h2>
+<p>Databricks is a <strong>lakehouse</strong>: cheap object storage (files) with a transactional table layer (Delta) and governance (Unity Catalog) on top, so one copy of the data serves BI, data engineering and ML.</p>
+<p><strong>Vocabulary</strong></p>
+<ul>
+<li><strong>Data lake vs warehouse vs lakehouse:</strong> raw files vs managed tables vs both together.</li>
+<li><strong>Delta Lake:</strong> Parquet files plus a transaction log. It gives you ACID writes, <code>MERGE</code>, schema enforcement and <strong>time travel</strong> (query old versions).</li>
+<li><strong>Unity Catalog (UC):</strong> the governance layer. A three-level namespace, <code>catalog.schema.table</code>, with grants, lineage and audit.</li>
+<li><strong>Managed vs external table:</strong> Databricks owns the files, or you point at your own.</li>
+<li><strong>Volume:</strong> UC-governed storage for non-tabular files (CSV drops, PDFs).</li>
+<li><strong>Compute:</strong> serverless or classic clusters, and SQL warehouses for BI.</li>
+<li><strong>Notebook vs job:</strong> interactive exploration vs a scheduled, parameterised, monitored run.</li>
+</ul>
+<h2 id="2-guided-lab-35-hrs" tabindex="-1">2. Guided lab (~3.5 hrs)</h2>
+<ol>
+<li>Sign up for <strong>Databricks Free Edition</strong> (search “Databricks Free Edition”).</li>
+<li>Install and authenticate the CLI:</li>
+</ol>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#B392F0">brew</span><span style="color:#9ECBFF"> tap</span><span style="color:#9ECBFF"> databricks/tap</span><span style="color:#E1E4E8"> &#x26;&#x26; </span><span style="color:#B392F0">brew</span><span style="color:#9ECBFF"> install</span><span style="color:#9ECBFF"> databricks</span></span>
+<span class="line"><span style="color:#B392F0">databricks</span><span style="color:#9ECBFF"> auth</span><span style="color:#9ECBFF"> login</span><span style="color:#79B8FF"> --host</span><span style="color:#9ECBFF"> https://</span><span style="color:#F97583">&#x3C;</span><span style="color:#9ECBFF">your-workspac</span><span style="color:#E1E4E8">e</span><span style="color:#F97583">></span><span style="color:#9ECBFF">.cloud.databricks.com</span></span>
+<span class="line"><span style="color:#B392F0">databricks</span><span style="color:#9ECBFF"> current-user</span><span style="color:#9ECBFF"> me</span></span>
+<span class="line"><span style="color:#B392F0">databricks</span><span style="color:#9ECBFF"> catalogs</span><span style="color:#9ECBFF"> list</span></span>
+<span class="line"></span></code></pre></div><ol start="3">
+<li>Create a schema and a volume (in a SQL editor or notebook):</li>
+</ol>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#F97583">create</span><span style="color:#F97583"> schema</span><span style="color:#B392F0"> if</span><span style="color:#F97583"> not</span><span style="color:#F97583"> exists</span><span style="color:#79B8FF"> workspace</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">support</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">create</span><span style="color:#E1E4E8"> volume </span><span style="color:#F97583">if</span><span style="color:#F97583"> not</span><span style="color:#F97583"> exists</span><span style="color:#79B8FF"> workspace</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">support</span><span style="color:#E1E4E8">.</span><span style="color:#F97583">raw</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span></code></pre></div><ol start="4">
+<li>Upload last week’s Parquet files:</li>
+</ol>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#B392F0">databricks</span><span style="color:#9ECBFF"> fs</span><span style="color:#9ECBFF"> cp</span><span style="color:#79B8FF"> -r</span><span style="color:#9ECBFF"> ./data</span><span style="color:#9ECBFF"> dbfs:/Volumes/workspace/support/raw/</span><span style="color:#79B8FF"> --overwrite</span></span>
+<span class="line"><span style="color:#B392F0">databricks</span><span style="color:#9ECBFF"> fs</span><span style="color:#9ECBFF"> ls</span><span style="color:#9ECBFF"> dbfs:/Volumes/workspace/support/raw/</span></span>
+<span class="line"></span></code></pre></div><ol start="5">
+<li>In a notebook (Python plus SQL cells):</li>
+</ol>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#E1E4E8">df </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> spark.read.parquet(</span><span style="color:#9ECBFF">"/Volumes/workspace/support/raw/tickets.parquet"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">df.printSchema(); display(df.limit(</span><span style="color:#79B8FF">10</span><span style="color:#E1E4E8">))</span></span>
+<span class="line"><span style="color:#E1E4E8">df.write.mode(</span><span style="color:#9ECBFF">"overwrite"</span><span style="color:#E1E4E8">).saveAsTable(</span><span style="color:#9ECBFF">"workspace.support.tickets"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span></code></pre></div><div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#E1E4E8">describe history </span><span style="color:#79B8FF">workspace</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">support</span><span style="color:#E1E4E8">.tickets;</span></span>
+<span class="line"><span style="color:#F97583">update</span><span style="color:#79B8FF"> workspace</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">support</span><span style="color:#E1E4E8">.tickets </span><span style="color:#F97583">set</span><span style="color:#F97583"> status</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> 'resolved'</span><span style="color:#F97583"> where</span><span style="color:#E1E4E8"> ticket_id </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">select</span><span style="color:#F97583"> *</span><span style="color:#F97583"> from</span><span style="color:#79B8FF"> workspace</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">support</span><span style="color:#E1E4E8">.tickets </span><span style="color:#F97583">version</span><span style="color:#F97583"> as</span><span style="color:#E1E4E8"> of </span><span style="color:#79B8FF">0</span><span style="color:#F97583"> where</span><span style="color:#E1E4E8"> ticket_id </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">;   </span><span style="color:#6A737D">-- time travel</span></span>
+<span class="line"><span style="color:#E1E4E8">describe detail </span><span style="color:#79B8FF">workspace</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">support</span><span style="color:#E1E4E8">.tickets;   </span><span style="color:#6A737D">-- where are the files?</span></span>
+<span class="line"></span></code></pre></div><ol start="6">
+<li>Look at the <strong>Catalog Explorer</strong>: find lineage, permissions and history for your table.</li>
+</ol>
+<h2 id="3-unguided-challenge-25-hrs" tabindex="-1">3. Unguided challenge (~2.5 hrs)</h2>
+<ul>
+<li>Load all the tables, then write a <code>MERGE INTO</code> that upserts a “late-arriving” batch of 1,000 updated attempts.</li>
+<li>Convert your week 12 star-schema SQL to Databricks SQL and build <code>fct_</code> and <code>dim_</code> tables in a <code>workspace.support_gold</code> schema.</li>
+<li>Wrap the build in a <strong>Job</strong> (Workflows → Jobs) that runs daily, with an email notification on failure.</li>
+</ul>
+<p><strong>Acceptance criteria:</strong></p>
+<ul>
+<li>The <code>MERGE</code> is idempotent: running it twice leaves the same result.</li>
+<li>The job runs successfully on a schedule.</li>
+<li>History shows each version.</li>
+</ul>
+<h2 id="4-thread-d-governing-personal-data-1-hr" tabindex="-1">4. Thread D — governing personal data (~1 hr)</h2>
+<p>Treat <code>customer_email</code> as personal data (PII).</p>
+<ol>
+<li>Create a column mask so that only a <code>pii_readers</code> group sees it in clear (search “Unity Catalog column masks”). Test as a user who isn’t in that group, or reason through the policy if Free Edition limits groups.</li>
+<li>Add a table comment and column tags (<code>pii</code>, <code>sensitive</code>).</li>
+<li>Explain how lineage helps answer “where did this customer’s data go?”</li>
+</ol>
+<h2 id="5-thread-h-estimation-practice-30-min" tabindex="-1">5. Thread H — estimation practice (~30 min)</h2>
+<p>Before starting the challenge, estimate each part in hours and write the estimates down. Afterwards, record the actual time and explain the gap. Keep a running log for the rest of the course.</p>
+<h2 id="6-system-design-5-consistency-1-hr" tabindex="-1">6. System design #5 — consistency (~1 hr)</h2>
+<p>Your FollowUp app goes multi-region with read replicas. A user updates a request status and immediately sees the old one. Explain:</p>
+<ul>
+<li>replication lag and read-after-write consistency</li>
+<li>options: read-your-writes routing, sticky sessions, reading from the primary after a write</li>
+<li>CAP and PACELC in plain language</li>
+<li>which parts of a support platform need strong consistency and which can be eventual</li>
+</ul>
+<p>Write an ADR and an exec summary.</p>
+<h2 id="7-ways-of-working-30-min" tabindex="-1">7. Ways of working (~30 min)</h2>
+<p><strong>Estimation, honestly.</strong> Estimates slip because of unknown unknowns, integration work and review queues. Better questions than “how long will it take?” include:</p>
+<ul>
+<li>“What’s the riskiest part?”</li>
+<li>“What would make this twice as long?”</li>
+<li>“What can we cut and still learn?”</li>
+</ul>
+<p>Write five questions you’ll use in your next planning session.</p>
+<h2 id="8-check" tabindex="-1">8. Check</h2>
+<ol>
+<li>What does Delta add on top of Parquet?</li>
+<li>Name UC’s three-level namespace.</li>
+<li>Why should a <code>MERGE</code> be idempotent?</li>
+<li>Notebook vs job: when does exploration become production?</li>
+<li>What is read-after-write consistency?</li>
+</ol>
+<p>Recycled:</p>
+<ul>
+<li>What’s the grain of <code>fct_ticket</code>?</li>
+<li>When is SCD2 needed?</li>
+</ul>
+<h2 id="9-teach-back" tabindex="-1">9. Teach-back</h2>
+<p>Write “What a lakehouse is, without the marketing.”</p>
+<h2 id="done-when" tabindex="-1">Done when</h2>
+<ul>
+<li class="task-list-item"><input type="checkbox">CLI authenticated</li>
+<li class="task-list-item"><input type="checkbox">Tables loaded in UC, with time travel demonstrated</li>
+<li class="task-list-item"><input type="checkbox">Idempotent <code>MERGE</code> and gold tables built</li>
+<li class="task-list-item"><input type="checkbox">Scheduled job running</li>
+<li class="task-list-item"><input type="checkbox">PII mask and tags applied</li>
+<li class="task-list-item"><input type="checkbox">Estimates vs actuals logged</li>
+<li class="task-list-item"><input type="checkbox">Consistency ADR defended</li>
+<li class="task-list-item"><input type="checkbox">Check and teach-back done</li>
+</ul>
+</div>
+    <nav class="pager" aria-label="Lesson pagination">
+  <a class="plain prev" href="/course/week-12/"><span class="label">Previous</span><span class="title">Week 12: SQL and Data Modelling</span></a>
+  <a class="plain next" href="/course/week-14/"><span class="label">Next</span><span class="title">Week 14: Pipelines, Orchestration and Streaming</span></a>
+</nav>
+  </article>
+</div>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-legal">© 2026 Productise LTD. All rights reserved.</div>
+  </div>
+</footer>
+<script src="../assets/course.js"></script>
+</body>
+</html>

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Syllabus — Productise</title>
+  <meta name="description" content="PM to Product Engineer — 26 weeks">
+  <link rel="canonical" href="https://productise.ltd/course/syllabus/">
+  <meta property="og:title" content="Syllabus — Productise">
+  <meta property="og:description" content="PM to Product Engineer — 26 weeks">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://productise.ltd/course/syllabus/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Syllabus — Productise">
+  <meta name="twitter:description" content="PM to Product Engineer — 26 weeks">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/course.css">
+</head>
+<body class="" >
+<nav class="site-nav" aria-label="Primary">
+  <div class="site-nav-inner">
+    <a class="site-nav-brand plain" href="/">Productise</a>
+    <div class="site-nav-links">
+      <a class="plain" href="/">Home</a>
+      <a class="plain" href="/course/">Course</a>
+      <a class="plain" href="/course/syllabus/" aria-current="page">Syllabus</a>
+      <a class="plain" href="/course/domains/">Domains</a>
+    </div>
+  </div>
+</nav>
+<div class="page-shell">
+  <aside class="toc">
+  <div class="toc-label">On this page</div>
+  <nav><a href="#goal">Goal</a><a href="#structure">Structure</a><a href="#build-track">Build track</a><a href="#cross-cutting-threads">Cross-cutting threads</a><a href="#system-design-thread-fortnightly">System design thread (fortnightly)</a><a href="#ways-of-working-weekly">Ways of working (weekly)</a><a href="#mock-reviews">Mock reviews</a><a href="#weekly-loop">Weekly loop</a><a href="#using-an-ai-tutor">Using an AI tutor</a></nav>
+</aside>
+  <article>
+    <header class="lesson-header">
+      <span class="micro-cap">Course</span>
+      <h1>Syllabus</h1>
+      <p class="body-lg" style="margin:0;">PM to Product Engineer — 26 weeks</p>
+      <div class="subnav">
+        <a class="plain" href="/course/">Overview</a>
+        <a class="plain" href="/course/syllabus/" aria-current="page">Syllabus</a>
+        <a class="plain" href="/course/domains/">Domain packs</a>
+      </div>
+    </header>
+    <div class="prose"><p><strong>Format:</strong> 26 weeks · 8–10 hours a week · one GitHub repo (<code>product-engineer-lab</code>) as your course spine · your own laptop as the workstation</p>
+<h2 id="goal" tabindex="-1">Goal</h2>
+<p>By week 26 you can build and ship small products end to end, and hold your own in technical conversations with software and data engineers: design reviews, PR discussions, pipeline debates. You also know where your knowledge ends.</p>
+<ul>
+<li><strong>In scope:</strong> hands-on and conversational fluency; sound trade-off judgement; reading and reviewing code; building production-shaped prototypes and measuring whether they work.</li>
+<li><strong>Out of scope:</strong> senior-engineer depth, designing large distributed systems alone, production on-call, and operating Kubernetes (you’ll learn the concepts only).</li>
+</ul>
+<h2 id="structure" tabindex="-1">Structure</h2>
+<ol>
+<li><strong>Build track</strong> (~60%): phased modules, each ending in something that works</li>
+<li><strong>Cross-cutting threads</strong> (~15%): product, stats, testing, security, frontend, cost, responsible AI, communication</li>
+<li><strong>System design thread</strong> (~10%): a design exercise every two weeks</li>
+<li><strong>Ways of working</strong> (~10%): one topic a week</li>
+<li><strong>Mock reviews</strong> (~5%): every 3–4 weeks an AI tutor plays a sceptical staff engineer, data engineer or SRE</li>
+</ol>
+<p><strong>Running example:</strong> a support-ticket service (tickets, accounts, messages, help centre). Swap in your own industry with a <a href="/course/domains/">domain pack</a>.</p>
+<h2 id="build-track" tabindex="-1">Build track</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Weeks</th>
+<th>Topics</th>
+<th>Deliverable</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0. Workstation</td>
+<td>1</td>
+<td>Homebrew, Ghostty, zsh, dotfiles, mise, uv, Docker/OrbStack, Claude Code</td>
+<td>Reproducible setup script in git</td>
+</tr>
+<tr>
+<td>1. CLI fluency</td>
+<td>2–3</td>
+<td>Filesystem, pipes, rg, jq, processes, env vars, SSH, scripting, tmux</td>
+<td>CLI tool: API → JSON → CSV</td>
+</tr>
+<tr>
+<td>2. Git &amp; GitHub</td>
+<td>4</td>
+<td>Branching, rebase vs merge, PRs, <code>gh</code>, code review, GitHub Actions</td>
+<td>CI on every PR</td>
+</tr>
+<tr>
+<td>3. Code core</td>
+<td>5–8</td>
+<td>Python (types, pytest), FastAPI, SQL basics, TypeScript, async, zod, reading and refactoring code</td>
+<td>Typed, tested ticket service and TS client</td>
+</tr>
+<tr>
+<td>4. Full-stack product</td>
+<td>9–11</td>
+<td>Next.js, Postgres (Supabase), Drizzle, auth, deploy (Vercel), accessibility, performance</td>
+<td>A deployed app with real users and a success metric</td>
+</tr>
+<tr>
+<td>5. Data engineering &amp; Databricks</td>
+<td>12–15</td>
+<td>Modelling (star schema, SCD2), Delta, Unity Catalog, Lakeflow pipelines, Kafka basics, contracts, Bundles, cost, dbt + Dagster comparison</td>
+<td>Medallion pipeline deployed from CI</td>
+</tr>
+<tr>
+<td>6. AI engineering</td>
+<td>16–19</td>
+<td>LLM APIs, structured outputs, RAG, MCP, agents, evals, voice pipelines, responsible AI</td>
+<td>Agent with an eval suite gating CI; voice prototype</td>
+</tr>
+<tr>
+<td>7. Production</td>
+<td>20–22</td>
+<td>Containers, IaC, OpenTelemetry, flags, rollouts, experiments, threat modelling, compliance, incident response</td>
+<td>Flags, tracing, an A/B test, a runbook, a postmortem</td>
+</tr>
+<tr>
+<td>Capstone</td>
+<td>23–26</td>
+<td>Everything together, in your domain</td>
+<td>One product: discovery → data → AI → shipped → measured → defended</td>
+</tr>
+</tbody>
+</table>
+</div><h2 id="cross-cutting-threads" tabindex="-1">Cross-cutting threads</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Thread</th>
+<th>Where it appears</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A. Product discovery &amp; metrics</td>
+<td>Problem framing (wk 3) · opportunity tree and north-star metric (9) · user research (10) · prioritisation (11) · metrics readout (22) · capstone discovery (23)</td>
+</tr>
+<tr>
+<td>B. Stats &amp; experimentation</td>
+<td>Descriptive stats (12) · eval statistics (18) · experiment design (20) · statistical traps (21) · A/B readout (22)</td>
+</tr>
+<tr>
+<td>C. Testing, debugging &amp; CS fundamentals</td>
+<td>Test pyramid and Big-O (6) · katas (6–7) · refactoring and contract tests (8) · e2e (11) · debugging drills (21)</td>
+</tr>
+<tr>
+<td>D. Security, compliance &amp; reliability</td>
+<td>Secrets (4) · OWASP (10) · least privilege / RLS (11) · data governance (13) · compliance by domain (20) · STRIDE (21) · incident response (22)</td>
+</tr>
+<tr>
+<td>E. Frontend &amp; UX</td>
+<td>Rendering strategies (9) · accessibility and Core Web Vitals (10) · state management and design tokens (11)</td>
+</tr>
+<tr>
+<td>F. Cost &amp; operations</td>
+<td>Databricks cost (15) · scaling cost (17) · LLM cost and latency (19) · FinOps and Kubernetes concepts (20)</td>
+</tr>
+<tr>
+<td>G. Responsible AI</td>
+<td>RAG failure modes (17) · prompt injection and data leakage (18) · bias, human-in-the-loop, kill switches (19)</td>
+</tr>
+<tr>
+<td>H. Communication</td>
+<td>An ADR and exec summary for every design exercise from week 5 · estimation (13) · runbook (22) · launch memo (26)</td>
+</tr>
+</tbody>
+</table>
+</div><h2 id="system-design-thread-fortnightly" tabindex="-1">System design thread (fortnightly)</h2>
+<p>Each exercise produces a one-page design doc and an ADR, which you then defend.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Week</th>
+<th>Topic</th>
+<th>Exercise</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5</td>
+<td>APIs: REST vs GraphQL vs gRPC, idempotency</td>
+<td>Design the partner API for the ticket service</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Datastores: relational vs document vs key-value</td>
+<td>Choose a store for support conversations</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Caching</td>
+<td>Add caching to your app — what breaks?</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Queues, idempotency, retries, dead-letter queues</td>
+<td>Reliable outbound notifications</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Consistency and replication</td>
+<td>Read-after-write in a multi-region app</td>
+</tr>
+<tr>
+<td>15</td>
+<td>Batch vs streaming</td>
+<td>Real-time vs nightly analytics, per consumer</td>
+</tr>
+<tr>
+<td>17</td>
+<td>Scaling, rate limits, cost estimation</td>
+<td>100× volume, priced</td>
+</tr>
+<tr>
+<td>19</td>
+<td>AI system design</td>
+<td>A voice support agent with human fallback</td>
+</tr>
+<tr>
+<td>21</td>
+<td>API versioning, threat modelling</td>
+<td>A breaking change shipped safely</td>
+</tr>
+<tr>
+<td>23</td>
+<td>Capstone architecture</td>
+<td>Full design doc</td>
+</tr>
+</tbody>
+</table>
+</div><h2 id="ways-of-working-weekly" tabindex="-1">Ways of working (weekly)</h2>
+<ol>
+<li>What a product engineer is</li>
+<li>The AI-native team</li>
+<li>Swarms: agent swarms for discovery, and team swarming</li>
+<li>Continuous discovery</li>
+<li>Shape Up</li>
+<li>Evals-driven development</li>
+<li>Trunk-based development, feature flags, DORA</li>
+<li>Instrumentation-first</li>
+<li>Team Topologies</li>
+<li>Cost-aware building</li>
+<li>Reading an engineering org</li>
+<li>Working with data teams</li>
+<li>Estimating honestly</li>
+<li>Communicating trade-offs
+15–26. Case studies, retros and applied practice</li>
+</ol>
+<h2 id="mock-reviews" tabindex="-1">Mock reviews</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Week</th>
+<th>Format</th>
+<th>Persona</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4</td>
+<td>PR review: defend your CI</td>
+<td>Staff SWE</td>
+</tr>
+<tr>
+<td>8</td>
+<td>API design review</td>
+<td>Staff SWE</td>
+</tr>
+<tr>
+<td>11</td>
+<td>“Why Postgres?”</td>
+<td>Principal SWE</td>
+</tr>
+<tr>
+<td>15</td>
+<td>“Why is this pipeline slow and expensive?”</td>
+<td>Senior data engineer</td>
+</tr>
+<tr>
+<td>19</td>
+<td>AI feature launch review</td>
+<td>ML/AI engineer</td>
+</tr>
+<tr>
+<td>22</td>
+<td>Incident review</td>
+<td>SRE</td>
+</tr>
+<tr>
+<td>26</td>
+<td>Capstone defence</td>
+<td>Full panel + exec</td>
+</tr>
+</tbody>
+</table>
+</div><p><strong>Pass bar:</strong> you defend decisions with trade-offs, ask the question that exposes the risk, and say “I don’t know, here’s how I’d find out” when that’s the honest answer.</p>
+<h2 id="weekly-loop" tabindex="-1">Weekly loop</h2>
+<ol>
+<li><strong>Concept brief and vocabulary.</strong></li>
+<li><strong>Guided lab:</strong> run the exact commands yourself.</li>
+<li><strong>Unguided challenge,</strong> with acceptance criteria.</li>
+<li><strong>Thread items.</strong></li>
+<li><strong>PR review</strong> by your AI tutor.</li>
+<li><strong>Check:</strong> 5 new questions plus 2 recycled from earlier weeks.</li>
+<li><strong>Teach-back:</strong> a short write-up in your own words.</li>
+</ol>
+<p><strong>Rules:</strong></p>
+<ul>
+<li>Type everything yourself in weeks 1–4.</li>
+<li>From week 5, an AI coding assistant is your pair programmer. You direct it, and you read every line it writes.</li>
+</ul>
+<h2 id="using-an-ai-tutor" tabindex="-1">Using an AI tutor</h2>
+<p>Any capable AI assistant can act as your tutor. Paste the week’s lesson in and ask it to:</p>
+<ul>
+<li>explain any concept you’re stuck on</li>
+<li>review your PR “as a senior engineer”</li>
+<li>run the mock reviews and game days in the persona listed</li>
+<li>check your answers to the weekly check</li>
+</ul>
+</div>
+  </article>
+</div>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-legal">© 2026 Productise LTD. All rights reserved.</div>
+  </div>
+</footer>
+<script src="../assets/course.js"></script>
+</body>
+</html>

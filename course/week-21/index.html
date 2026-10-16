@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 21: Feature Flags, Rollouts, Debugging and Threat Modelling — Productise</title>
+  <meta name="description" content="FollowUp with flags and staged rollout, a STRIDE threat model, and a debugging-drill log">
+  <link rel="canonical" href="https://productise.ltd/course/week-21/">
+  <meta property="og:title" content="Week 21: Feature Flags, Rollouts, Debugging and Threat Modelling — Productise">
+  <meta property="og:description" content="FollowUp with flags and staged rollout, a STRIDE threat model, and a debugging-drill log">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://productise.ltd/course/week-21/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Week 21: Feature Flags, Rollouts, Debugging and Threat Modelling — Productise">
+  <meta name="twitter:description" content="FollowUp with flags and staged rollout, a STRIDE threat model, and a debugging-drill log">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/course.css">
+</head>
+<body class="" data-week-slug="week-21">
+<nav class="site-nav" aria-label="Primary">
+  <div class="site-nav-inner">
+    <a class="site-nav-brand plain" href="/">Productise</a>
+    <div class="site-nav-links">
+      <a class="plain" href="/">Home</a>
+      <a class="plain" href="/course/" aria-current="page">Course</a>
+      <a class="plain" href="/course/syllabus/">Syllabus</a>
+      <a class="plain" href="/course/domains/">Domains</a>
+    </div>
+  </div>
+</nav>
+<div class="page-shell">
+  <aside class="toc">
+  <div class="toc-label">On this page</div>
+  <nav><a href="#1-concept-brief">1. Concept brief</a><a href="#2-guided-lab-3-hrs">2. Guided lab (~3 hrs)</a><a href="#3-unguided-challenge-25-hrs-debugging-drills">3. Unguided challenge (~2.5 hrs) — debugging drills</a><a href="#4-thread-d-threat-model-1-hr">4. Thread D — threat model (~1 hr)</a><a href="#5-thread-b-statistical-traps-1-hr">5. Thread B — statistical traps (~1 hr)</a><a href="#6-system-design-9-versioning-and-threat-modelling-45-min">6. System design #9 — versioning and threat modelling (~45 min)</a><a href="#7-check">7. Check</a><a href="#8-teach-back">8. Teach-back</a><a href="#done-when">Done when</a></nav>
+</aside>
+  <article>
+    <header class="lesson-header">
+      <div class="hero-meta">
+        <span class="micro-cap">7. Production</span>
+        <span class="micro-cap">·</span>
+        <span class="micro-cap">8–10 hrs</span>
+      </div>
+      <h1>Week 21 — Feature Flags, Rollouts, Debugging and Threat Modelling</h1>
+      <p class="body-lg" style="margin:0;max-width:640px;">FollowUp with flags and staged rollout, a STRIDE threat model, and a debugging-drill log</p>
+      <div class="badge-row" style="margin-top:14px;"><span class="badge design">System design</span></div>
+      <div class="topic-chips"><span class="topic-chip">feature flags</span><span class="topic-chip">staged rollouts</span><span class="topic-chip">canary</span><span class="topic-chip">rollback</span><span class="topic-chip">PostHog</span><span class="topic-chip">production debugging</span><span class="topic-chip">STRIDE</span><span class="topic-chip">threat modelling</span><span class="topic-chip">API versioning</span><span class="topic-chip">statistical traps</span></div>
+      <p class="micro-cap" style="margin-top:16px;">Ways of working: Case study: a bad rollout</p>
+      <label class="micro-cap" style="display:flex;gap:10px;align-items:center;margin-top:18px;cursor:pointer;">
+        <input type="checkbox" data-mark-complete>
+        Mark week complete
+      </label>
+    </header>
+    <div class="prose"><p><strong>Phase 7 · Threads B, C and D · System design #9</strong></p>
+<h2 id="1-concept-brief" tabindex="-1">1. Concept brief</h2>
+<p><strong>Vocabulary</strong></p>
+<ul>
+<li><strong>Feature flag:</strong> a runtime switch that decouples <em>deploy</em> (code is live) from <em>release</em> (users see it). The main kinds are release, experiment, ops (kill switch) and permission flags.</li>
+<li><strong>Staged rollout / canary:</strong> 1% → 10% → 50% → 100%, watching metrics at each step.</li>
+<li><strong>Rollback vs roll-forward:</strong> revert to the previous version, or fix quickly and deploy again.</li>
+<li><strong>Expand–contract migration:</strong> add the new column → write to both → backfill → read the new one → drop the old one. Zero downtime.</li>
+<li><strong>Threat model:</strong> a structured look at what can go wrong security-wise. <strong>STRIDE</strong> stands for Spoofing, Tampering, Repudiation, Information disclosure, Denial of service and Elevation of privilege.</li>
+<li><strong>Mean time to detect / restore (MTTD / MTTR):</strong> how fast you notice a problem, and how fast you fix it.</li>
+</ul>
+<h2 id="2-guided-lab-3-hrs" tabindex="-1">2. Guided lab (~3 hrs)</h2>
+<p><strong>PostHog flags and analytics:</strong></p>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#79B8FF">cd</span><span style="color:#9ECBFF"> ~/dev/followup</span><span style="color:#E1E4E8"> &#x26;&#x26; </span><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> posthog-js</span><span style="color:#9ECBFF"> posthog-node</span></span>
+<span class="line"></span></code></pre></div><ol>
+<li>Add PostHog (EU cloud) with page views and the 8–10 events from your week 8 tracking plan, adapted to FollowUp.</li>
+<li>Create a flag <code>new-request-form</code>, evaluate it server-side, and build the new form behind it.</li>
+<li>Roll it out to yourself only, then to 20%, then to 50%. Watch the error rate in Sentry and the event counts in PostHog at each step.</li>
+<li>Practise a rollback: turn the flag off and confirm users get the old form within seconds, with no deploy.</li>
+</ol>
+<p><strong>Expand–contract migration:</strong> rename <code>requests.owner</code> to <code>assignee_id</code> with zero downtime, using the five expand–contract steps across separate PRs.</p>
+<h2 id="3-unguided-challenge-25-hrs-debugging-drills" tabindex="-1">3. Unguided challenge (~2.5 hrs) — debugging drills</h2>
+<p>Ask Claude to act as a chaos engineer: <em>“Give me 4 production-style bugs to inject into FollowUp or the ticket service, one at a time, without telling me what they are.”</em> Ask for a mix of:</p>
+<ul>
+<li>a slow query (missing index)</li>
+<li>an N+1 query</li>
+<li>a misconfigured environment variable in preview only</li>
+<li>a race condition on status updates</li>
+<li>a memory leak in a worker</li>
+<li>a third-party timeout without a retry</li>
+</ul>
+<p>For each one, diagnose it using <strong>only</strong> logs, traces, metrics and <code>git bisect</code>. Record each drill in <code>docs/debug-log.md</code> with these headings: symptom → hypotheses → evidence → root cause → fix → the test that would have caught it → time to diagnose.</p>
+<h2 id="4-thread-d-threat-model-1-hr" tabindex="-1">4. Thread D — threat model (~1 hr)</h2>
+<p>Draw a data-flow diagram of FollowUp: the browser, Vercel, Supabase, PostHog, Sentry, email, and the LLM if you’ve added one. Mark the trust boundaries.</p>
+<p>Apply STRIDE to each boundary and list at least 12 threats, each with a likelihood, an impact and a mitigation. Pay special attention to what you send to analytics and error tracking. Is any PII or regulated data leaking into PostHog or Sentry breadcrumbs?</p>
+<h2 id="5-thread-b-statistical-traps-1-hr" tabindex="-1">5. Thread B — statistical traps (~1 hr)</h2>
+<p>Work through one example of each (Claude can generate datasets for these):</p>
+<ul>
+<li><strong>Simpson’s paradox:</strong> AI-handled tickets look better overall but worse within every plan tier. Why?</li>
+<li><strong>Selection bias:</strong> only engaged users saw the new form.</li>
+<li><strong>Survivorship bias:</strong> analysing only resolved tickets.</li>
+<li><strong>Novelty effect:</strong> the uplift fades after a week.</li>
+<li><strong>Confounding:</strong> draw a simple causal DAG for “users who use filters close requests faster.” What else could explain it?</li>
+</ul>
+<h2 id="6-system-design-9-versioning-and-threat-modelling-45-min" tabindex="-1">6. System design #9 — versioning and threat modelling (~45 min)</h2>
+<p>You must ship a <strong>breaking change</strong> to the ticket API used by partners. Cover:</p>
+<ul>
+<li>the versioning strategy (URL vs header)</li>
+<li>the deprecation timeline</li>
+<li>an expand–contract approach for the data</li>
+<li>communicating with partners</li>
+<li>monitoring old-version traffic</li>
+</ul>
+<p>Then threat-model the new endpoint. Write an ADR and an exec summary.</p>
+<h2 id="7-check" tabindex="-1">7. Check</h2>
+<ol>
+<li>Deploy vs release: what’s the difference?</li>
+<li>Name the five steps of expand–contract.</li>
+<li>What does STRIDE stand for?</li>
+<li>What’s an N+1 query, and how do you spot it in a trace?</li>
+<li>Explain Simpson’s paradox in one sentence.</li>
+</ol>
+<p>Recycled:</p>
+<ul>
+<li>SLO vs SLA?</li>
+<li>What’s a minimum detectable effect?</li>
+</ul>
+<h2 id="8-teach-back" tabindex="-1">8. Teach-back</h2>
+<p>Write “I debugged four production bugs with only traces and logs.”</p>
+<h2 id="done-when" tabindex="-1">Done when</h2>
+<ul>
+<li class="task-list-item"><input type="checkbox">PostHog events and flag with a staged rollout and rollback demo</li>
+<li class="task-list-item"><input type="checkbox">Zero-downtime rename done</li>
+<li class="task-list-item"><input type="checkbox">4 debugging drills logged</li>
+<li class="task-list-item"><input type="checkbox">STRIDE model with 12+ threats, PII leaks checked</li>
+<li class="task-list-item"><input type="checkbox">Stats traps done</li>
+<li class="task-list-item"><input type="checkbox">Versioning ADR defended</li>
+<li class="task-list-item"><input type="checkbox">Check and teach-back done</li>
+</ul>
+</div>
+    <nav class="pager" aria-label="Lesson pagination">
+  <a class="plain prev" href="/course/week-20/"><span class="label">Previous</span><span class="title">Week 20: Containers, Infrastructure and Observability</span></a>
+  <a class="plain next" href="/course/week-22/"><span class="label">Next</span><span class="title">Week 22: Experiments, Incidents and Runbooks</span></a>
+</nav>
+  </article>
+</div>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-legal">© 2026 Productise LTD. All rights reserved.</div>
+  </div>
+</footer>
+<script src="../assets/course.js"></script>
+</body>
+</html>

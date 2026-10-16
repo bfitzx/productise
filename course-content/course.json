@@ -1,0 +1,689 @@
+{
+  "title": "PM to Product Engineer",
+  "running_example": "Support-ticket service",
+  "pages": {
+    "overview": "overview.md",
+    "syllabus": "syllabus.md",
+    "domains": "domain-packs.md"
+  },
+  "weeks": [
+    {
+      "week": 1,
+      "title": "Workstation",
+      "phase": "0. Workstation",
+      "hours": "8\u201310",
+      "topics": [
+        "Homebrew",
+        "terminal",
+        "zsh",
+        "PATH",
+        "mise",
+        "uv",
+        "Docker",
+        "dotfiles",
+        "Claude Code"
+      ],
+      "threads": [],
+      "ways_of_working": "What a product engineer is",
+      "deliverable": "A dotfiles repo with an idempotent bootstrap script",
+      "slug": "week-01",
+      "file": "lessons/week-01.md",
+      "has_domain_pack_note": false
+    },
+    {
+      "week": 2,
+      "title": "CLI Fluency I \u2014 Files, Pipes and Text",
+      "phase": "1. CLI fluency",
+      "hours": "8\u201310",
+      "topics": [
+        "filesystem",
+        "permissions",
+        "redirection",
+        "pipes",
+        "grep",
+        "ripgrep",
+        "jq",
+        "find",
+        "xargs"
+      ],
+      "threads": [],
+      "ways_of_working": "The AI-native team",
+      "deliverable": "A log-analysis one-liner toolkit and a cheat sheet",
+      "slug": "week-02",
+      "file": "lessons/week-02.md",
+      "has_domain_pack_note": true
+    },
+    {
+      "week": 3,
+      "title": "CLI Fluency II \u2014 Processes, Environment and Scripting",
+      "phase": "1. CLI fluency",
+      "hours": "8\u201310",
+      "topics": [
+        "processes",
+        "signals",
+        "environment variables",
+        "SSH",
+        "shell scripting",
+        "tmux",
+        "fzf",
+        "curl"
+      ],
+      "threads": [
+        "A. Problem framing"
+      ],
+      "ways_of_working": "Swarms",
+      "deliverable": "A CLI tool: API \u2192 JSON transform \u2192 CSV",
+      "slug": "week-03",
+      "file": "lessons/week-03.md",
+      "has_domain_pack_note": true
+    },
+    {
+      "week": 4,
+      "title": "Git and GitHub",
+      "phase": "2. Git & GitHub",
+      "hours": "8\u201310",
+      "topics": [
+        "commits",
+        "branches",
+        "merge",
+        "rebase",
+        "pull requests",
+        "gh CLI",
+        "code review",
+        "GitHub Actions",
+        "secrets"
+      ],
+      "threads": [
+        "D. Secrets basics"
+      ],
+      "mock_review": "PR review \u2014 defend your CI setup (Staff SWE)",
+      "ways_of_working": "Continuous discovery",
+      "deliverable": "CI pipeline that lints and tests every PR",
+      "slug": "week-04",
+      "file": "lessons/week-04.md",
+      "has_domain_pack_note": false
+    },
+    {
+      "week": 5,
+      "title": "Python Core and Your First API",
+      "phase": "3. Code core",
+      "hours": "8\u201310",
+      "topics": [
+        "Python",
+        "uv",
+        "type hints",
+        "pydantic",
+        "HTTP",
+        "REST",
+        "FastAPI",
+        "ADRs"
+      ],
+      "threads": [
+        "H. ADR + exec summary"
+      ],
+      "system_design": "APIs \u2014 REST vs GraphQL vs gRPC",
+      "ways_of_working": "Shape Up",
+      "deliverable": "A typed FastAPI service skeleton with an ADR",
+      "slug": "week-05",
+      "file": "lessons/week-05.md",
+      "has_domain_pack_note": false
+    },
+    {
+      "week": 6,
+      "title": "Persistence, Testing and Big-O",
+      "phase": "3. Code core",
+      "hours": "8\u201310",
+      "topics": [
+        "SQLite",
+        "SQLModel",
+        "SQL basics",
+        "test pyramid",
+        "fixtures",
+        "mocking",
+        "Big-O",
+        "data structures"
+      ],
+      "threads": [
+        "C. Test pyramid",
+        "C. Lightweight DSA"
+      ],
+      "ways_of_working": "Evals-driven development",
+      "deliverable": "The ticket service backed by a real database, with a layered test suite",
+      "slug": "week-06",
+      "file": "lessons/week-06.md",
+      "has_domain_pack_note": false
+    },
+    {
+      "week": 7,
+      "title": "TypeScript and Async",
+      "phase": "3. Code core",
+      "hours": "8\u201310",
+      "topics": [
+        "TypeScript",
+        "Node.js",
+        "pnpm",
+        "types vs interfaces",
+        "async/await",
+        "promises",
+        "fetch",
+        "zod"
+      ],
+      "threads": [
+        "C. DSA kata"
+      ],
+      "system_design": "Datastores \u2014 relational vs document vs key-value",
+      "ways_of_working": "Trunk-based development, feature flags, DORA metrics",
+      "deliverable": "A typed TypeScript client and CLI for the ticket service",
+      "slug": "week-07",
+      "file": "lessons/week-07.md",
+      "has_domain_pack_note": false
+    },
+    {
+      "week": 8,
+      "title": "Reading, Refactoring and Contract Tests",
+      "phase": "3. Code core",
+      "hours": "8\u201310",
+      "topics": [
+        "reading unfamiliar code",
+        "refactoring",
+        "code smells",
+        "open-source contribution",
+        "contract testing",
+        "OpenAPI"
+      ],
+      "threads": [
+        "C. Refactoring",
+        "C. Contract testing"
+      ],
+      "mock_review": "API design review (Staff SWE)",
+      "ways_of_working": "Instrumentation-first",
+      "deliverable": "A merged (or submitted) open-source PR and contract tests between service and client",
+      "slug": "week-08",
+      "file": "lessons/week-08.md",
+      "has_domain_pack_note": false
+    },
+    {
+      "week": 9,
+      "title": "Full-Stack Foundations \u2014 Next.js and Postgres",
+      "phase": "4. Full-stack product",
+      "hours": "8\u201310",
+      "topics": [
+        "Next.js App Router",
+        "React Server Components",
+        "SSR",
+        "SSG",
+        "ISR",
+        "Postgres",
+        "Supabase",
+        "Drizzle",
+        "migrations"
+      ],
+      "threads": [
+        "A. Opportunity tree + north-star metric",
+        "E. Rendering strategies"
+      ],
+      "system_design": "Caching \u2014 where, invalidation, TTLs",
+      "ways_of_working": "Team Topologies",
+      "deliverable": "A Next.js app reading and writing Postgres, running locally, plus a product brief",
+      "slug": "week-09",
+      "file": "lessons/week-09.md",
+      "has_domain_pack_note": false
+    },
+    {
+      "week": 10,
+      "title": "Auth, Deploy, Accessibility and Security",
+      "phase": "4. Full-stack product",
+      "hours": "8\u201310",
+      "topics": [
+        "authentication",
+        "sessions",
+        "OAuth",
+        "Vercel",
+        "environments",
+        "accessibility",
+        "WCAG",
+        "Core Web Vitals",
+        "OWASP Top 10"
+      ],
+      "threads": [
+        "A. User research",
+        "D. OWASP Top 10",
+        "E. Accessibility",
+        "E. Performance"
+      ],
+      "ways_of_working": "Cost-aware building",
+      "deliverable": "FollowUp deployed with auth, accessible, and security-reviewed; 5 user conversations done",
+      "slug": "week-10",
+      "file": "lessons/week-10.md",
+      "has_domain_pack_note": false
+    },
+    {
+      "week": 11,
+      "title": "Ship to Real Users",
+      "phase": "4. Full-stack product",
+      "hours": "8\u201310",
+      "topics": [
+        "Playwright",
+        "end-to-end testing",
+        "row-level security",
+        "least privilege",
+        "state management",
+        "design tokens",
+        "prioritisation",
+        "queues"
+      ],
+      "threads": [
+        "A. Prioritisation",
+        "C. E2E tests",
+        "D. Least privilege / RLS",
+        "E. State management + design tokens"
+      ],
+      "system_design": "Queues, async work, idempotency, retries, dead-letter queues",
+      "mock_review": "\"Why did we pick Postgres?\" architecture review (Principal SWE)",
+      "ways_of_working": "Reading an engineering org",
+      "deliverable": "FollowUp v1 in the hands of 5+ real users, with e2e tests and RLS",
+      "slug": "week-11",
+      "file": "lessons/week-11.md",
+      "has_domain_pack_note": false
+    },
+    {
+      "week": 12,
+      "title": "SQL and Data Modelling",
+      "phase": "5. Data engineering & Databricks",
+      "hours": "8\u201310",
+      "topics": [
+        "advanced SQL",
+        "CTEs",
+        "window functions",
+        "DuckDB",
+        "star schema",
+        "facts and dimensions",
+        "slowly changing dimensions",
+        "descriptive statistics"
+      ],
+      "threads": [
+        "B. Descriptive stats in SQL"
+      ],
+      "ways_of_working": "Working with data teams",
+      "deliverable": "A star-schema model of synthetic support data in DuckDB with an analysis notebook",
+      "slug": "week-12",
+      "file": "lessons/week-12.md",
+      "has_domain_pack_note": true
+    },
+    {
+      "week": 13,
+      "title": "Databricks Foundations",
+      "phase": "5. Data engineering & Databricks",
+      "hours": "8\u201310",
+      "topics": [
+        "Databricks Free Edition",
+        "lakehouse",
+        "Delta Lake",
+        "ACID",
+        "time travel",
+        "Unity Catalog",
+        "governance",
+        "lineage",
+        "notebooks",
+        "jobs",
+        "Databricks CLI"
+      ],
+      "threads": [
+        "D. Data governance for personal data",
+        "H. Estimation practice"
+      ],
+      "system_design": "Consistency, replication, CAP in practice",
+      "ways_of_working": "Estimation honestly",
+      "deliverable": "Support data loaded into Unity Catalog Delta tables with governance controls and a scheduled job",
+      "slug": "week-13",
+      "file": "lessons/week-13.md",
+      "has_domain_pack_note": false
+    },
+    {
+      "week": 14,
+      "title": "Pipelines, Orchestration and Streaming",
+      "phase": "5. Data engineering & Databricks",
+      "hours": "8\u201310",
+      "topics": [
+        "Lakeflow Declarative Pipelines",
+        "medallion architecture",
+        "bronze/silver/gold",
+        "Auto Loader",
+        "DAGs",
+        "retries",
+        "backfills",
+        "batch vs streaming",
+        "Kafka",
+        "Redpanda"
+      ],
+      "threads": [],
+      "ways_of_working": "Communicating trade-offs to non-engineers",
+      "deliverable": "A bronze \u2192 silver \u2192 gold declarative pipeline fed by incremental file drops, plus a local Kafka demo",
+      "slug": "week-14",
+      "file": "lessons/week-14.md",
+      "has_domain_pack_note": false
+    },
+    {
+      "week": 15,
+      "title": "Data Quality, Contracts, Cost and Portability",
+      "phase": "5. Data engineering & Databricks",
+      "hours": "8\u201310",
+      "topics": [
+        "data contracts",
+        "data quality",
+        "schema evolution",
+        "partitioning",
+        "liquid clustering",
+        "DBUs",
+        "serverless vs classic",
+        "Declarative Automation Bundles",
+        "CI/CD for data",
+        "Genie",
+        "AI/BI dashboards",
+        "dbt",
+        "Dagster"
+      ],
+      "threads": [
+        "F. Databricks cost",
+        "Portability: dbt + DuckDB + Dagster"
+      ],
+      "system_design": "Batch vs streaming architectures",
+      "mock_review": "\"Why is this pipeline slow and expensive?\" (Senior data engineer)",
+      "ways_of_working": "Case study: a data incident",
+      "deliverable": "The pipeline deployed from CI with Bundles, plus a dbt/Dagster rebuild of one gold table",
+      "slug": "week-15",
+      "file": "lessons/week-15.md",
+      "has_domain_pack_note": false
+    },
+    {
+      "week": 16,
+      "title": "LLM APIs and Structured Outputs",
+      "phase": "6. AI engineering",
+      "hours": "8\u201310",
+      "topics": [
+        "LLM APIs",
+        "tokens",
+        "context windows",
+        "system prompts",
+        "temperature",
+        "streaming",
+        "structured outputs",
+        "JSON schema",
+        "tool use basics",
+        "prompt caching"
+      ],
+      "threads": [],
+      "ways_of_working": "Case study: an AI-native product team",
+      "deliverable": "A support-conversation triage service that returns validated structured output via an API endpoint",
+      "slug": "week-16",
+      "file": "lessons/week-16.md",
+      "has_domain_pack_note": true
+    },
+    {
+      "week": 17,
+      "title": "Retrieval-Augmented Generation",
+      "phase": "6. AI engineering",
+      "hours": "8\u201310",
+      "topics": [
+        "embeddings",
+        "vector search",
+        "pgvector",
+        "chunking",
+        "hybrid search",
+        "reranking",
+        "citations",
+        "RAG failure modes"
+      ],
+      "threads": [
+        "G. RAG failure modes",
+        "F. Cost estimate in design"
+      ],
+      "system_design": "Scaling \u2014 horizontal vs vertical, load balancing, rate limiting, cost estimation",
+      "ways_of_working": "Retro on your own work so far",
+      "deliverable": "A cited Q&A over a help-centre and policy knowledge base, with a retrieval test set",
+      "slug": "week-17",
+      "file": "lessons/week-17.md",
+      "has_domain_pack_note": true
+    },
+    {
+      "week": 18,
+      "title": "Agents, MCP and Evals",
+      "phase": "6. AI engineering",
+      "hours": "8\u201310",
+      "topics": [
+        "agent loop",
+        "tool use",
+        "MCP servers",
+        "evals",
+        "graders",
+        "LLM-as-judge",
+        "eval statistics",
+        "prompt injection",
+        "data exfiltration",
+        "red-teaming"
+      ],
+      "threads": [
+        "B. Eval statistics",
+        "G. Prompt injection & data leakage"
+      ],
+      "ways_of_working": "Evals as the spec (revisited)",
+      "deliverable": "An MCP server plus an agent with an eval suite gating CI, and a red-team report",
+      "slug": "week-18",
+      "file": "lessons/week-18.md",
+      "has_domain_pack_note": false
+    },
+    {
+      "week": 19,
+      "title": "Voice Pipelines and AI System Design",
+      "phase": "6. AI engineering",
+      "hours": "8\u201310",
+      "topics": [
+        "speech-to-text",
+        "text-to-speech",
+        "latency budgets",
+        "turn-taking",
+        "barge-in",
+        "realtime APIs",
+        "model routing",
+        "LLM caching",
+        "bias",
+        "human-in-the-loop",
+        "kill switches"
+      ],
+      "threads": [
+        "F. LLM cost & latency budgets",
+        "G. Bias, HITL, failure modes"
+      ],
+      "system_design": "AI system design \u2014 latency, cost, fallbacks, eval gates",
+      "mock_review": "AI feature launch review (ML/AI engineer)",
+      "ways_of_working": "Case study: voice AI in production",
+      "deliverable": "A local voice-agent prototype with a measured latency budget and a launch-review pack",
+      "slug": "week-19",
+      "file": "lessons/week-19.md",
+      "has_domain_pack_note": false
+    },
+    {
+      "week": 20,
+      "title": "Containers, Infrastructure and Observability",
+      "phase": "7. Production",
+      "hours": "8\u201310",
+      "topics": [
+        "Docker",
+        "multi-stage builds",
+        "docker compose",
+        "Kubernetes concepts",
+        "infrastructure as code",
+        "Terraform",
+        "OpenTelemetry",
+        "logs",
+        "metrics",
+        "traces",
+        "FinOps",
+        "GDPR",
+        "regulated-domain compliance",
+        "experiment design"
+      ],
+      "threads": [
+        "B. Experiment design",
+        "D. Compliance realities",
+        "F. FinOps + Kubernetes concepts"
+      ],
+      "ways_of_working": "Case study: a cloud bill",
+      "deliverable": "The ticket service containerised, traced end to end, with infra as code and an experiment plan",
+      "slug": "week-20",
+      "file": "lessons/week-20.md",
+      "has_domain_pack_note": true
+    },
+    {
+      "week": 21,
+      "title": "Feature Flags, Rollouts, Debugging and Threat Modelling",
+      "phase": "7. Production",
+      "hours": "8\u201310",
+      "topics": [
+        "feature flags",
+        "staged rollouts",
+        "canary",
+        "rollback",
+        "PostHog",
+        "production debugging",
+        "STRIDE",
+        "threat modelling",
+        "API versioning",
+        "statistical traps"
+      ],
+      "threads": [
+        "B. Statistical traps",
+        "C. Debugging drills",
+        "D. Threat modelling"
+      ],
+      "system_design": "API versioning and migrations + threat model",
+      "ways_of_working": "Case study: a bad rollout",
+      "deliverable": "FollowUp with flags and staged rollout, a STRIDE threat model, and a debugging-drill log",
+      "slug": "week-21",
+      "file": "lessons/week-21.md",
+      "has_domain_pack_note": false
+    },
+    {
+      "week": 22,
+      "title": "Experiments, Incidents and Runbooks",
+      "phase": "7. Production",
+      "hours": "8\u201310",
+      "topics": [
+        "A/B testing",
+        "experiment readout",
+        "confidence intervals",
+        "incident response",
+        "severity levels",
+        "runbooks",
+        "blameless postmortems",
+        "on-call"
+      ],
+      "threads": [
+        "A. Metrics readout",
+        "B. Run an A/B test",
+        "D. Incident response",
+        "H. Runbook"
+      ],
+      "mock_review": "Incident review \u2014 your app went down (SRE)",
+      "ways_of_working": "Case study: a public postmortem",
+      "deliverable": "An A/B test readout, a runbook, and a postmortem from a simulated incident",
+      "slug": "week-22",
+      "file": "lessons/week-22.md",
+      "has_domain_pack_note": false
+    },
+    {
+      "week": 23,
+      "title": "Capstone I \u2014 Discovery and Architecture",
+      "phase": "Capstone",
+      "hours": "8\u201310",
+      "topics": [
+        "agent swarm discovery",
+        "problem framing",
+        "opportunity solution tree",
+        "success metrics",
+        "architecture design doc",
+        "ADRs",
+        "build plan"
+      ],
+      "threads": [
+        "A. Capstone discovery sprint"
+      ],
+      "system_design": "Capstone architecture review",
+      "ways_of_working": "Swarms (applied)",
+      "deliverable": "A capstone brief, architecture design doc and shaped build plan",
+      "slug": "week-23",
+      "file": "lessons/week-23.md",
+      "has_domain_pack_note": true
+    },
+    {
+      "week": 24,
+      "title": "Capstone II \u2014 Data and Backend",
+      "phase": "Capstone",
+      "hours": "8\u201310",
+      "topics": [
+        "repo setup",
+        "CI",
+        "synthetic data",
+        "pipeline",
+        "data contracts",
+        "API",
+        "tests",
+        "migrations",
+        "deployment"
+      ],
+      "threads": [],
+      "ways_of_working": "Swarming on your own blockers",
+      "deliverable": "Capstone data pipeline and API running in CI and deployed to a dev environment",
+      "slug": "week-24",
+      "file": "lessons/week-24.md",
+      "has_domain_pack_note": false
+    },
+    {
+      "week": 25,
+      "title": "Capstone III \u2014 AI Feature and Frontend",
+      "phase": "Capstone",
+      "hours": "8\u201310",
+      "topics": [
+        "AI feature",
+        "evals in CI",
+        "red-teaming",
+        "frontend",
+        "accessibility",
+        "performance",
+        "instrumentation",
+        "feature flags"
+      ],
+      "threads": [],
+      "ways_of_working": "Builder-PM in practice",
+      "deliverable": "Capstone AI feature gated by evals, a usable accessible UI, instrumentation and flags",
+      "slug": "week-25",
+      "file": "lessons/week-25.md",
+      "has_domain_pack_note": false
+    },
+    {
+      "week": 26,
+      "title": "Capstone IV \u2014 Ship, Measure, Defend",
+      "phase": "Capstone",
+      "hours": "8\u201310",
+      "topics": [
+        "staged rollout",
+        "pilot users",
+        "experiment readout",
+        "runbook",
+        "launch memo",
+        "capstone defence",
+        "retrospective",
+        "publishing"
+      ],
+      "threads": [
+        "H. Launch memo"
+      ],
+      "mock_review": "Capstone defence \u2014 full panel (SWE + DE + SRE + exec)",
+      "ways_of_working": "Course retrospective",
+      "deliverable": "Capstone live with pilot users, measured, defended, and written up publicly",
+      "slug": "week-26",
+      "file": "lessons/week-26.md",
+      "has_domain_pack_note": false
+    }
+  ]
+}

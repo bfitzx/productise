@@ -38,6 +38,52 @@
     a:hover { opacity: 0.7; }
     a.plain { text-decoration: none; }
 
+    .site-nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(0, 0, 0, 0.92);
+      border-bottom: 1px solid var(--hairline);
+      backdrop-filter: blur(8px);
+    }
+    .site-nav-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .site-nav-brand {
+      text-decoration: none;
+      text-transform: uppercase;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 1.2px;
+      color: var(--on-primary);
+    }
+    .site-nav-brand:hover { opacity: 0.7; }
+    .site-nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 18px;
+      align-items: center;
+    }
+    .site-nav-links a {
+      text-decoration: none;
+      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.96px;
+      color: var(--on-primary-mute);
+    }
+    .site-nav-links a:hover,
+    .site-nav-links a[aria-current="page"] {
+      color: var(--on-primary);
+      opacity: 1;
+    }
+
     .band { padding: 96px 24px; border-bottom: 1px solid var(--hairline); }
     .band-inner { max-width: var(--max); margin: 0 auto; }
     .band:last-of-type { border-bottom: none; }
@@ -228,6 +274,16 @@
 </head>
 <body>
 
+  <nav class="site-nav" aria-label="Primary">
+    <div class="site-nav-inner">
+      <a class="site-nav-brand plain" href="/" aria-current="page">Productise</a>
+      <div class="site-nav-links">
+        <a class="plain" href="/" aria-current="page">Home</a>
+        <a class="plain" href="/course/">Course</a>
+      </div>
+    </div>
+  </nav>
+
   <!-- Hero -->
   <section class="hero">
     <div class="hero-inner">
@@ -249,6 +305,7 @@
         <span class="proof-item">AI</span>
       </div>
       <div class="hero-cta-row">
+        <a href="/course/" class="ghost-pill plain">Product Engineer with AI Course</a>
         <a href="https://x.com/productiseltd" target="_blank" rel="noopener noreferrer" class="ghost-pill">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M4 4l11.733 16h4.267l-11.733 -16z"></path>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 06: Persistence, Testing and Big-O — Productise</title>
+  <meta name="description" content="The ticket service backed by a real database, with a layered test suite">
+  <link rel="canonical" href="https://productise.ltd/course/week-06/">
+  <meta property="og:title" content="Week 06: Persistence, Testing and Big-O — Productise">
+  <meta property="og:description" content="The ticket service backed by a real database, with a layered test suite">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://productise.ltd/course/week-06/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Week 06: Persistence, Testing and Big-O — Productise">
+  <meta name="twitter:description" content="The ticket service backed by a real database, with a layered test suite">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/course.css">
+</head>
+<body class="" data-week-slug="week-06">
+<nav class="site-nav" aria-label="Primary">
+  <div class="site-nav-inner">
+    <a class="site-nav-brand plain" href="/">Productise</a>
+    <div class="site-nav-links">
+      <a class="plain" href="/">Home</a>
+      <a class="plain" href="/course/" aria-current="page">Course</a>
+      <a class="plain" href="/course/syllabus/">Syllabus</a>
+      <a class="plain" href="/course/domains/">Domains</a>
+    </div>
+  </div>
+</nav>
+<div class="page-shell">
+  <aside class="toc">
+  <div class="toc-label">On this page</div>
+  <nav><a href="#1-concept-brief">1. Concept brief</a><a href="#2-guided-lab-3-hrs">2. Guided lab (~3 hrs)</a><a href="#3-unguided-challenge-3-hrs">3. Unguided challenge (~3 hrs)</a><a href="#4-thread-c-lightweight-dsa-15-hrs">4. Thread C — lightweight DSA (~1.5 hrs)</a><a href="#5-ways-of-working-1-hr">5. Ways of working (~1 hr)</a><a href="#6-check">6. Check</a><a href="#7-teach-back">7. Teach-back</a><a href="#done-when">Done when</a></nav>
+</aside>
+  <article>
+    <header class="lesson-header">
+      <div class="hero-meta">
+        <span class="micro-cap">3. Code core</span>
+        <span class="micro-cap">·</span>
+        <span class="micro-cap">8–10 hrs</span>
+      </div>
+      <h1>Week 06 — Persistence, Testing and Big-O</h1>
+      <p class="body-lg" style="margin:0;max-width:640px;">The ticket service backed by a real database, with a layered test suite</p>
+      
+      <div class="topic-chips"><span class="topic-chip">SQLite</span><span class="topic-chip">SQLModel</span><span class="topic-chip">SQL basics</span><span class="topic-chip">test pyramid</span><span class="topic-chip">fixtures</span><span class="topic-chip">mocking</span><span class="topic-chip">Big-O</span><span class="topic-chip">data structures</span></div>
+      <p class="micro-cap" style="margin-top:16px;">Ways of working: Evals-driven development</p>
+      <label class="micro-cap" style="display:flex;gap:10px;align-items:center;margin-top:18px;cursor:pointer;">
+        <input type="checkbox" data-mark-complete>
+        Mark week complete
+      </label>
+    </header>
+    <div class="prose"><p><strong>Phase 3 · Thread C: testing + DSA · Ways of working: evals-driven development</strong></p>
+<h2 id="1-concept-brief" tabindex="-1">1. Concept brief</h2>
+<p>An in-memory dict disappears when the server restarts. This week the service gets a real database, and you learn how engineers decide what to test and why some code is fast and some is slow.</p>
+<p><strong>Vocabulary</strong></p>
+<ul>
+<li><strong>ORM:</strong> maps classes to tables (SQLModel, SQLAlchemy). Convenient, but it can hide slow queries.</li>
+<li><strong>Primary key / foreign key / index:</strong> identity, relationships, and fast lookup.</li>
+<li><strong>Transaction:</strong> a group of writes that all succeed or all fail.</li>
+<li><strong>Test pyramid:</strong> many fast unit tests, fewer integration tests, very few end-to-end tests.</li>
+<li><strong>Fixture:</strong> reusable test setup (a fresh database per test, for example).</li>
+<li><strong>Mock:</strong> a fake stand-in for a dependency. Mock what you don’t own and is slow or flaky (external APIs); don’t mock your own database logic.</li>
+<li><strong>Big-O:</strong> how work grows with input size. O(1) is constant, O(log n) is like binary search, O(n) is a scan, O(n²) is nested loops.</li>
+</ul>
+<h2 id="2-guided-lab-3-hrs" tabindex="-1">2. Guided lab (~3 hrs)</h2>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#79B8FF">cd</span><span style="color:#9ECBFF"> ~/dev/ticket-service</span></span>
+<span class="line"><span style="color:#B392F0">uv</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> sqlmodel</span></span>
+<span class="line"></span></code></pre></div><p>Then:</p>
+<ol>
+<li>Replace the dict with SQLModel. Define <code>Ticket</code> as a <code>table=True</code> model, create the engine with <code>sqlite:///tickets.db</code>, and use a <code>get_session</code> dependency.</li>
+<li>Explore the database directly:</li>
+</ol>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#B392F0">sqlite3</span><span style="color:#9ECBFF"> tickets.db</span><span style="color:#9ECBFF"> ".tables"</span><span style="color:#9ECBFF"> ".schema ticket"</span></span>
+<span class="line"><span style="color:#B392F0">sqlite3</span><span style="color:#9ECBFF"> tickets.db</span><span style="color:#9ECBFF"> "select status, count(*) from ticket group by status;"</span></span>
+<span class="line"><span style="color:#B392F0">sqlite3</span><span style="color:#9ECBFF"> tickets.db</span><span style="color:#9ECBFF"> "explain query plan select * from ticket where account_id='A12';"</span></span>
+<span class="line"><span style="color:#B392F0">sqlite3</span><span style="color:#9ECBFF"> tickets.db</span><span style="color:#9ECBFF"> "create index ix_account on ticket(account_id);"</span></span>
+<span class="line"><span style="color:#B392F0">sqlite3</span><span style="color:#9ECBFF"> tickets.db</span><span style="color:#9ECBFF"> "explain query plan select * from ticket where account_id='A12';"</span><span style="color:#6A737D">   # compare the plans</span></span>
+<span class="line"></span></code></pre></div><ol start="3">
+<li>Testing layers. Create <code>tests/conftest.py</code> with a fixture that builds a fresh in-memory SQLite engine and overrides <code>get_session</code>. Then write:
+<ul>
+<li><strong>unit tests</strong> for pure functions (for example a <code>can_transition(old, new)</code> state-machine function)</li>
+<li><strong>integration tests</strong> that hit endpoints against the real (in-memory) database</li>
+<li>a <strong>mock</strong> test: add a <code>notify_account()</code> function that calls an external webhook URL with <code>httpx</code>, and use <code>respx</code> or <code>unittest.mock</code> to fake it</li>
+</ul>
+</li>
+</ol>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#B392F0">uv</span><span style="color:#9ECBFF"> add</span><span style="color:#79B8FF"> --dev</span><span style="color:#9ECBFF"> respx</span><span style="color:#9ECBFF"> pytest-cov</span></span>
+<span class="line"><span style="color:#B392F0">uv</span><span style="color:#9ECBFF"> run</span><span style="color:#9ECBFF"> pytest</span><span style="color:#79B8FF"> --cov=.</span><span style="color:#79B8FF"> --cov-report=term-missing</span></span>
+<span class="line"></span></code></pre></div><h2 id="3-unguided-challenge-3-hrs" tabindex="-1">3. Unguided challenge (~3 hrs)</h2>
+<ul>
+<li>Add a <code>Account</code> table with a foreign key from <code>Ticket</code>, and an endpoint <code>GET /accounts/{id}/stats</code> that returns counts by status. Do the counting in SQL, not in Python.</li>
+<li>Seed 10,000 tickets with <code>faker</code> (<code>uv add --dev faker</code>), then time the stats endpoint with and without an index.</li>
+<li>Reach 85% or more coverage, and explain in the README which lines you chose <em>not</em> to test, and why.</li>
+</ul>
+<p><strong>Acceptance criteria:</strong></p>
+<ul>
+<li>The stats endpoint is correct (tested).</li>
+<li>An index timing comparison is in the README.</li>
+<li>CI is green.</li>
+</ul>
+<h2 id="4-thread-c-lightweight-dsa-15-hrs" tabindex="-1">4. Thread C — lightweight DSA (~1.5 hrs)</h2>
+<ol>
+<li>In a notebook or script, time a membership check <code>x in list</code> vs <code>x in set</code> for n = 1k, 100k and 1M. Plot or print the results. Explain them using hash tables.</li>
+<li>Implement binary search yourself. Why does it need sorted input?</li>
+<li>Why is a database index usually a B-tree? (Read a 10-minute explainer.)</li>
+<li>Kata: <a href="https://leetcode.com/problems/two-sum/">Two Sum</a>. Solve it in O(n²), then in O(n) with a dict.</li>
+</ol>
+<h2 id="5-ways-of-working-1-hr" tabindex="-1">5. Ways of working (~1 hr)</h2>
+<p><strong>Evals-driven development.</strong> In AI products, the spec is increasingly a test suite: a set of inputs with graded expected outputs. Take a feature from your current or past work and write 10 eval cases as a table (input, expected behaviour, how you’d grade it). This is what you’ll automate in week 18.</p>
+<h2 id="6-check" tabindex="-1">6. Check</h2>
+<ol>
+<li>What does an index trade off?</li>
+<li>When should you <em>not</em> mock something?</li>
+<li>What’s the Big-O of looking up a key in a dict? And in a list?</li>
+<li>Why use a fresh database per test?</li>
+<li>What does a transaction guarantee?</li>
+</ol>
+<p>Recycled:</p>
+<ul>
+<li>What does 409 mean?</li>
+<li>Why use an idempotency key?</li>
+</ul>
+<h2 id="7-teach-back" tabindex="-1">7. Teach-back</h2>
+<p>Write “The test pyramid, explained to a PM who wants 100% coverage.”</p>
+<h2 id="done-when" tabindex="-1">Done when</h2>
+<ul>
+<li class="task-list-item"><input type="checkbox">SQLModel persistence, Account relationship and stats endpoint done</li>
+<li class="task-list-item"><input type="checkbox">Unit, integration and mock tests written, coverage at 85%+</li>
+<li class="task-list-item"><input type="checkbox">Index timing comparison documented</li>
+<li class="task-list-item"><input type="checkbox">DSA exercises and kata done</li>
+<li class="task-list-item"><input type="checkbox">Eval table written</li>
+<li class="task-list-item"><input type="checkbox">Check and teach-back done</li>
+</ul>
+</div>
+    <nav class="pager" aria-label="Lesson pagination">
+  <a class="plain prev" href="/course/week-05/"><span class="label">Previous</span><span class="title">Week 05: Python Core and Your First API</span></a>
+  <a class="plain next" href="/course/week-07/"><span class="label">Next</span><span class="title">Week 07: TypeScript and Async</span></a>
+</nav>
+  </article>
+</div>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-legal">© 2026 Productise LTD. All rights reserved.</div>
+  </div>
+</footer>
+<script src="../assets/course.js"></script>
+</body>
+</html>

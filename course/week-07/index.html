@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 07: TypeScript and Async — Productise</title>
+  <meta name="description" content="A typed TypeScript client and CLI for the ticket service">
+  <link rel="canonical" href="https://productise.ltd/course/week-07/">
+  <meta property="og:title" content="Week 07: TypeScript and Async — Productise">
+  <meta property="og:description" content="A typed TypeScript client and CLI for the ticket service">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://productise.ltd/course/week-07/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Week 07: TypeScript and Async — Productise">
+  <meta name="twitter:description" content="A typed TypeScript client and CLI for the ticket service">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/course.css">
+</head>
+<body class="" data-week-slug="week-07">
+<nav class="site-nav" aria-label="Primary">
+  <div class="site-nav-inner">
+    <a class="site-nav-brand plain" href="/">Productise</a>
+    <div class="site-nav-links">
+      <a class="plain" href="/">Home</a>
+      <a class="plain" href="/course/" aria-current="page">Course</a>
+      <a class="plain" href="/course/syllabus/">Syllabus</a>
+      <a class="plain" href="/course/domains/">Domains</a>
+    </div>
+  </div>
+</nav>
+<div class="page-shell">
+  <aside class="toc">
+  <div class="toc-label">On this page</div>
+  <nav><a href="#1-concept-brief">1. Concept brief</a><a href="#2-guided-lab-3-hrs">2. Guided lab (~3 hrs)</a><a href="#3-unguided-challenge-3-hrs">3. Unguided challenge (~3 hrs)</a><a href="#4-thread-c-kata-30-min">4. Thread C — kata (~30 min)</a><a href="#5-system-design-2-datastores-15-hrs">5. System design #2 — datastores (~1.5 hrs)</a><a href="#6-ways-of-working-1-hr">6. Ways of working (~1 hr)</a><a href="#7-check">7. Check</a><a href="#8-teach-back">8. Teach-back</a><a href="#done-when">Done when</a></nav>
+</aside>
+  <article>
+    <header class="lesson-header">
+      <div class="hero-meta">
+        <span class="micro-cap">3. Code core</span>
+        <span class="micro-cap">·</span>
+        <span class="micro-cap">8–10 hrs</span>
+      </div>
+      <h1>Week 07 — TypeScript and Async</h1>
+      <p class="body-lg" style="margin:0;max-width:640px;">A typed TypeScript client and CLI for the ticket service</p>
+      <div class="badge-row" style="margin-top:14px;"><span class="badge design">System design</span></div>
+      <div class="topic-chips"><span class="topic-chip">TypeScript</span><span class="topic-chip">Node.js</span><span class="topic-chip">pnpm</span><span class="topic-chip">types vs interfaces</span><span class="topic-chip">async/await</span><span class="topic-chip">promises</span><span class="topic-chip">fetch</span><span class="topic-chip">zod</span></div>
+      <p class="micro-cap" style="margin-top:16px;">Ways of working: Trunk-based development, feature flags, DORA metrics</p>
+      <label class="micro-cap" style="display:flex;gap:10px;align-items:center;margin-top:18px;cursor:pointer;">
+        <input type="checkbox" data-mark-complete>
+        Mark week complete
+      </label>
+    </header>
+    <div class="prose"><p><strong>Phase 3 · System design #2 · Ways of working: trunk-based development and DORA</strong></p>
+<h2 id="1-concept-brief" tabindex="-1">1. Concept brief</h2>
+<p>TypeScript is JavaScript with a type system, and it’s the language of most modern frontends and a lot of backends. The key mental shift is <strong>async</strong>: almost everything (network, disk) returns a <em>promise</em> you <code>await</code>.</p>
+<p><strong>Vocabulary</strong></p>
+<ul>
+<li><strong>Type vs interface:</strong> both describe shapes. Interfaces can be extended and merged; types handle unions (<code>&quot;a&quot; | &quot;b&quot;</code>).</li>
+<li><strong>Union / narrowing:</strong> <code>string | null</code>, then <code>if (x)</code> narrows it to <code>string</code>.</li>
+<li><strong>Generics:</strong> <code>Array&lt;T&gt;</code> — types that take types.</li>
+<li><strong>Promise / async / await:</strong> a value that arrives later. <code>await</code> pauses the function, not the program.</li>
+<li><strong>Runtime validation:</strong> TS types disappear at runtime; <code>zod</code> validates real data from the network.</li>
+<li><strong>Event loop:</strong> how Node runs many I/O tasks on one thread.</li>
+<li><strong>pnpm:</strong> a fast, disk-efficient npm alternative.</li>
+</ul>
+<h2 id="2-guided-lab-3-hrs" tabindex="-1">2. Guided lab (~3 hrs)</h2>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#B392F0">npm</span><span style="color:#9ECBFF"> i</span><span style="color:#79B8FF"> -g</span><span style="color:#9ECBFF"> pnpm</span></span>
+<span class="line"><span style="color:#B392F0">mkdir</span><span style="color:#79B8FF"> -p</span><span style="color:#9ECBFF"> ~/dev/ticket-client</span><span style="color:#E1E4E8"> &#x26;&#x26; </span><span style="color:#79B8FF">cd</span><span style="color:#79B8FF"> $_</span></span>
+<span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> init</span></span>
+<span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> zod</span></span>
+<span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> add</span><span style="color:#79B8FF"> -D</span><span style="color:#9ECBFF"> typescript</span><span style="color:#9ECBFF"> tsx</span><span style="color:#9ECBFF"> @types/node</span><span style="color:#9ECBFF"> vitest</span></span>
+<span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> tsc</span><span style="color:#79B8FF"> --init</span><span style="color:#79B8FF"> --strict</span><span style="color:#79B8FF"> --target</span><span style="color:#9ECBFF"> es2022</span><span style="color:#79B8FF"> --module</span><span style="color:#9ECBFF"> nodenext</span><span style="color:#79B8FF"> --moduleResolution</span><span style="color:#9ECBFF"> nodenext</span></span>
+<span class="line"></span></code></pre></div><p>Create <code>src/client.ts</code>:</p>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> { z } </span><span style="color:#F97583">from</span><span style="color:#9ECBFF"> "zod"</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> const</span><span style="color:#79B8FF"> Status</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> z.</span><span style="color:#B392F0">enum</span><span style="color:#E1E4E8">([</span><span style="color:#9ECBFF">"open"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"pending"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"resolved"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"escalated"</span><span style="color:#E1E4E8">]);</span></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> const</span><span style="color:#79B8FF"> Ticket</span><span style="color:#F97583"> =</span><span style="color:#E1E4E8"> z.</span><span style="color:#B392F0">object</span><span style="color:#E1E4E8">({</span></span>
+<span class="line"><span style="color:#E1E4E8">  id: z.</span><span style="color:#B392F0">number</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">  account_id: z.</span><span style="color:#B392F0">string</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">  customer_email: z.</span><span style="color:#B392F0">string</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">  subject: z.</span><span style="color:#B392F0">string</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">  status: Status,</span></span>
+<span class="line"><span style="color:#E1E4E8">  created_at: z.</span><span style="color:#B392F0">string</span><span style="color:#E1E4E8">(),</span></span>
+<span class="line"><span style="color:#E1E4E8">});</span></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> type</span><span style="color:#B392F0"> Ticket</span><span style="color:#F97583"> =</span><span style="color:#B392F0"> z</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">infer</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#F97583">typeof</span><span style="color:#E1E4E8"> Ticket>;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">export</span><span style="color:#F97583"> class</span><span style="color:#B392F0"> TicketClient</span><span style="color:#E1E4E8"> {</span></span>
+<span class="line"><span style="color:#F97583">  constructor</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">private</span><span style="color:#FFAB70"> base</span><span style="color:#F97583"> =</span><span style="color:#9ECBFF"> "http://localhost:8000"</span><span style="color:#E1E4E8">) {}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">  async</span><span style="color:#B392F0"> get</span><span style="color:#E1E4E8">(</span><span style="color:#FFAB70">id</span><span style="color:#F97583">:</span><span style="color:#79B8FF"> number</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">:</span><span style="color:#B392F0"> Promise</span><span style="color:#E1E4E8">&#x3C;</span><span style="color:#B392F0">Ticket</span><span style="color:#E1E4E8">> {</span></span>
+<span class="line"><span style="color:#F97583">    const</span><span style="color:#79B8FF"> res</span><span style="color:#F97583"> =</span><span style="color:#F97583"> await</span><span style="color:#B392F0"> fetch</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">`${</span><span style="color:#79B8FF">this</span><span style="color:#9ECBFF">.</span><span style="color:#E1E4E8">base</span><span style="color:#9ECBFF">}/tickets/${</span><span style="color:#E1E4E8">id</span><span style="color:#9ECBFF">}`</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">    if</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">!</span><span style="color:#E1E4E8">res.ok) </span><span style="color:#F97583">throw</span><span style="color:#F97583"> new</span><span style="color:#B392F0"> Error</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">`HTTP ${</span><span style="color:#E1E4E8">res</span><span style="color:#9ECBFF">.</span><span style="color:#E1E4E8">status</span><span style="color:#9ECBFF">}`</span><span style="color:#E1E4E8">);</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> Ticket.</span><span style="color:#B392F0">parse</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">await</span><span style="color:#E1E4E8"> res.</span><span style="color:#B392F0">json</span><span style="color:#E1E4E8">());</span></span>
+<span class="line"><span style="color:#E1E4E8">  }</span></span>
+<span class="line"><span style="color:#E1E4E8">}</span></span>
+<span class="line"></span></code></pre></div><p>Practise:</p>
+<ul>
+<li><code>Promise.all</code> vs a sequential <code>for</code> loop with <code>await</code>; time both against 20 GETs</li>
+<li><code>try/catch</code> around <code>await</code></li>
+<li><code>setTimeout</code> wrapped in a promise (a sleep function)</li>
+<li><code>Array.map</code>, <code>.filter</code>, <code>.reduce</code></li>
+<li>optional chaining <code>?.</code> and nullish coalescing <code>??</code></li>
+</ul>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> tsx</span><span style="color:#9ECBFF"> src/demo.ts</span></span>
+<span class="line"><span style="color:#B392F0">pnpm</span><span style="color:#9ECBFF"> vitest</span></span>
+<span class="line"></span></code></pre></div><h2 id="3-unguided-challenge-3-hrs" tabindex="-1">3. Unguided challenge (~3 hrs)</h2>
+<p>Build <code>tickets-cli</code> in TypeScript. It should:</p>
+<ul>
+<li>run as <code>pnpm tsx src/cli.ts list --status escalated</code>, <code>create --account A1 ...</code> and <code>stats A1</code></li>
+<li>validate every response with zod</li>
+<li>retry with exponential backoff on 5xx or network errors (max 3 tries), but <strong>not</strong> on 4xx</li>
+<li>include vitest tests that mock <code>fetch</code> (with <code>vi.spyOn(global, 'fetch')</code>), covering the retry logic</li>
+</ul>
+<p><strong>Acceptance criteria:</strong></p>
+<ul>
+<li><code>pnpm tsc --noEmit</code> is clean in strict mode.</li>
+<li>Tests cover success, 4xx with no retry, and 5xx retried then succeeding.</li>
+</ul>
+<h2 id="4-thread-c-kata-30-min" tabindex="-1">4. Thread C — kata (~30 min)</h2>
+<p>Solve <a href="https://leetcode.com/problems/valid-parentheses/">Valid Parentheses</a> in TypeScript using a stack. What’s the Big-O?</p>
+<h2 id="5-system-design-2-datastores-15-hrs" tabindex="-1">5. System design #2 — datastores (~1.5 hrs)</h2>
+<p>Pick and justify a datastore for <strong>support conversations</strong>. Assume 2M tickets a month, each with metadata, a message thread, status-change events and attachments, and a need for analytics plus customer-level lookups.</p>
+<p>Compare Postgres, a document store (MongoDB or DynamoDB) and a key-value store (Redis). Cover access patterns, indexes, transactions, schema evolution, where message threads and attachments go (blob storage?), and cost.</p>
+<p>Deliverables:</p>
+<ul>
+<li>a design doc</li>
+<li>ADR 0002</li>
+<li>an exec summary</li>
+</ul>
+<p>Defend it to Claude.</p>
+<h2 id="6-ways-of-working-1-hr" tabindex="-1">6. Ways of working (~1 hr)</h2>
+<p><strong>Trunk-based development and DORA.</strong> Short-lived branches, merging to <code>main</code> daily, and feature flags that separate <em>deploy</em> from <em>release</em>. DORA’s four metrics are:</p>
+<ul>
+<li>deploy frequency</li>
+<li>lead time for changes</li>
+<li>change failure rate</li>
+<li>time to restore</li>
+</ul>
+<p>How would your current team score on each? Which would you fix first?</p>
+<h2 id="7-check" tabindex="-1">7. Check</h2>
+<ol>
+<li>Why do you still need zod if you have TypeScript types?</li>
+<li>What’s the difference between <code>Promise.all</code> and awaiting in a loop?</li>
+<li>Why not retry on a 400?</li>
+<li>What does narrowing mean?</li>
+<li>Which DORA metric is hurt most by large, long-lived branches?</li>
+</ol>
+<p>Recycled:</p>
+<ul>
+<li>What does an index trade off?</li>
+<li>When shouldn’t you mock?</li>
+</ul>
+<h2 id="8-teach-back" tabindex="-1">8. Teach-back</h2>
+<p>Write “Async explained with a restaurant kitchen.”</p>
+<h2 id="done-when" tabindex="-1">Done when</h2>
+<ul>
+<li class="task-list-item"><input type="checkbox"><code>tickets-cli</code> working, strict TypeScript clean, retry tests passing</li>
+<li class="task-list-item"><input type="checkbox">Kata done</li>
+<li class="task-list-item"><input type="checkbox">Datastore design doc, ADR 0002 and exec summary committed and defended</li>
+<li class="task-list-item"><input type="checkbox">DORA reflection written</li>
+<li class="task-list-item"><input type="checkbox">Check and teach-back done</li>
+</ul>
+</div>
+    <nav class="pager" aria-label="Lesson pagination">
+  <a class="plain prev" href="/course/week-06/"><span class="label">Previous</span><span class="title">Week 06: Persistence, Testing and Big-O</span></a>
+  <a class="plain next" href="/course/week-08/"><span class="label">Next</span><span class="title">Week 08: Reading, Refactoring and Contract Tests</span></a>
+</nav>
+  </article>
+</div>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-legal">© 2026 Productise LTD. All rights reserved.</div>
+  </div>
+</footer>
+<script src="../assets/course.js"></script>
+</body>
+</html>

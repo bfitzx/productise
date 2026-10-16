@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Domain packs — Productise</title>
+  <meta name="description" content="Run the course with data from your own industry">
+  <link rel="canonical" href="https://productise.ltd/course/domains/">
+  <meta property="og:title" content="Domain packs — Productise">
+  <meta property="og:description" content="Run the course with data from your own industry">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://productise.ltd/course/domains/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Domain packs — Productise">
+  <meta name="twitter:description" content="Run the course with data from your own industry">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/course.css">
+</head>
+<body class="" >
+<nav class="site-nav" aria-label="Primary">
+  <div class="site-nav-inner">
+    <a class="site-nav-brand plain" href="/">Productise</a>
+    <div class="site-nav-links">
+      <a class="plain" href="/">Home</a>
+      <a class="plain" href="/course/">Course</a>
+      <a class="plain" href="/course/syllabus/">Syllabus</a>
+      <a class="plain" href="/course/domains/" aria-current="page">Domains</a>
+    </div>
+  </div>
+</nav>
+<div class="page-shell">
+  <aside class="toc">
+  <div class="toc-label">On this page</div>
+  <nav><a href="#pharma-and-life-sciences">Pharma and life sciences</a><a href="#healthcare">Healthcare</a><a href="#fintech-and-payments">Fintech and payments</a><a href="#e-commerce-and-marketplaces">E-commerce and marketplaces</a><a href="#bring-any-other-domain">Bring any other domain</a></nav>
+</aside>
+  <article>
+    <header class="lesson-header">
+      <span class="micro-cap">Course</span>
+      <h1>Domain packs</h1>
+      <p class="body-lg" style="margin:0;">Run the course with data from your own industry</p>
+      <div class="subnav">
+        <a class="plain" href="/course/">Overview</a>
+        <a class="plain" href="/course/syllabus/">Syllabus</a>
+        <a class="plain" href="/course/domains/" aria-current="page">Domain packs</a>
+      </div>
+    </header>
+    <div class="prose"><p>Every lesson uses one <strong>default running example</strong>: a support-ticket service with tickets, customer accounts, messages and resolutions. It’s simple, everyone understands it, and it needs no regulated data.</p>
+<p>Learners from a specialised industry get more out of the course by <strong>swapping in their own domain</strong>. Each pack below shows:</p>
+<ul>
+<li>how your domain’s entities map onto the running example</li>
+<li>public datasets you can use in each phase</li>
+<li>the compliance topics for week 20</li>
+<li>capstone ideas</li>
+</ul>
+<p><strong>Rule for every pack:</strong> use public or synthetic data only. Never put real personal, patient or customer data into course projects, LLM prompts or public repos.</p>
+<hr>
+<h2 id="pharma-and-life-sciences" tabindex="-1">Pharma and life sciences</h2>
+<p><strong>Entity mapping</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Running example</th>
+<th>Pharma equivalent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ticket</td>
+<td>adverse-event report, or a medical-information enquiry</td>
+</tr>
+<tr>
+<td>account</td>
+<td>product (drug), or a trial sponsor</td>
+</tr>
+<tr>
+<td>status</td>
+<td>case seriousness / outcome / processing status</td>
+</tr>
+<tr>
+<td>plan changes (SCD2)</td>
+<td>label versions, formulation or manufacturer changes</td>
+</tr>
+<tr>
+<td>help-centre articles (RAG)</td>
+<td>drug labels (SPL), prescribing information, SOPs</td>
+</tr>
+</tbody>
+</table>
+</div><p><strong>Public data by phase</strong></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Weeks</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2–3 (CLI)</td>
+<td><code>curl</code> + <code>jq</code> against the <strong>openFDA</strong> APIs (<code>api.fda.gov/drug/event.json</code>, <code>/drug/label.json</code>) and the <strong><a href="http://ClinicalTrials.gov">ClinicalTrials.gov</a> API v2</strong></td>
+</tr>
+<tr>
+<td>5–8 (API)</td>
+<td>Build a service over your own curated subset: products, events, enquiries</td>
+</tr>
+<tr>
+<td>12–15 (data)</td>
+<td><strong>FAERS</strong> quarterly extracts (adverse events) → medallion pipeline. Dimensions: drug, reaction (MedDRA preferred terms), reporter type, country. SCD2 on product labels using <strong>DailyMed</strong> label versions</td>
+</tr>
+<tr>
+<td>16–19 (AI)</td>
+<td>RAG over openFDA or DailyMed <strong>drug labels</strong> with citations; structured extraction of drug, dose, reaction and seriousness from synthetic case narratives; an agent over <a href="http://ClinicalTrials.gov">ClinicalTrials.gov</a></td>
+</tr>
+<tr>
+<td>21–22 (stats)</td>
+<td>Disproportionality analysis (PRR / ROR) on FAERS, and why reporting bias makes FAERS hypothesis-generating rather than proof (selection bias and confounding in practice)</td>
+</tr>
+</tbody>
+</table>
+</div><p><strong>Week 20 compliance:</strong></p>
+<ul>
+<li>GxP and computer system validation</li>
+<li>21 CFR Part 11 and EU Annex 11 (audit trails, e-signatures)</li>
+<li>pharmacovigilance timelines</li>
+<li>GDPR for trial-participant data</li>
+<li>when an AI feature becomes “validated software”</li>
+</ul>
+<p><strong>Capstone ideas</strong></p>
+<ul>
+<li>Drug-label comparison and Q&amp;A tool with change tracking across label versions</li>
+<li>Adverse-event signal explorer: pipeline, PRR/ROR, LLM-drafted signal summaries with a human reviewer in the loop</li>
+<li>Clinical-trial landscape explorer: sponsor, site and indication analytics plus cited protocol Q&amp;A</li>
+<li>Medical-information enquiry triage: classify, draft a response from approved content, escalate off-label questions</li>
+</ul>
+<hr>
+<h2 id="healthcare" tabindex="-1">Healthcare</h2>
+<p><strong>Entity mapping:</strong> ticket → encounter or referral · account → provider/practice · status → referral status · plan changes → provider network or system changes · help-centre articles → clinical guidelines or practice policies.</p>
+<p><strong>Public data</strong></p>
+<ul>
+<li><strong>Synthea:</strong> synthetic patients and EHR records (FHIR/CSV); use it for weeks 12–15</li>
+<li><strong>CMS public datasets:</strong> provider directories, quality measures</li>
+<li><strong>FHIR sandbox servers</strong> for API weeks</li>
+<li>MIMIC needs credentialed access; only use it if you have that access</li>
+</ul>
+<p><strong>Week 20 compliance:</strong> HIPAA (PHI, minimum necessary, BAAs, audit logs, breach notification), GDPR special-category data, and national health-data rules.</p>
+<p><strong>Capstone ideas:</strong> a referral-tracking co-pilot, appointment no-show prediction with outreach, or guideline Q&amp;A with citations.</p>
+<hr>
+<h2 id="fintech-and-payments" tabindex="-1">Fintech and payments</h2>
+<p><strong>Entity mapping:</strong> ticket → transaction or dispute · account → customer account or merchant · status → dispute or fraud-review status · plan changes → risk tier or KYC level changes · help-centre articles → policy and regulatory docs.</p>
+<p><strong>Public data</strong></p>
+<ul>
+<li><strong>PaySim</strong> (synthetic mobile-money transactions)</li>
+<li>the public credit-card fraud dataset (Kaggle)</li>
+<li><strong>SEC EDGAR</strong> filings for RAG</li>
+<li>open banking sandbox APIs</li>
+</ul>
+<p><strong>Week 20 compliance:</strong> PCI DSS scope reduction, KYC/AML data handling, SOX controls, and model risk management for AI decisions.</p>
+<p><strong>Capstone ideas:</strong> dispute triage with evidence summarisation, a fraud-alert review queue with LLM explanations, or a filings Q&amp;A tool.</p>
+<hr>
+<h2 id="e-commerce-and-marketplaces" tabindex="-1">E-commerce and marketplaces</h2>
+<p><strong>Entity mapping:</strong> ticket → order or return · account → customer or seller · status → order/return status · plan changes → seller tier changes · help-centre articles → returns and shipping policies.</p>
+<p><strong>Public data</strong></p>
+<ul>
+<li>the <strong>Olist Brazilian e-commerce</strong> dataset (orders, reviews, sellers)</li>
+<li><strong>Instacart</strong> basket data</li>
+<li>Amazon review datasets</li>
+</ul>
+<p><strong>Week 20 compliance:</strong> GDPR/consumer law, PCI scope when taking payments, accessibility law (European Accessibility Act).</p>
+<p><strong>Capstone ideas:</strong> a returns-reason analyser, a review-insight dashboard with LLM theme extraction, or a seller-support co-pilot.</p>
+<hr>
+<h2 id="bring-any-other-domain" tabindex="-1">Bring any other domain</h2>
+<p>Answer these five questions in week 3, then map your answers onto the running example:</p>
+<ol>
+<li>What’s the core <strong>event</strong> (your “ticket”)?</li>
+<li>What’s the main <strong>entity</strong> that changes over time (your “account” with SCD2)?</li>
+<li>What <strong>documents</strong> would an assistant need to answer questions from (your RAG corpus)?</li>
+<li>What <strong>regulation</strong> governs the data?</li>
+<li>Where can you get <strong>public or synthetic</strong> data?</li>
+</ol>
+</div>
+  </article>
+</div>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-legal">© 2026 Productise LTD. All rights reserved.</div>
+  </div>
+</footer>
+<script src="../assets/course.js"></script>
+</body>
+</html>

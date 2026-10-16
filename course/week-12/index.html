@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 12: SQL and Data Modelling — Productise</title>
+  <meta name="description" content="A star-schema model of synthetic support data in DuckDB with an analysis notebook">
+  <link rel="canonical" href="https://productise.ltd/course/week-12/">
+  <meta property="og:title" content="Week 12: SQL and Data Modelling — Productise">
+  <meta property="og:description" content="A star-schema model of synthetic support data in DuckDB with an analysis notebook">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://productise.ltd/course/week-12/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Week 12: SQL and Data Modelling — Productise">
+  <meta name="twitter:description" content="A star-schema model of synthetic support data in DuckDB with an analysis notebook">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/course.css">
+</head>
+<body class="" data-week-slug="week-12">
+<nav class="site-nav" aria-label="Primary">
+  <div class="site-nav-inner">
+    <a class="site-nav-brand plain" href="/">Productise</a>
+    <div class="site-nav-links">
+      <a class="plain" href="/">Home</a>
+      <a class="plain" href="/course/" aria-current="page">Course</a>
+      <a class="plain" href="/course/syllabus/">Syllabus</a>
+      <a class="plain" href="/course/domains/">Domains</a>
+    </div>
+  </div>
+</nav>
+<div class="page-shell">
+  <aside class="toc">
+  <div class="toc-label">On this page</div>
+  <nav><a href="#1-concept-brief">1. Concept brief</a><a href="#2-guided-lab-35-hrs">2. Guided lab (~3.5 hrs)</a><a href="#3-unguided-challenge-3-hrs">3. Unguided challenge (~3 hrs)</a><a href="#4-thread-b-why-averages-lie-1-hr">4. Thread B — why averages lie (~1 hr)</a><a href="#5-ways-of-working-1-hr">5. Ways of working (~1 hr)</a><a href="#6-check">6. Check</a><a href="#7-teach-back">7. Teach-back</a><a href="#done-when">Done when</a></nav>
+</aside>
+  <article>
+    <header class="lesson-header">
+      <div class="hero-meta">
+        <span class="micro-cap">5. Data engineering &amp; Databricks</span>
+        <span class="micro-cap">·</span>
+        <span class="micro-cap">8–10 hrs</span>
+      </div>
+      <h1>Week 12 — SQL and Data Modelling</h1>
+      <p class="body-lg" style="margin:0;max-width:640px;">A star-schema model of synthetic support data in DuckDB with an analysis notebook</p>
+      
+      <div class="topic-chips"><span class="topic-chip">advanced SQL</span><span class="topic-chip">CTEs</span><span class="topic-chip">window functions</span><span class="topic-chip">DuckDB</span><span class="topic-chip">star schema</span><span class="topic-chip">facts and dimensions</span><span class="topic-chip">slowly changing dimensions</span><span class="topic-chip">descriptive statistics</span></div>
+      <p class="micro-cap" style="margin-top:16px;">Ways of working: Working with data teams</p>
+      <label class="micro-cap" style="display:flex;gap:10px;align-items:center;margin-top:18px;cursor:pointer;">
+        <input type="checkbox" data-mark-complete>
+        Mark week complete
+      </label>
+    </header>
+    <div class="prose"><p><strong>Phase 5 · Thread B: descriptive stats · Ways of working: working with data teams</strong></p>
+<blockquote class="domain-pack">
+<p><strong><a href="/course/domains/">Domain pack</a>:</strong> Using a domain pack? Model your domain’s dataset instead (for pharma, FAERS adverse events with SCD2 on product labels). The SQL techniques are identical.</p>
+</blockquote>
+<h2 id="1-concept-brief" tabindex="-1">1. Concept brief</h2>
+<p>Data engineering starts with modelling: deciding what tables exist, at what grain, and how they join. Get this right and the dashboards are easy. Get it wrong and every number is argued over.</p>
+<p><strong>Vocabulary</strong></p>
+<ul>
+<li><strong>OLTP vs OLAP:</strong> transactional databases (Postgres, row-oriented, many small writes) vs analytical ones (DuckDB, Databricks, Snowflake; columnar, big scans).</li>
+<li><strong>Grain:</strong> what one row represents (“one ticket”). Decide this first.</li>
+<li><strong>Fact table:</strong> events and measures (tickets, response times).</li>
+<li><strong>Dimension:</strong> descriptive context (account, date, category).</li>
+<li><strong>Star schema:</strong> one fact table surrounded by dimensions.</li>
+<li><strong>Slowly changing dimensions:</strong> SCD1 overwrites old values; SCD2 keeps history with <code>valid_from</code>/<code>valid_to</code> columns.</li>
+<li><strong>CTE:</strong> a <code>WITH</code> clause — a named sub-query that makes SQL readable.</li>
+<li><strong>Window function:</strong> a calculation across related rows without collapsing them (<code>ROW_NUMBER</code>, <code>LAG</code>, running totals).</li>
+</ul>
+<h2 id="2-guided-lab-35-hrs" tabindex="-1">2. Guided lab (~3.5 hrs)</h2>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#B392F0">brew</span><span style="color:#9ECBFF"> install</span><span style="color:#9ECBFF"> duckdb</span></span>
+<span class="line"><span style="color:#B392F0">mkdir</span><span style="color:#79B8FF"> -p</span><span style="color:#9ECBFF"> ~/dev/support-analytics</span><span style="color:#E1E4E8"> &#x26;&#x26; </span><span style="color:#79B8FF">cd</span><span style="color:#79B8FF"> $_</span><span style="color:#E1E4E8"> &#x26;&#x26; </span><span style="color:#B392F0">uv</span><span style="color:#9ECBFF"> init</span><span style="color:#E1E4E8"> &#x26;&#x26; </span><span style="color:#B392F0">uv</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> duckdb</span><span style="color:#9ECBFF"> faker</span><span style="color:#9ECBFF"> pandas</span><span style="color:#9ECBFF"> jupyter</span></span>
+<span class="line"></span></code></pre></div><p><strong>Generate data.</strong> Ask Claude Code to help you write <code>gen.py</code>, which produces about 200k tickets across about 500 customer accounts over 6 months:</p>
+<ul>
+<li><code>tickets</code>: ticket_id, account_id, created_at, channel, category, first_response_s, status, handled_by (ai/human), csat (nullable)</li>
+<li><code>accounts</code>: account_id, name, region, plan, with <strong>some accounts changing plan mid-period</strong> (for SCD2)</li>
+<li><code>messages</code>: message_id, ticket_id, sent_at, author (customer/agent/ai)</li>
+<li><code>resolutions</code>: ticket_id, resolved_at (nullable)</li>
+</ul>
+<p>Write the tables out as Parquet files.</p>
+<div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#B392F0">duckdb</span><span style="color:#9ECBFF"> support.duckdb</span></span>
+<span class="line"></span></code></pre></div><div class="code-block"><pre class="shiki github-dark" style="background-color:#24292e;color:#e1e4e8" tabindex="0"><code><span class="line"><span style="color:#F97583">create</span><span style="color:#F97583"> table</span><span style="color:#B392F0"> tickets</span><span style="color:#F97583"> as</span><span style="color:#F97583"> select</span><span style="color:#F97583"> *</span><span style="color:#F97583"> from</span><span style="color:#9ECBFF"> 'data/tickets.parquet'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#6A737D">-- CTE + aggregate</span></span>
+<span class="line"><span style="color:#F97583">with</span><span style="color:#E1E4E8"> by_account </span><span style="color:#F97583">as</span><span style="color:#E1E4E8"> (</span></span>
+<span class="line"><span style="color:#F97583">  select</span><span style="color:#E1E4E8"> account_id, </span><span style="color:#79B8FF">count</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">*</span><span style="color:#E1E4E8">) n, </span><span style="color:#79B8FF">avg</span><span style="color:#E1E4E8">(first_response_s) avg_resp,</span></span>
+<span class="line"><span style="color:#79B8FF">         sum</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">case</span><span style="color:#F97583"> when</span><span style="color:#F97583"> status=</span><span style="color:#9ECBFF">'escalated'</span><span style="color:#F97583"> then</span><span style="color:#79B8FF"> 1</span><span style="color:#F97583"> else</span><span style="color:#79B8FF"> 0</span><span style="color:#F97583"> end</span><span style="color:#E1E4E8">)::double </span><span style="color:#F97583">/</span><span style="color:#79B8FF"> count</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">*</span><span style="color:#E1E4E8">) esc_rate</span></span>
+<span class="line"><span style="color:#F97583">  from</span><span style="color:#E1E4E8"> tickets </span><span style="color:#F97583">group by</span><span style="color:#79B8FF"> 1</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">select</span><span style="color:#F97583"> *</span><span style="color:#F97583"> from</span><span style="color:#E1E4E8"> by_account </span><span style="color:#F97583">order by</span><span style="color:#E1E4E8"> esc_rate </span><span style="color:#F97583">desc</span><span style="color:#F97583"> limit</span><span style="color:#79B8FF"> 10</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">-- Window functions: message number per ticket, and gap since the previous message</span></span>
+<span class="line"><span style="color:#F97583">create</span><span style="color:#F97583"> table</span><span style="color:#B392F0"> messages</span><span style="color:#F97583"> as</span><span style="color:#F97583"> select</span><span style="color:#F97583"> *</span><span style="color:#F97583"> from</span><span style="color:#9ECBFF"> 'data/messages.parquet'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">select</span><span style="color:#E1E4E8"> ticket_id, sent_at,</span></span>
+<span class="line"><span style="color:#79B8FF">       row_number</span><span style="color:#E1E4E8">() </span><span style="color:#F97583">over</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">partition</span><span style="color:#F97583"> by</span><span style="color:#E1E4E8"> ticket_id </span><span style="color:#F97583">order by</span><span style="color:#E1E4E8"> sent_at) msg_no,</span></span>
+<span class="line"><span style="color:#E1E4E8">       sent_at </span><span style="color:#F97583">-</span><span style="color:#79B8FF"> lag</span><span style="color:#E1E4E8">(sent_at) </span><span style="color:#F97583">over</span><span style="color:#E1E4E8"> (</span><span style="color:#F97583">partition</span><span style="color:#F97583"> by</span><span style="color:#E1E4E8"> ticket_id </span><span style="color:#F97583">order by</span><span style="color:#E1E4E8"> sent_at) gap</span></span>
+<span class="line"><span style="color:#F97583">from</span><span style="color:#E1E4E8"> messages </span><span style="color:#F97583">limit</span><span style="color:#79B8FF"> 20</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D">-- Time to resolve: percentiles, not just averages</span></span>
+<span class="line"><span style="color:#F97583">create</span><span style="color:#F97583"> table</span><span style="color:#B392F0"> resolutions</span><span style="color:#F97583"> as</span><span style="color:#F97583"> select</span><span style="color:#F97583"> *</span><span style="color:#F97583"> from</span><span style="color:#9ECBFF"> 'data/resolutions.parquet'</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"><span style="color:#F97583">select</span><span style="color:#E1E4E8"> quantile_cont(epoch(</span><span style="color:#79B8FF">r</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">resolved_at</span><span style="color:#F97583"> -</span><span style="color:#79B8FF"> t</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">created_at</span><span style="color:#E1E4E8">)</span><span style="color:#F97583">/</span><span style="color:#79B8FF">3600</span><span style="color:#E1E4E8">, [0.5, 0.9, 0.99]) </span><span style="color:#F97583">hours</span></span>
+<span class="line"><span style="color:#F97583">from</span><span style="color:#E1E4E8"> tickets t </span><span style="color:#F97583">join</span><span style="color:#E1E4E8"> resolutions r </span><span style="color:#F97583">using</span><span style="color:#E1E4E8"> (ticket_id) </span><span style="color:#F97583">where</span><span style="color:#79B8FF"> r</span><span style="color:#E1E4E8">.</span><span style="color:#79B8FF">resolved_at</span><span style="color:#F97583"> is not null</span><span style="color:#E1E4E8">;</span></span>
+<span class="line"></span></code></pre></div><h2 id="3-unguided-challenge-3-hrs" tabindex="-1">3. Unguided challenge (~3 hrs)</h2>
+<p>Model a star schema:</p>
+<ul>
+<li><code>fct_ticket</code> (grain: one ticket)</li>
+<li><code>dim_account</code> as <strong>SCD2</strong>, with <code>valid_from</code>, <code>valid_to</code> and <code>is_current</code></li>
+<li><code>dim_date</code></li>
+<li><code>dim_category</code></li>
+</ul>
+<p>Write the SQL to build each table. Then answer, in a notebook:</p>
+<ol>
+<li>Escalation rate by plan, <em>using the plan in effect when the ticket was created</em> (a point-in-time join on SCD2).</li>
+<li>The median and 90th-percentile messages per resolved ticket.</li>
+<li>Do AI-handled tickets have a different resolution rate or CSAT from human ones? (Describe only — no conclusions yet.)</li>
+</ol>
+<p><strong>Acceptance criteria:</strong></p>
+<ul>
+<li>Every table has a documented grain.</li>
+<li>The SCD2 join is correct (test it on an account that changed plan).</li>
+<li>The notebook runs top to bottom.</li>
+</ul>
+<h2 id="4-thread-b-why-averages-lie-1-hr" tabindex="-1">4. Thread B — why averages lie (~1 hr)</h2>
+<p>For first-response time:</p>
+<ol>
+<li>Compute the mean, median, p90 and p99, then plot a histogram.</li>
+<li>Explain the gap between the mean and the median.</li>
+<li>Find one metric in your real job that’s reported as an average and should be a percentile.</li>
+<li>Describe Anscombe’s quartet in two sentences.</li>
+</ol>
+<h2 id="5-ways-of-working-1-hr" tabindex="-1">5. Ways of working (~1 hr)</h2>
+<p><strong>Working with data teams.</strong> Data as a product, data mesh (domain ownership), data contracts, and the semantic layer. Who owns the definition of “resolved” (or your domain’s equivalent key metric) at your organisation? Write the definition you’d propose and who should sign off on it.</p>
+<h2 id="6-check" tabindex="-1">6. Check</h2>
+<ol>
+<li>What’s the grain of a table, and why decide it first?</li>
+<li>SCD1 vs SCD2: when would you use each?</li>
+<li>What does <code>LAG()</code> return?</li>
+<li>Why is DuckDB fast at analytics but a poor fit for an app backend?</li>
+<li>When is the median better than the mean?</li>
+</ol>
+<p>Recycled:</p>
+<ul>
+<li>What does RLS do?</li>
+<li>What’s a dead-letter queue?</li>
+</ul>
+<h2 id="7-teach-back" tabindex="-1">7. Teach-back</h2>
+<p>Write “Facts, dimensions and why my dashboard numbers finally agree.”</p>
+<h2 id="done-when" tabindex="-1">Done when</h2>
+<ul>
+<li class="task-list-item"><input type="checkbox">Synthetic data generated as Parquet</li>
+<li class="task-list-item"><input type="checkbox">Star schema with SCD2 built and tested</li>
+<li class="task-list-item"><input type="checkbox">Analysis notebook answers all three questions</li>
+<li class="task-list-item"><input type="checkbox">Stats exercise done</li>
+<li class="task-list-item"><input type="checkbox">Data definition proposal written</li>
+<li class="task-list-item"><input type="checkbox">Check and teach-back done</li>
+</ul>
+</div>
+    <nav class="pager" aria-label="Lesson pagination">
+  <a class="plain prev" href="/course/week-11/"><span class="label">Previous</span><span class="title">Week 11: Ship to Real Users</span></a>
+  <a class="plain next" href="/course/week-13/"><span class="label">Next</span><span class="title">Week 13: Databricks Foundations</span></a>
+</nav>
+  </article>
+</div>
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-legal">© 2026 Productise LTD. All rights reserved.</div>
+  </div>
+</footer>
+<script src="../assets/course.js"></script>
+</body>
+</html>
