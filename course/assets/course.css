@@ -36,27 +36,30 @@ a.plain { text-decoration: none; }
   top: 0;
   z-index: 50;
   background: rgba(0, 0, 0, 0.92);
-  border-bottom: 1px solid var(--hairline);
+  border-bottom: none;
   backdrop-filter: blur(8px);
 }
 .site-nav-inner {
   max-width: var(--max);
   margin: 0 auto;
-  padding: 14px 24px;
+  padding: 16px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
 }
 .site-nav-brand {
+  display: inline-flex;
+  align-items: center;
   text-decoration: none;
-  text-transform: uppercase;
-  font-weight: 700;
-  font-size: 14px;
-  letter-spacing: 1.2px;
-  color: var(--on-primary);
+  line-height: 0;
 }
 .site-nav-brand:hover { opacity: 0.7; }
+.site-nav-logo {
+  display: block;
+  height: 28px;
+  width: auto;
+}
 .site-nav-links {
   display: flex;
   flex-wrap: wrap;

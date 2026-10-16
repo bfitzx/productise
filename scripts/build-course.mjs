@@ -61,14 +61,15 @@ function absoluteUrl(pathname) {
 
 function navHtml(active) {
   const links = [
-    { href: '/', label: 'Home', id: 'home' },
-    { href: '/course/', label: 'Course', id: 'course' },
+    { href: '/course/', label: 'Product Engineering Course', id: 'course' },
     { href: '/course/syllabus/', label: 'Syllabus', id: 'syllabus' },
     { href: '/course/domains/', label: 'Domains', id: 'domains' },
   ];
   return `<nav class="site-nav" aria-label="Primary">
   <div class="site-nav-inner">
-    <a class="site-nav-brand plain" href="/">Productise</a>
+    <a class="site-nav-brand plain" href="/" aria-label="Productise home">
+      <img class="site-nav-logo" src="/assets/productise-logo.png" alt="Productise" width="41" height="32">
+    </a>
     <div class="site-nav-links">
       ${links
         .map(
